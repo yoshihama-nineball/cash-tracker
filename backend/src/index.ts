@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import colors from 'colors';
 import server from './server';
 import dotenv from 'dotenv';

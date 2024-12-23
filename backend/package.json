@@ -17,11 +17,14 @@
     "morgan": "^1.10.0",
     "pg": "^8.13.1",
     "pg-hstore": "^2.3.4",
+    "reflect-metadata": "^0.2.2",
+    "sequelize": "^6.37.5",
     "sequelize-typescript": "^2.1.6"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/morgan": "^1.9.9",
+    "@types/sequelize": "^4.28.20",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.2"

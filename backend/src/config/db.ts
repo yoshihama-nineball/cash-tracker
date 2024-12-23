@@ -1,21 +1,29 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import colors from 'colors';
+import { Sequelize } from 'sequelize-typescript'
+import dotenv from 'dotenv'
+dotenv.config()
 
-dotenv.config();
+export const db = new Sequelize( process.env.DATABASE_URL , {
+    models: [__dirname + '/../models/**/*' ],
+    logging: false,
+    define: {
+        timestamps: false
+    },
+    dialectOptions: {
+        ssl: {
+            require: false
+        }
+    }
+})
+// import { Sequelize } from 'sequelize-typescript'
+// import dotenv from 'dotenv'
+// dotenv.config()
 
-console.log('MONGO_URL:', process.env.MONGO_URL);
-
-const connectDB = async () => {
-  try {
-    const { connection } = await mongoose.connect(process.env.MONGO_URL);
-    const url = `${connection.host}: ${connection.port}`
-    console.log(colors.blue.bold(`MongoDBに接続しました ${url}`));
-  } catch (err) {
-    console.log(colors.red.bold(err.message));
-    
-    process.exit(1);
-  }
-};
-
-export default connectDB;
+// export const db = new Sequelize( process.env.DATABASE_URL , {
+//     models: [__dirname + '/../models/**/*' ],
+//     logging: false,
+//     dialectOptions: {
+//         ssl: {
+//             require: false
+//         }
+//     }
+// })
