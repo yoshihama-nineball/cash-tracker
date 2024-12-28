@@ -33,6 +33,8 @@ export class BudgetController {
     }
   };
   static getById = async (req: Request, res: Response) => {
+    console.log(req.params.id);
+
     console.log('予算のID表示APIです /api/budgets/id');
     res.status(200).send('予算のID指定での表示');
   };
