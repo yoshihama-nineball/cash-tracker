@@ -27,7 +27,7 @@ export default [
       // PrettierのルールをESLintでエラーとして扱う
       "prettier/prettier": "error",
       // その他のカスタムルールの定義
-      semi: ["error", "never"], // セミコロンを常に使用
+      semi: ["error", "never"], // セミコロンを常に使わない
       quotes: ["error", "single"], // シングルクオートを使用
       "no-console": "off", // コンソールの使用を許可（デフォルトは警告）
       "@typescript-eslint/no-unused-vars": ["warn", { vars: "all", args: "after-used", ignoreRestSiblings: false }], // 未使用変数の警告

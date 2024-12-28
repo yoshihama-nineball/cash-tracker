@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { BudgetController } from '../controllers/BudgetController'
 import { body, param } from 'express-validator'
 import { handleInputErrors } from '../middleware/validation'
+import { validateBudgetId } from '../middleware/budget'
 const router = Router()
 
 router.get('/', BudgetController.getAll)
@@ -22,21 +23,13 @@ router.post(
 
 router.get(
   '/:id',
-  param('id')
-    .isInt()
-    .withMessage('IDが正しくありません')
-    .custom((value) => value > 0)
-    .withMessage('IDの値がマイナスです'),
+  validateBudgetId,
   handleInputErrors,
   BudgetController.getById,
 )
 router.put(
   '/:id',
-  param('id')
-    .isInt()
-    .withMessage('IDが正しくありません')
-    .custom((value) => value > 0)
-    .withMessage('IDの値がマイナスです'),
+  validateBudgetId,
   handleInputErrors, // パラメータバリデーションの後に配置
 
   body('name').notEmpty().withMessage('予算タイトルは必須です'),
@@ -54,11 +47,7 @@ router.put(
 
 router.delete(
   '/:id',
-  param('id')
-    .isInt()
-    .withMessage('IDが正しくありません')
-    .custom((value) => value > 0)
-    .withMessage('IDの値がマイナスです'),
+  validateBudgetId,
   handleInputErrors,
   BudgetController.deleteById,
 )
