@@ -63,7 +63,18 @@ export class BudgetController {
     }
   };
   static deleteById = async (req: Request, res: Response) => {
-    console.log('予算のIDを用いた削除APIです /api/budgets/id');
-    res.status(200).send('予算のID指定での削除');
+    try {
+      const { id } = req.params;
+      const budget = await Budget.findByPk(id);
+      if (!budget) {
+        const error = new Error('予算が見つかりません');
+        res.status(404).json({ error: error.message });
+        return
+      }
+      await budget.destroy();
+      res.json('予算の削除に成功しました');
+    } catch (error) {
+      res.status(500).json({ error: "エラーが発生しました" });
+    }
   };
 }
