@@ -3,15 +3,27 @@ import Budget from '../models/Budget';
 
 export class BudgetController {
   static getAll = async (req: Request, res: Response) => {
-    console.log('予算の全表示APIです /api/budgets');
-    console.log('Debug: getAll method called');
-    res.status(200).send('予算の一覧全表示');
+    try {
+      const budgets = await Budget.findAll({
+        order: [
+          ['createdAt', 'DESC']
+        ],
+        // limit: 1,
+        // TODO: 後ほど検索フィルタリング実装
+        // where: {
+        //   name: '食費'
+        // }
+      });
+      res.json(budgets);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: "エラーが発生しました" });
+    }
   };
 
   static create = async (req: Request, res: Response) => {
     // console.log('予算追加APIです /api/budgets');
     try {
-      // console.log(req.body);
       const budget = new Budget(req.body)
       await budget.save();
       res.status(201).json('予算が正しく作成されました');
