@@ -1,10 +1,10 @@
-import { Router } from 'express';
+import { Router } from 'express'
 
-const router = Router();
+const router = Router()
 
 // ルートのサンプル
 router.get('/', (req, res) => {
-  res.send('Hello, world!');
-});
+  res.send('Hello, world!')
+})
 
-export default router;
+export default router

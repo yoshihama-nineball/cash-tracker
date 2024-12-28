@@ -1,6 +1,6 @@
-import { Sequelize } from 'sequelize-typescript';
-import dotenv from 'dotenv';
-dotenv.config();
+import { Sequelize } from 'sequelize-typescript'
+import dotenv from 'dotenv'
+dotenv.config()
 
 export const db = new Sequelize(process.env.DATABASE_URL, {
   models: [__dirname + '/../models/**/*'],
@@ -13,5 +13,5 @@ export const db = new Sequelize(process.env.DATABASE_URL, {
       require: false,
     },
   },
-  timezone: '+9:00' //日本時間に設定
-});
+  timezone: '+9:00', //日本時間に設定
+})
