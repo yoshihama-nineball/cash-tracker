@@ -32,12 +32,21 @@ export class BudgetController {
       res.status(500).json({ error: "エラーが発生しました" });
     }
   };
-  static getById = async (req: Request, res: Response) => {
-    console.log(req.params.id);
-
-    console.log('予算のID表示APIです /api/budgets/id');
-    res.status(200).send('予算のID指定での表示');
+  static getById = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const budget = await Budget.findByPk(id);
+      if (!budget) {
+        const error = new Error('予算が見つかりません')
+        res.status(404).json({ error: error.message });
+        return;
+      }
+      res.json(budget);
+    } catch (error) {
+      res.status(500).json({ error: "エラーが発生しました" });
+    }
   };
+
   static updateById = async (req: Request, res: Response) => {
     console.log('予算のIDを用いた編集APIです /api/budgets/id');
     res.status(200).send('予算のID指定での編集');

@@ -18,11 +18,11 @@ router.post('/',
 );
 
 router.get('/:id',
-  param('id').isInt().withMessage('IDが正しくありません'),
+  param('id').isInt().withMessage('IDが正しくありません')
+    .custom(value => value > 0).withMessage('IDの値がマイナスです'),
   handleInputErrors,
   BudgetController.getById
 );
-
 router.put('/:id', BudgetController.updateById);
 router.delete('/:id', BudgetController.deleteById);
 
