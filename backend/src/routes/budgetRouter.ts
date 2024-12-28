@@ -23,7 +23,20 @@ router.get('/:id',
   handleInputErrors,
   BudgetController.getById
 );
-router.put('/:id', BudgetController.updateById);
+router.put('/:id',
+  param('id').isInt().withMessage('IDが正しくありません')
+    .custom(value => value > 0).withMessage('IDの値がマイナスです'),
+  handleInputErrors, // パラメータバリデーションの後に配置
+
+  body('name').notEmpty().withMessage('予算タイトルは必須です'),
+  body('amount').notEmpty().withMessage('予算金額は必須です')
+    .isNumeric().withMessage('予算金額の値が無効です')
+    .custom(value => value > 0).withMessage('予算金額が0円未満です'),
+  handleInputErrors, // ボディバリデーションの後に配置
+
+  BudgetController.updateById
+);
+
 router.delete('/:id', BudgetController.deleteById);
 
 export default router;
