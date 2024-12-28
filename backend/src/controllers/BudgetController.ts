@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import Budget from '../models/Budget';
 
 export class BudgetController {
   static getAll = async (req: Request, res: Response) => {
@@ -8,8 +9,16 @@ export class BudgetController {
   };
 
   static create = async (req: Request, res: Response) => {
-    console.log('予算追加APIです /api/budgets');
-    res.status(200).send('予算の作成');
+    // console.log('予算追加APIです /api/budgets');
+    try {
+      // console.log(req.body);
+      const budget = new Budget(req.body)
+      await budget.save();
+      res.status(201).json('予算が正しく作成されました');
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ error: "エラーが発生しました" });
+    }
   };
   static getById = async (req: Request, res: Response) => {
     console.log('予算のID表示APIです /api/budgets/id');
