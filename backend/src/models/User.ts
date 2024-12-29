@@ -33,6 +33,7 @@ class User extends Model {
   })
   declare password: string
 
+  //MEMO: 同一ユーザーが二重登録できないようにUniqueを設定
   @Unique(true)
   @AllowNull(false)
   @Column({
@@ -72,4 +73,4 @@ class User extends Model {
   declare budgets: Budget[]
 }
 
-export default Budget
+export default User
