@@ -62,6 +62,7 @@ router.get(
 
 router.put(
   '/:budgetId/expenses/:expenseId',
+  handleInputErrors, // パラメータバリデーションの後に配置,
   validateExpenseInput,
   handleInputErrors,
   ExpenseController.updateById,
