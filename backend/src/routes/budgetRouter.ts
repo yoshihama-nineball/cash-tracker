@@ -7,6 +7,7 @@ import {
   validateBudgetId,
   validateBudgetInput,
 } from '../middleware/budget'
+import { ExpenseController } from '../controllers/ExpenseController'
 const router = Router()
 
 // MEMO: router.paramはbudgetIdがURLパラメータとしてある場合に実行するために追加
@@ -32,5 +33,25 @@ router.put(
 )
 
 router.delete('/:budgetId', handleInputErrors, BudgetController.deleteById)
+
+router.get('/:budgetId/expenses',
+  ExpenseController.getAll,
+)
+
+router.post('/:budgetId/expenses',
+  ExpenseController.create,
+)
+
+router.get('/:budgetId/expenses/:expensesId',
+  ExpenseController.getById,
+)
+
+router.put('/:budgetId/expenses/:expensesId',
+  ExpenseController.updateById,
+)
+
+router.delete('/:budgetId/expenses/:expensesId',
+  ExpenseController.deleteById,
+)
 
 export default router
