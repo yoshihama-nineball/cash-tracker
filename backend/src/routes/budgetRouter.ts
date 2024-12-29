@@ -1,57 +1,76 @@
-import { Router } from 'express'
-import { BudgetController } from '../controllers/BudgetController'
-import { body, param } from 'express-validator'
-import { handleInputErrors } from '../middleware/validation'
+import { Router } from 'express';
+import { BudgetController } from '../controllers/BudgetController';
+import { ExpenseController } from '../controllers/ExpenseController';
+import { handleInputErrors } from '../middleware/validation';
 import {
   validateBudgetExists,
   validateBudgetId,
   validateBudgetInput,
-} from '../middleware/budget'
-import { ExpenseController } from '../controllers/ExpenseController'
-const router = Router()
+} from '../middleware/budget';
+import {
+  belongsToBudget,
+  validateExpenseInput,
+  validateExpenseId,
+  validateExpenseExists,
+} from '../middleware/expense';
 
-// MEMO: router.paramはbudgetIdがURLパラメータとしてある場合に実行するために追加
-router.param('budgetId', validateBudgetId)
-router.param('budgetId', validateBudgetExists)
+const router = Router();
 
-router.get('/', BudgetController.getAll)
+router.param('budgetId', validateBudgetId);
+router.param('budgetId', validateBudgetExists);
+
+// MEMO: expenseIdのバリデーションとチェックを追加
+router.param('expenseId', validateExpenseId);
+router.param('expenseId', validateExpenseExists);
+router.param('expenseId', belongsToBudget);
+
+router.get('/', BudgetController.getAll);
 
 router.post(
   '/',
   validateBudgetInput,
   handleInputErrors,
   BudgetController.create,
-)
+);
 
-router.get('/:budgetId', handleInputErrors, BudgetController.getById)
+router.get('/:budgetId', handleInputErrors, BudgetController.getById);
+
 router.put(
   '/:budgetId',
   handleInputErrors, // パラメータバリデーションの後に配置
   validateBudgetInput,
   handleInputErrors, // ボディバリデーションの後に配置
   BudgetController.updateById,
-)
+);
 
-router.delete('/:budgetId', handleInputErrors, BudgetController.deleteById)
+router.delete('/:budgetId', handleInputErrors, BudgetController.deleteById);
 
-router.get('/:budgetId/expenses',
-  ExpenseController.getAll,
-)
+router.get('/:budgetId/expenses', handleInputErrors, ExpenseController.getAll);
 
-router.post('/:budgetId/expenses',
+router.post(
+  '/:budgetId/expenses',
+  validateExpenseInput, // 追加
+  handleInputErrors, // 追加
   ExpenseController.create,
-)
+);
 
-router.get('/:budgetId/expenses/:expensesId',
+router.get(
+  '/:budgetId/expenses/:expenseId',
+  handleInputErrors,
   ExpenseController.getById,
-)
+);
 
-router.put('/:budgetId/expenses/:expensesId',
+router.put(
+  '/:budgetId/expenses/:expenseId',
+  validateExpenseInput,
+  handleInputErrors,
   ExpenseController.updateById,
-)
+);
 
-router.delete('/:budgetId/expenses/:expensesId',
+router.delete(
+  '/:budgetId/expenses/:expenseId',
+  handleInputErrors,
   ExpenseController.deleteById,
-)
+);
 
-export default router
+export default router;
