@@ -31,48 +31,15 @@ export class BudgetController {
     }
   }
   static getById = async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { id } = req.params
-      const budget = await Budget.findByPk(id)
-      if (!budget) {
-        const error = new Error('予算が見つかりません')
-        res.status(404).json({ error: error.message })
-        return
-      }
-      res.json(budget)
-    } catch (error) {
-      res.status(500).json({ error: 'エラーが発生しました' })
-    }
+    res.json(req.budget)
   }
 
   static updateById = async (req: Request, res: Response) => {
-    try {
-      const { id } = req.params
-      const budget = await Budget.findByPk(id)
-      if (!budget) {
-        const error = new Error('予算が見つかりません')
-        res.status(404).json({ error: error.message })
-        return
-      }
-      await budget.update(req.body)
-      res.json('予算の編集に成功しました')
-    } catch (error) {
-      res.status(500).json({ error: 'エラーが発生しました' })
-    }
+    await req.budget.update(req.body)
+    res.json('予算の編集に成功しました')
   }
   static deleteById = async (req: Request, res: Response) => {
-    try {
-      const { id } = req.params
-      const budget = await Budget.findByPk(id)
-      if (!budget) {
-        const error = new Error('予算が見つかりません')
-        res.status(404).json({ error: error.message })
-        return
-      }
-      await budget.destroy()
-      res.json('予算の削除に成功しました')
-    } catch (error) {
-      res.status(500).json({ error: 'エラーが発生しました' })
-    }
+    await req.budget.destroy()
+    res.json('予算の削除に成功しました')
   }
 }
