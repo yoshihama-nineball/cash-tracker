@@ -46,7 +46,7 @@ class Budget extends Model {
 
   @HasMany(() => Expense, {
     onUpdate: 'CASCADE',
-    onDelete: 'CASCADE'
+    onDelete: 'CASCADE',
   })
   declare expenses: Expense[]
 

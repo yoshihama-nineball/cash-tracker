@@ -1,6 +1,6 @@
-import { Request, Response, NextFunction } from "express"
-import { param, validationResult, body } from "express-validator"
-import Expense from "../models/Expense"
+import { Request, Response, NextFunction } from 'express'
+import { param, validationResult, body } from 'express-validator'
+import Expense from '../models/Expense'
 
 declare global {
   namespace Express {
@@ -37,10 +37,7 @@ export const validateExpenseInput = async (
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
-  await body('name')
-    .notEmpty()
-    .withMessage('支出タイトルは必須です')
-    .run(req)
+  await body('name').notEmpty().withMessage('支出タイトルは必須です').run(req)
   await body('amount')
     .notEmpty()
     .withMessage('支出金額は必須です')
@@ -65,27 +62,30 @@ export const validateExpenseExists = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const { expenseId } = req.params;
-    console.log(`Validating existence of expense with ID: ${expenseId}`); // デバッグログ
+    const { expenseId } = req.params
+    console.log(`Validating existence of expense with ID: ${expenseId}`) // デバッグログ
 
-    const expense = await Expense.findByPk(expenseId);
+    const expense = await Expense.findByPk(expenseId)
     if (!expense) {
-      const error = new Error('支出が見つかりません');
-      console.log(`Expense with ID: ${expenseId} not found`); // デバッグログ
-      res.status(404).json({ error: error.message });
-      return;
+      const error = new Error('支出が見つかりません')
+      console.log(`Expense with ID: ${expenseId} not found`) // デバッグログ
+      res.status(404).json({ error: error.message })
+      return
     }
-    req.expense = expense;
-    console.log(`Expense found: ${JSON.stringify(expense)}`); // デバッグログ
-    next();
+    req.expense = expense
+    console.log(`Expense found: ${JSON.stringify(expense)}`) // デバッグログ
+    next()
   } catch (error) {
-    console.log(`Error while validating expense: ${error.message}`); // デバッグログ
-    res.status(500).json({ error: error.message });
+    console.log(`Error while validating expense: ${error.message}`) // デバッグログ
+    res.status(500).json({ error: error.message })
   }
 }
 
-
-export const belongsToBudget = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const belongsToBudget = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
   if (req.budget.id !== req.expense.budgetId) {
     const error = new Error('支出が見つかりません')
     res.status(404).json({ error: error.message })
