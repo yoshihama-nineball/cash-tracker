@@ -8,6 +8,7 @@ import {
   ForeignKey,
   AllowNull,
 } from 'sequelize-typescript'
+import Expense from './Expense'
 // import Expense from './Expense'
 // import User from './User'
 
@@ -43,11 +44,11 @@ class Budget extends Model {
   })
   declare updatedAt: Date
 
-  // @HasMany( () => Expense, {
-  //     onUpdate: 'CASCADE',
-  //     onDelete: 'CASCADE'
-  // })
-  // declare expenses: Expense[]
+  @HasMany(() => Expense, {
+    onUpdate: 'CASCADE',
+    onDelete: 'CASCADE'
+  })
+  declare expenses: Expense[]
 
   // @ForeignKey(() => User)
   // declare userId: number
