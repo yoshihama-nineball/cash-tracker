@@ -1,3 +1,4 @@
+import { body } from 'express-validator';
 import { AuthController } from '../controllers/AuthController';
 import { handleInputErrors } from '../middleware/validation';
 import { PostFormatter } from './../../node_modules/schema-utils/declarations/ValidationError.d';
@@ -7,6 +8,17 @@ import { Router } from "express"
 const router = Router()
 
 router.post('/create-account',
+  body('name')
+    .notEmpty()
+    .withMessage('ユーザー名は必須です'),
+  body('password')
+    .notEmpty()
+    .withMessage('パスワードは必須です')
+    .isLength({ min: 8 })
+    .withMessage('パスワードは8文字以上です'),
+  body('email')
+    .isEmail()
+    .withMessage('メールアドレスは有効な形式ではありません'),
   handleInputErrors,
   AuthController.createAccount,
 )
