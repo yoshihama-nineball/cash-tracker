@@ -45,7 +45,7 @@ router.post('/login',
     .isLength({ min: 8 })
     .withMessage('パスワードは8文字以上にしてください'),
   handleInputErrors,
-  AuthController.login
+  AuthController.login,
 )
 
 router.post(

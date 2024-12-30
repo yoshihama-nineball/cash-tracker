@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import User from '../models/User'
 import { hashPassword } from '../utils/auth'
-import { generateToken } from '../utils/token'
+import { checkPassword, generateToken } from '../utils/token'
 import { AuthEmail } from '../emails/AuthEmail'
 
 export class AuthController {
@@ -64,7 +64,7 @@ export class AuthController {
   }
 
   static login = async (req: Request, res: Response): Promise<void> => {
-    const { email } = req.body
+    const { email, password } = req.body
     const user = await User.findOne({ where: { email } })
     if (!user) {
       const error = new Error('ユーザが見つかりません')
@@ -75,6 +75,12 @@ export class AuthController {
       res.status(401).json({ error: error.message })
     }
 
+    const isPasswordCorrect = await checkPassword(password, user.password)
+    if (!isPasswordCorrect) {
+      const error = new Error('パスワードが間違っています')
+      res.status(401).json({ error: error.message })
+    }
+    // res.json(user)
     res.json('アカウントのログインに成功しました！')
   }
 
