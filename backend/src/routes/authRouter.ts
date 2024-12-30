@@ -35,7 +35,19 @@ router.post(
   AuthController.confirmAccount,
 )
 
-router.post('/login', handleInputErrors, AuthController.login)
+router.post(
+  '/login',
+  body('email')
+    .isEmail()
+    .withMessage('メールアドレスは有効な形式ではありません'),
+  body('password')
+    .notEmpty()
+    .withMessage('パスワードは必須です')
+    .isLength({ min: 8 })
+    .withMessage('パスワードは8文字以上にしてください'),
+  handleInputErrors,
+  AuthController.login,
+)
 
 router.post(
   '/forgot-password',

@@ -1,8 +1,9 @@
 import { Request, Response } from 'express'
 import User from '../models/User'
 import { hashPassword } from '../utils/auth'
-import { generateToken } from '../utils/token'
+import { checkPassword, generateToken } from '../utils/token'
 import { AuthEmail } from '../emails/AuthEmail'
+import { generateJWT } from '../utils/jwt'
 
 export class AuthController {
   static createAccount = async (req: Request, res: Response): Promise<void> => {
@@ -63,7 +64,41 @@ export class AuthController {
     res.json('アカウントの認証に成功しました！')
   }
 
-  static login = async (req: Request, res: Response): Promise<void> => {}
+  static login = async (req: Request, res: Response): Promise<void> => {
+    const { email, password } = req.body
+
+    try {
+      const user = await User.findOne({ where: { email } })
+
+      if (!user) {
+        res.status(401).json({ error: 'ユーザが見つかりません' })
+        return // 関数を終了させる
+      }
+
+      if (!user.confirmed) {
+        res
+          .status(401)
+          .json({
+            error:
+              'アカウントがまだ有効化されていません。メールに送信された認証コードを使用してアカウントを有効化してください',
+          })
+        return // 関数を終了させる
+      }
+
+      const isPasswordCorrect = await checkPassword(password, user.password)
+      // console.log('Password correct:', isPasswordCorrect);
+      if (!isPasswordCorrect) {
+        res.status(401).json({ error: 'パスワードが間違っています' })
+        return // 関数を終了させる
+      }
+
+      // JWTの生成
+      const token = generateJWT(user.id)
+      res.json({ message: 'アカウントのログインに成功しました！', token })
+    } catch (error) {
+      res.status(500).json({ error: 'サーバーエラーが発生しました' })
+    }
+  }
 
   static forgotPassword = async (
     req: Request,
