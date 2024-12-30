@@ -65,63 +65,67 @@ export class AuthController {
   }
 
   static login = async (req: Request, res: Response): Promise<void> => {
-    const { email, password } = req.body;
+    const { email, password } = req.body
 
     try {
-      const user = await User.findOne({ where: { email } });
+      const user = await User.findOne({ where: { email } })
 
       if (!user) {
-        res.status(401).json({ error: 'ユーザが見つかりません' });
-        return; // 関数を終了させる
+        res.status(401).json({ error: 'ユーザが見つかりません' })
+        return // 関数を終了させる
       }
 
       if (!user.confirmed) {
-        res.status(401).json({ error: 'アカウントがまだ有効化されていません。メールに送信された認証コードを使用してアカウントを有効化してください' });
-        return; // 関数を終了させる
+        res
+          .status(401)
+          .json({
+            error:
+              'アカウントがまだ有効化されていません。メールに送信された認証コードを使用してアカウントを有効化してください',
+          })
+        return // 関数を終了させる
       }
 
-      const isPasswordCorrect = await checkPassword(password, user.password);
+      const isPasswordCorrect = await checkPassword(password, user.password)
       // console.log('Password correct:', isPasswordCorrect);
       if (!isPasswordCorrect) {
-        res.status(401).json({ error: 'パスワードが間違っています' });
-        return; // 関数を終了させる
+        res.status(401).json({ error: 'パスワードが間違っています' })
+        return // 関数を終了させる
       }
 
       // JWTの生成
-      const token = generateJWT(user.id);
-      res.json({ message: 'アカウントのログインに成功しました！', token });
+      const token = generateJWT(user.id)
+      res.json({ message: 'アカウントのログインに成功しました！', token })
     } catch (error) {
-      res.status(500).json({ error: 'サーバーエラーが発生しました' });
+      res.status(500).json({ error: 'サーバーエラーが発生しました' })
     }
   }
-
 
   static forgotPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => { }
+  ): Promise<void> => {}
 
   static validateToken = async (
     req: Request,
     res: Response,
-  ): Promise<void> => { }
+  ): Promise<void> => {}
 
   static resetPasswordWithToken = async (
     req: Request,
     res: Response,
-  ): Promise<void> => { }
+  ): Promise<void> => {}
 
-  static user = async (req: Request, res: Response): Promise<void> => { }
+  static user = async (req: Request, res: Response): Promise<void> => {}
 
   static updateCurrentUserPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => { }
+  ): Promise<void> => {}
 
   static checkPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => { }
+  ): Promise<void> => {}
 
-  static updateUser = async (req: Request, res: Response): Promise<void> => { }
+  static updateUser = async (req: Request, res: Response): Promise<void> => {}
 }

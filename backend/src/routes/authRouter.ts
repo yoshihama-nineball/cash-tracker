@@ -35,7 +35,8 @@ router.post(
   AuthController.confirmAccount,
 )
 
-router.post('/login',
+router.post(
+  '/login',
   body('email')
     .isEmail()
     .withMessage('メールアドレスは有効な形式ではありません'),
