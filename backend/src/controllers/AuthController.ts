@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import User from '../models/User'
 import { hashPassword } from '../utils/auth'
+import { generateToken } from '../utils/token'
 
 export class AuthController {
   static createAccount = async (req: Request, res: Response): Promise<void> => {
@@ -15,8 +16,8 @@ export class AuthController {
     try {
       const user = new User(req.body)
       user.password = await hashPassword(password)
-      // const token = generateToken()
-      // user.token = token
+      const token = generateToken()
+      user.token = token
 
       // if(process.env.NODE_ENV !== 'production') {
       //   globalThis.cashTrackerConfirmationToken = token
@@ -39,36 +40,36 @@ export class AuthController {
   static confirmAccount = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => { }
 
-  static login = async (req: Request, res: Response): Promise<void> => {}
+  static login = async (req: Request, res: Response): Promise<void> => { }
 
   static forgotPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => { }
 
   static validateToken = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => { }
 
   static resetPasswordWithToken = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => { }
 
-  static user = async (req: Request, res: Response): Promise<void> => {}
+  static user = async (req: Request, res: Response): Promise<void> => { }
 
   static updateCurrentUserPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => { }
 
   static checkPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => { }
 
-  static updateUser = async (req: Request, res: Response): Promise<void> => {}
+  static updateUser = async (req: Request, res: Response): Promise<void> => { }
 }
