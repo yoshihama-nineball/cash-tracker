@@ -2,8 +2,11 @@ import { body } from 'express-validator'
 import { AuthController } from '../controllers/AuthController'
 import { handleInputErrors } from '../middleware/validation'
 import { Router } from 'express'
+import { limiter } from '../config/limiter'
 
 const router = Router()
+
+router.use(limiter) // ルーターにlimiterを適用
 
 router.post(
   '/create-account',
@@ -22,6 +25,12 @@ router.post(
 
 router.post(
   '/confirm-account',
+  body('token')
+    .notEmpty()
+    .withMessage('認証コードは必須です')
+    .bail()
+    .isLength({ min: 6, max: 6 })
+    .withMessage('トークンが無効です'),
   handleInputErrors,
   AuthController.confirmAccount,
 )

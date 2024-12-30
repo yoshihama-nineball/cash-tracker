@@ -31,12 +31,10 @@ export class AuthController {
         token: user.token,
       })
       // res.status(201).json({ message: 'アカウントを作成しました' });
-      res
-        .status(201)
-        .json({
-          message: 'アカウントを作成しました',
-          email: { to: user.email, token: user.token },
-        })
+      res.status(201).json({
+        message: 'アカウントを作成しました',
+        email: { to: user.email, token: user.token },
+      })
       // res.status(200).json(user)
     } catch (error) {
       // console.log(error);
@@ -47,7 +45,23 @@ export class AuthController {
   static confirmAccount = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => {
+    const { token } = req.body
+    const user = await User.findOne({ where: { token } })
+    // res.json(user)
+    // console.log(user)
+
+    if (!user) {
+      const error = new Error('認証コードが無効です')
+      res.status(401).json({ error: error.message })
+    }
+    //MEMO:MEMO: confirmedをtrueにすることで、ユーザ登録を完了する
+    user.confirmed = true
+    //MEMO: アカウントの確認用tokenを無効にする
+    user.token = null
+    await user.save()
+    res.json('アカウントの認証に成功しました！')
+  }
 
   static login = async (req: Request, res: Response): Promise<void> => {}
 
