@@ -64,9 +64,18 @@ export class AuthController {
   }
 
   static login = async (req: Request, res: Response): Promise<void> => {
-    res.status(200).json('ログインAPIのテスト')
-    console.log('ログインAPIのログ');
+    const { email } = req.body
+    const user = await User.findOne({ where: { email } })
+    if (!user) {
+      const error = new Error('ユーザが見つかりません')
+      res.status(401).json({ error: error.message })
+    }
+    if (!user.confirmed) {
+      const error = new Error('アカウントがまだ有効化されていません。メールに送信された認証コードを使用してアカウントを有効化してください')
+      res.status(401).json({ error: error.message })
+    }
 
+    res.json('アカウントのログインに成功しました！')
   }
 
   static forgotPassword = async (
