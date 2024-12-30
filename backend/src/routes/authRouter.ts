@@ -2,8 +2,11 @@ import { body } from 'express-validator'
 import { AuthController } from '../controllers/AuthController'
 import { handleInputErrors } from '../middleware/validation'
 import { Router } from 'express'
+import { limiter } from '../config/limiter'
 
 const router = Router()
+
+router.use(limiter) // ルーターにlimiterを適用
 
 router.post(
   '/create-account',
