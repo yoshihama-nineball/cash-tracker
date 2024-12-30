@@ -3,6 +3,7 @@ import User from '../models/User'
 import { hashPassword } from '../utils/auth'
 import { checkPassword, generateToken } from '../utils/token'
 import { AuthEmail } from '../emails/AuthEmail'
+import { generateJWT } from '../utils/jwt'
 
 export class AuthController {
   static createAccount = async (req: Request, res: Response): Promise<void> => {
@@ -64,25 +65,36 @@ export class AuthController {
   }
 
   static login = async (req: Request, res: Response): Promise<void> => {
-    const { email, password } = req.body
-    const user = await User.findOne({ where: { email } })
-    if (!user) {
-      const error = new Error('ユーザが見つかりません')
-      res.status(401).json({ error: error.message })
-    }
-    if (!user.confirmed) {
-      const error = new Error('アカウントがまだ有効化されていません。メールに送信された認証コードを使用してアカウントを有効化してください')
-      res.status(401).json({ error: error.message })
-    }
+    const { email, password } = req.body;
 
-    const isPasswordCorrect = await checkPassword(password, user.password)
-    if (!isPasswordCorrect) {
-      const error = new Error('パスワードが間違っています')
-      res.status(401).json({ error: error.message })
+    try {
+      const user = await User.findOne({ where: { email } });
+
+      if (!user) {
+        res.status(401).json({ error: 'ユーザが見つかりません' });
+        return; // 関数を終了させる
+      }
+
+      if (!user.confirmed) {
+        res.status(401).json({ error: 'アカウントがまだ有効化されていません。メールに送信された認証コードを使用してアカウントを有効化してください' });
+        return; // 関数を終了させる
+      }
+
+      const isPasswordCorrect = await checkPassword(password, user.password);
+      // console.log('Password correct:', isPasswordCorrect);
+      if (!isPasswordCorrect) {
+        res.status(401).json({ error: 'パスワードが間違っています' });
+        return; // 関数を終了させる
+      }
+
+      // JWTの生成
+      const token = generateJWT(user.id);
+      res.json({ message: 'アカウントのログインに成功しました！', token });
+    } catch (error) {
+      res.status(500).json({ error: 'サーバーエラーが発生しました' });
     }
-    // res.json(user)
-    res.json('アカウントのログインに成功しました！')
   }
+
 
   static forgotPassword = async (
     req: Request,
