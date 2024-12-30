@@ -63,34 +63,38 @@ export class AuthController {
     res.json('アカウントの認証に成功しました！')
   }
 
-  static login = async (req: Request, res: Response): Promise<void> => {}
+  static login = async (req: Request, res: Response): Promise<void> => {
+    res.status(200).json('ログインAPIのテスト')
+    console.log('ログインAPIのログ');
+
+  }
 
   static forgotPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => { }
 
   static validateToken = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => { }
 
   static resetPasswordWithToken = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => { }
 
-  static user = async (req: Request, res: Response): Promise<void> => {}
+  static user = async (req: Request, res: Response): Promise<void> => { }
 
   static updateCurrentUserPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => { }
 
   static checkPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => { }
 
-  static updateUser = async (req: Request, res: Response): Promise<void> => {}
+  static updateUser = async (req: Request, res: Response): Promise<void> => { }
 }
