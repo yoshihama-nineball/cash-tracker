@@ -7,29 +7,50 @@ import {
   BelongsTo,
   ForeignKey,
   AllowNull,
+  Unique,
+  Default,
 } from 'sequelize-typescript'
 import Expense from './Expense'
-import User from './User'
+import Budget from './Budget'
 // import Expense from './Expense'
 // import User from './User'
 
 @Table({
-  tableName: 'budgets',
+  tableName: 'users',
   timestamps: true,
 })
-class Budget extends Model {
+class User extends Model {
   //MEMO: nameがnull非許容でstring型であることを定義
   @AllowNull(false)
   @Column({
-    type: DataType.STRING(100),
+    type: DataType.STRING(50),
   })
   declare name: string
 
   @AllowNull(false)
   @Column({
-    type: DataType.DECIMAL,
+    type: DataType.STRING(60),
   })
-  declare amount: number
+  declare password: string
+
+  //MEMO: 同一ユーザーが二重登録できないようにUniqueを設定
+  @Unique(true)
+  @AllowNull(false)
+  @Column({
+    type: DataType.STRING(50),
+  })
+  declare email: string
+
+  @Column({
+    type: DataType.STRING(6),
+  })
+  declare token: string
+
+  @Default(false)
+  @Column({
+    type: DataType.BOOLEAN,
+  })
+  declare confirmed: boolean
 
   @AllowNull(false)
   @Column({
@@ -45,17 +66,11 @@ class Budget extends Model {
   })
   declare updatedAt: Date
 
-  @HasMany(() => Expense, {
+  @HasMany(() => Budget, {
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',
   })
-  declare expenses: Expense[]
-
-  @ForeignKey(() => User)
-  declare userId: number
-
-  @BelongsTo(() => User)
-  declare user: User
+  declare budgets: Budget[]
 }
 
-export default Budget
+export default User
