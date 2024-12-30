@@ -2,6 +2,7 @@ import { Request, Response } from 'express'
 import User from '../models/User'
 import { hashPassword } from '../utils/auth'
 import { generateToken } from '../utils/token'
+import { AuthEmail } from '../emails/AuthEmail'
 
 export class AuthController {
   static createAccount = async (req: Request, res: Response): Promise<void> => {
@@ -24,12 +25,12 @@ export class AuthController {
       // }
 
       await user.save()
-      // await AuthEmail.sendConfirmationEmail({
-      //   name: user.name,
-      //   email: user.email,
-      //   token: user.token,
-      // })
-      //   res.status(201).json({ message: 'アカウントを作成しました' });
+      await AuthEmail.sendConfirmationEmail({
+        name: user.name,
+        email: user.email,
+        token: user.token,
+      })
+      // res.status(201).json({ message: 'アカウントを作成しました' });
       res.status(200).json(user)
     } catch (error) {
       // console.log(error);
