@@ -51,6 +51,9 @@ router.post(
 
 router.post(
   '/forgot-password',
+  body('email')
+    .isEmail()
+    .withMessage('メールアドレスは有効な形式ではありません'),
   handleInputErrors,
   AuthController.forgotPassword,
 )

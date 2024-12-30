@@ -103,29 +103,31 @@ export class AuthController {
   static forgotPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => {
+    console.log('パスワードリセット用のテストAPI');
+  }
 
   static validateToken = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => { }
 
   static resetPasswordWithToken = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => { }
 
-  static user = async (req: Request, res: Response): Promise<void> => {}
+  static user = async (req: Request, res: Response): Promise<void> => { }
 
   static updateCurrentUserPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => { }
 
   static checkPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => { }
 
-  static updateUser = async (req: Request, res: Response): Promise<void> => {}
+  static updateUser = async (req: Request, res: Response): Promise<void> => { }
 }
