@@ -31,7 +31,8 @@ export class AuthController {
         token: user.token,
       })
       // res.status(201).json({ message: 'アカウントを作成しました' });
-      res.status(200).json(user)
+      res.status(201).json({ message: 'アカウントを作成しました', email: { to: user.email, token: user.token } });
+      // res.status(200).json(user)
     } catch (error) {
       // console.log(error);
       res.status(500).json({ error: 'ユーザ作成中にエラーが発生しました' })
