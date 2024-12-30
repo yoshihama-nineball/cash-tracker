@@ -3,7 +3,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 type TransportConfig = {
-  host: string,
+  host: string
   port: number
   auth: {
     user: string
@@ -17,9 +17,9 @@ const config = (): TransportConfig => {
     port: +process.env.EMAIL_PORT,
     auth: {
       user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
+      pass: process.env.EMAIL_PASS,
+    },
   }
 }
 
-export const transport = nodemailer.createTransport(config());
+export const transport = nodemailer.createTransport(config())

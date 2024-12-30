@@ -31,7 +31,12 @@ export class AuthController {
         token: user.token,
       })
       // res.status(201).json({ message: 'アカウントを作成しました' });
-      res.status(201).json({ message: 'アカウントを作成しました', email: { to: user.email, token: user.token } });
+      res
+        .status(201)
+        .json({
+          message: 'アカウントを作成しました',
+          email: { to: user.email, token: user.token },
+        })
       // res.status(200).json(user)
     } catch (error) {
       // console.log(error);
@@ -42,36 +47,36 @@ export class AuthController {
   static confirmAccount = async (
     req: Request,
     res: Response,
-  ): Promise<void> => { }
+  ): Promise<void> => {}
 
-  static login = async (req: Request, res: Response): Promise<void> => { }
+  static login = async (req: Request, res: Response): Promise<void> => {}
 
   static forgotPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => { }
+  ): Promise<void> => {}
 
   static validateToken = async (
     req: Request,
     res: Response,
-  ): Promise<void> => { }
+  ): Promise<void> => {}
 
   static resetPasswordWithToken = async (
     req: Request,
     res: Response,
-  ): Promise<void> => { }
+  ): Promise<void> => {}
 
-  static user = async (req: Request, res: Response): Promise<void> => { }
+  static user = async (req: Request, res: Response): Promise<void> => {}
 
   static updateCurrentUserPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => { }
+  ): Promise<void> => {}
 
   static checkPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => { }
+  ): Promise<void> => {}
 
-  static updateUser = async (req: Request, res: Response): Promise<void> => { }
+  static updateUser = async (req: Request, res: Response): Promise<void> => {}
 }
