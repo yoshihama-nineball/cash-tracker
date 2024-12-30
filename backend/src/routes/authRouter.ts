@@ -22,6 +22,12 @@ router.post(
 
 router.post(
   '/confirm-account',
+  body('token')
+    .notEmpty()
+    .withMessage('認証コードは必須です')
+    .bail()
+    .isLength({ min: 6, max: 6 })
+    .withMessage('トークンが無効です'),
   handleInputErrors,
   AuthController.confirmAccount,
 )
