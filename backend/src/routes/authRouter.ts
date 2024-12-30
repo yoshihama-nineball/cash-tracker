@@ -1,7 +1,6 @@
 import { body } from 'express-validator'
 import { AuthController } from '../controllers/AuthController'
 import { handleInputErrors } from '../middleware/validation'
-import { PostFormatter } from './../../node_modules/schema-utils/declarations/ValidationError.d'
 import { Router } from 'express'
 
 const router = Router()
