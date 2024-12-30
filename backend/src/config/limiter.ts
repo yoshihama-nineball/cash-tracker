@@ -5,5 +5,5 @@ export const limiter = rateLimit({
   windowMs: 60 * 1000,
   // limit: process.env.NODE_ENV === 'production' ? 5 : 1000,
   limit: 5,
-  message: { "error": "リクエストの上限に達しました" }
+  message: { error: 'リクエストの上限に達しました' },
 })
