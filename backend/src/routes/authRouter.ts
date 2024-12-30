@@ -1,16 +1,14 @@
-import { body } from 'express-validator';
-import { AuthController } from '../controllers/AuthController';
-import { handleInputErrors } from '../middleware/validation';
-import { PostFormatter } from './../../node_modules/schema-utils/declarations/ValidationError.d';
-import { Router } from "express"
-
+import { body } from 'express-validator'
+import { AuthController } from '../controllers/AuthController'
+import { handleInputErrors } from '../middleware/validation'
+import { PostFormatter } from './../../node_modules/schema-utils/declarations/ValidationError.d'
+import { Router } from 'express'
 
 const router = Router()
 
-router.post('/create-account',
-  body('name')
-    .notEmpty()
-    .withMessage('ユーザー名は必須です'),
+router.post(
+  '/create-account',
+  body('name').notEmpty().withMessage('ユーザー名は必須です'),
   body('password')
     .notEmpty()
     .withMessage('パスワードは必須です')
@@ -23,49 +21,38 @@ router.post('/create-account',
   AuthController.createAccount,
 )
 
-router.post('/confirm-account',
+router.post(
+  '/confirm-account',
   handleInputErrors,
   AuthController.confirmAccount,
 )
 
-router.post('/login',
-  handleInputErrors,
-  AuthController.login,
-)
+router.post('/login', handleInputErrors, AuthController.login)
 
-router.post('/forgot-password',
+router.post(
+  '/forgot-password',
   handleInputErrors,
   AuthController.forgotPassword,
 )
 
-router.post('/validate-token',
-  handleInputErrors,
-  AuthController.validateToken
-)
+router.post('/validate-token', handleInputErrors, AuthController.validateToken)
 
-router.post('/reset-password/:token',
+router.post(
+  '/reset-password/:token',
   handleInputErrors,
   AuthController.resetPasswordWithToken,
 )
 
-router.get('/user',
+router.get('/user', handleInputErrors, AuthController.user)
+
+router.put('/user', handleInputErrors, AuthController.user)
+
+router.post(
+  '/update-password',
   handleInputErrors,
-  AuthController.user,
+  AuthController.updateCurrentUserPassword,
 )
 
-router.put('/user',
-  handleInputErrors,
-  AuthController.user,
-)
-
-router.post('/update-password',
-  handleInputErrors,
-  AuthController.updateCurrentUserPassword
-)
-
-router.post('/check-password',
-  handleInputErrors,
-  AuthController.checkPassword
-)
+router.post('/check-password', handleInputErrors, AuthController.checkPassword)
 
 export default router

@@ -1,72 +1,72 @@
-import { Request, Response } from "express";
-import User from "../models/User";
-
+import { Request, Response } from 'express'
+import User from '../models/User'
 
 export class AuthController {
   static createAccount = async (req: Request, res: Response): Promise<void> => {
-    res.json('アカウント作成APIテスト')
-    // const { email, password } = req.body;
-    // const userExists = await User.findOne({ where: { email } })
-    // if (userExists) {
-    //   const error = new Error('そのメールアドレスは既に登録されています。')
-    //   res.status(409).json({ error: error.message })
-    // }
-    // try {
-    //   const user = await User.create(req.body)
-    // user.password = await hashPassword(password)
-    // const token = generateToken()
-    // user.token = token
+    // res.json(req.body)
+    const { email, password } = req.body
+    const userExists = await User.findOne({ where: { email } })
+    if (userExists) {
+      const error = new Error('そのメールアドレスは既に登録されています。')
+      res.status(409).json({ error: error.message })
+    }
+    try {
+      const user = new User(req.body)
+      // user.password = await hashPassword(password)
+      // const token = generateToken()
+      // user.token = token
 
-    // if(process.env.NODE_ENV !== 'production') {
-    //   globalThis.cashTrackerConfirmationToken = token
-    // }
+      // if(process.env.NODE_ENV !== 'production') {
+      //   globalThis.cashTrackerConfirmationToken = token
+      // }
 
-    // await user.save()
-    // await AuthEmail.sendConfirmationEmail({
-    //   name: user.name,
-    //   email: user.email,
-    //   token: user.token,
-    // })
-    //   res.status(201).json({ message: 'アカウントを作成しました' });
-    // } catch (error) {
-    //   // console.log(error);
-    //   res.status(500).json({ error: 'ユーザ作成中にエラーが発生しました' });
-    // }
+      await user.save()
+      // await AuthEmail.sendConfirmationEmail({
+      //   name: user.name,
+      //   email: user.email,
+      //   token: user.token,
+      // })
+      //   res.status(201).json({ message: 'アカウントを作成しました' });
+      res.status(200).json(user)
+    } catch (error) {
+      // console.log(error);
+      res.status(500).json({ error: 'ユーザ作成中にエラーが発生しました' })
+    }
   }
 
-  static confirmAccount = async (req: Request, res: Response): Promise<void> => {
+  static confirmAccount = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {}
 
-  }
+  static login = async (req: Request, res: Response): Promise<void> => {}
 
-  static login = async (req: Request, res: Response): Promise<void> => {
+  static forgotPassword = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {}
 
-  }
+  static validateToken = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {}
 
-  static forgotPassword = async (req: Request, res: Response): Promise<void> => {
+  static resetPasswordWithToken = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {}
 
-  }
+  static user = async (req: Request, res: Response): Promise<void> => {}
 
-  static validateToken = async (req: Request, res: Response): Promise<void> => {
+  static updateCurrentUserPassword = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {}
 
-  }
+  static checkPassword = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {}
 
-  static resetPasswordWithToken = async (req: Request, res: Response): Promise<void> => {
-
-  }
-
-  static user = async (req: Request, res: Response): Promise<void> => {
-
-  }
-
-  static updateCurrentUserPassword = async (req: Request, res: Response): Promise<void> => {
-
-  }
-
-  static checkPassword = async (req: Request, res: Response): Promise<void> => {
-
-  }
-
-  static updateUser = async (req: Request, res: Response): Promise<void> => {
-
-  }
+  static updateUser = async (req: Request, res: Response): Promise<void> => {}
 }
