@@ -165,17 +165,22 @@ export class AuthController {
     res.json(req.user)
   }
   static updateUser = async (req: Request, res: Response): Promise<void> => {
-    res.json('認証されたユーザの更新APIテスト');
-
+    res.json('認証されたユーザの更新APIテスト')
   }
 
-  static updateCurrentUserPassword = async (req: Request, res: Response): Promise<void> => {
+  static updateCurrentUserPassword = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {
     const { current_password, password } = req.body
-    const { id } = req.user;
+    const { id } = req.user
     const user = await User.findByPk(id)
 
     //MEMO: IDから取得したユーザのパスワードと、current_passwordが一致するか確認
-    const isCheckPasswordCorrect = await checkPassword(current_password, user.password)
+    const isCheckPasswordCorrect = await checkPassword(
+      current_password,
+      user.password,
+    )
     if (!isCheckPasswordCorrect) {
       res.status(401).json({ error: '現在のパスワードが間違っています' })
       return

@@ -96,10 +96,11 @@ router.get(
   AuthController.user,
 )
 
-router.put('/user',
+router.put(
+  '/user',
   authenticate,
   // handleInputErrors,
-  AuthController.updateUser
+  AuthController.updateUser,
 )
 
 router.post(
@@ -119,13 +120,12 @@ router.post(
   AuthController.updateCurrentUserPassword,
 )
 
-router.post('/check-password',
+router.post(
+  '/check-password',
   authenticate,
-  body('password')
-    .notEmpty()
-    .withMessage('パスワードは必須です'),
+  body('password').notEmpty().withMessage('パスワードは必須です'),
   handleInputErrors,
-  AuthController.checkPassword
+  AuthController.checkPassword,
 )
 
 export default router
