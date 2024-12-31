@@ -1,9 +1,10 @@
-import { Request, Response } from 'express'
+import type { Request, Response } from 'express'
 import User from '../models/User'
 import { hashPassword } from '../utils/auth'
 import { checkPassword, generateToken } from '../utils/token'
 import { AuthEmail } from '../emails/AuthEmail'
 import { generateJWT } from '../utils/jwt'
+import jwt from 'jsonwebtoken'
 
 export class AuthController {
   static createAccount = async (req: Request, res: Response): Promise<void> => {
@@ -128,11 +129,9 @@ export class AuthController {
     if (!user) {
       res.status(401).json({ error: 'ユーザが見つかりません' })
     }
-    res
-      .status(200)
-      .json({
-        message: '有効なトークンです。新しいパスワードを設定してください。',
-      })
+    res.status(200).json({
+      message: '有効なトークンです。新しいパスワードを設定してください。',
+    })
   }
 
   static resetPasswordWithToken = async (
@@ -162,7 +161,9 @@ export class AuthController {
     }
   }
 
-  static user = async (req: Request, res: Response): Promise<void> => {}
+  static user = async (req: Request, res: Response): Promise<void> => {
+    res.json(req.user)
+  }
 
   static updateCurrentUserPassword = async (
     req: Request,
