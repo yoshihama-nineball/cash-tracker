@@ -96,14 +96,36 @@ router.get(
   AuthController.user,
 )
 
-router.put('/user', handleInputErrors, AuthController.user)
+router.put(
+  '/user',
+  authenticate,
+  // handleInputErrors,
+  AuthController.updateUser,
+)
 
 router.post(
   '/update-password',
+  authenticate,
+  body('current_password')
+    .notEmpty()
+    .withMessage('現在のパスワードは必須です')
+    .isLength({ min: 8 })
+    .withMessage('現在のパスワードは8文字以上です'),
+  body('password')
+    .notEmpty()
+    .withMessage('再設定するパスワードは必須です')
+    .isLength({ min: 8 })
+    .withMessage('再設定するパスワードは8文字以上です'),
   handleInputErrors,
   AuthController.updateCurrentUserPassword,
 )
 
-router.post('/check-password', handleInputErrors, AuthController.checkPassword)
+router.post(
+  '/check-password',
+  authenticate,
+  body('password').notEmpty().withMessage('パスワードは必須です'),
+  handleInputErrors,
+  AuthController.checkPassword,
+)
 
 export default router

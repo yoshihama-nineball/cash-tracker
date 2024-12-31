@@ -164,16 +164,44 @@ export class AuthController {
   static user = async (req: Request, res: Response): Promise<void> => {
     res.json(req.user)
   }
+  static updateUser = async (req: Request, res: Response): Promise<void> => {
+    res.json('認証されたユーザの更新APIテスト')
+  }
 
   static updateCurrentUserPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => {
+    const { current_password, password } = req.body
+    const { id } = req.user
+    const user = await User.findByPk(id)
 
-  static checkPassword = async (
-    req: Request,
-    res: Response,
-  ): Promise<void> => {}
+    //MEMO: IDから取得したユーザのパスワードと、current_passwordが一致するか確認
+    const isCheckPasswordCorrect = await checkPassword(
+      current_password,
+      user.password,
+    )
+    if (!isCheckPasswordCorrect) {
+      res.status(401).json({ error: '現在のパスワードが間違っています' })
+      return
+    }
+    //MEMO: 現在のパスワードの入力が正しい場合、再設定したパスワードを保存
+    user.password = await hashPassword(password)
+    await user.save()
+    res.status(200).json({ message: 'パスワードが更新されました' })
+  }
 
-  static updateUser = async (req: Request, res: Response): Promise<void> => {}
+  static checkPassword = async (req: Request, res: Response): Promise<void> => {
+    const { password } = req.body
+    const { id } = req.user
+
+    const user = await User.findByPk(id)
+
+    const isCorrectPassword = await checkPassword(password, user.password)
+    if (!isCorrectPassword) {
+      res.status(401).json({ error: 'パスワードが間違っています' })
+      return
+    }
+    res.status(201).json({ message: 'パスワードは正しいです' })
+  }
 }
