@@ -76,12 +76,10 @@ export class AuthController {
       }
 
       if (!user.confirmed) {
-        res
-          .status(401)
-          .json({
-            error:
-              'アカウントがまだ有効化されていません。メールに送信された認証コードを使用してアカウントを有効化してください',
-          })
+        res.status(401).json({
+          error:
+            'アカウントがまだ有効化されていません。メールに送信された認証コードを使用してアカウントを有効化してください',
+        })
         return // 関数を終了させる
       }
 
@@ -100,8 +98,11 @@ export class AuthController {
     }
   }
 
-  static forgotPassword = async (req: Request, res: Response,): Promise<void> => {
-    const { email } = req.body;
+  static forgotPassword = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {
+    const { email } = req.body
     const user = await User.findOne({ where: { email } })
     if (!user) {
       res.status(401).json({ error: 'ユーザが見つかりません' })
@@ -120,22 +121,29 @@ export class AuthController {
     })
   }
 
-  static validateToken = async (req: Request, res: Response,): Promise<void> => {
+  static validateToken = async (req: Request, res: Response): Promise<void> => {
     //TODO: パスワードリセット時に生成したtokenが有効か確認する
     const { token } = req.body
     const user = await User.findOne({ where: { token } })
     if (!user) {
       res.status(401).json({ error: 'ユーザが見つかりません' })
     }
-    res.status(200).json({ message: '有効なトークンです。新しいパスワードを設定してください。' })
+    res
+      .status(200)
+      .json({
+        message: '有効なトークンです。新しいパスワードを設定してください。',
+      })
   }
 
-  static resetPasswordWithToken = async (req: Request, res: Response): Promise<void> => {
-    const { token } = req.params;
-    const { password } = req.body;
+  static resetPasswordWithToken = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {
+    const { token } = req.params
+    const { password } = req.body
 
     try {
-      const user = await User.findOne({ where: { token } });
+      const user = await User.findOne({ where: { token } })
 
       if (!user) {
         res.status(401).json({ error: 'ユーザが見つかりません' })
@@ -143,29 +151,28 @@ export class AuthController {
       }
 
       // パスワードの再設定時も、ハッシュ化して登録する
-      user.password = await hashPassword(password);
+      user.password = await hashPassword(password)
       // 認証コード用のtokenが正しいことが確認出来たら、tokenをnullにして無効にする
-      user.token = null;
-      await user.save();
+      user.token = null
+      await user.save()
 
       res.status(200).json({ message: 'パスワードが更新されました' })
     } catch (error) {
-      res.status(500).json({ error: 'サーバーエラーが発生しました' });
+      res.status(500).json({ error: 'サーバーエラーが発生しました' })
     }
   }
 
-
-  static user = async (req: Request, res: Response): Promise<void> => { }
+  static user = async (req: Request, res: Response): Promise<void> => {}
 
   static updateCurrentUserPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => { }
+  ): Promise<void> => {}
 
   static checkPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => { }
+  ): Promise<void> => {}
 
-  static updateUser = async (req: Request, res: Response): Promise<void> => { }
+  static updateUser = async (req: Request, res: Response): Promise<void> => {}
 }

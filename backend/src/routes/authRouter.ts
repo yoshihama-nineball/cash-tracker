@@ -58,7 +58,8 @@ router.post(
   AuthController.forgotPassword,
 )
 
-router.post('/validate-token',
+router.post(
+  '/validate-token',
   body('token')
     .notEmpty()
     .withMessage('認証コードは必須です')
@@ -66,7 +67,7 @@ router.post('/validate-token',
     .isLength({ min: 6, max: 6 })
     .withMessage('トークンが無効です'),
   handleInputErrors,
-  AuthController.validateToken
+  AuthController.validateToken,
 )
 
 router.post(
