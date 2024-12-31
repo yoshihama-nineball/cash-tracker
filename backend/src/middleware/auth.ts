@@ -38,7 +38,7 @@ export const authenticate = async (
     if (typeof decoded === 'object' && decoded.id) {
       // MEMO: 秘密鍵とJWTを用いて検証、JWTが有効であればデコードする
       req.user = await User.findByPk(decoded.id, {
-        attributes: ['id', 'name', 'email', 'password'],
+        attributes: ['id', 'name', 'email'],
       })
       //MEMO: authRouterのuser
       //MEMO: authenticateの次にあるAuthController.userにreq.userを渡す

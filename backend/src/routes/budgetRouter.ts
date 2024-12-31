@@ -3,6 +3,7 @@ import { BudgetController } from '../controllers/BudgetController'
 import { ExpenseController } from '../controllers/ExpenseController'
 import { handleInputErrors } from '../middleware/validation'
 import {
+  hasAccess,
   validateBudgetExists,
   validateBudgetId,
   validateBudgetInput,
@@ -13,11 +14,18 @@ import {
   validateExpenseId,
   validateExpenseExists,
 } from '../middleware/expense'
+import { authenticate } from '../middleware/auth'
 
 const router = Router()
 
+//MEMO: ユーザ認証を、予算、支出データのCRUDすべてにおいて確認
+router.use(authenticate)
+
 router.param('budgetId', validateBudgetId)
 router.param('budgetId', validateBudgetExists)
+//MEMO: 予算、支出のCRUDでURLパラメータにbudgetIdを持つ操作すべて、アクセス権の確認を行う
+//MEMO: IDによるデータ取得、編集、削除
+router.param('budgetId', hasAccess)
 
 // MEMO: expenseIdのバリデーションとチェックを追加
 router.param('expenseId', validateExpenseId)
@@ -37,9 +45,9 @@ router.get('/:budgetId', handleInputErrors, BudgetController.getById)
 
 router.put(
   '/:budgetId',
-  handleInputErrors, // パラメータバリデーションの後に配置
+  handleInputErrors,
   validateBudgetInput,
-  handleInputErrors, // ボディバリデーションの後に配置
+  handleInputErrors,
   BudgetController.updateById,
 )
 

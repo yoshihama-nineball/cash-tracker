@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express'
 import Budget from '../models/Budget'
+import Expense from '../models/Expense'
 
 export class BudgetController {
   static getAll = async (req: Request, res: Response) => {
@@ -8,9 +9,9 @@ export class BudgetController {
         order: [['createdAt', 'DESC']],
         // limit: 1,
         // TODO: 後ほど検索フィルタリング実装
-        // where: {
-        //   name: '食費'
-        // }
+        where: {
+          userId: req.user.id,
+        },
       })
       res.json(budgets)
     } catch (error) {
@@ -23,6 +24,8 @@ export class BudgetController {
     // console.log('予算追加APIです /api/budgets');
     try {
       const budget = new Budget(req.body)
+      //MEMO: JWT認証によって得たユーザIDをBudgetテーブルのuserIdに追加
+      budget.userId = req.user.id
       await budget.save()
       res.status(201).json('予算が正しく作成されました')
     } catch (error) {
@@ -31,7 +34,28 @@ export class BudgetController {
     }
   }
   static getById = async (req: Request, res: Response): Promise<void> => {
-    res.json(req.budget)
+    try {
+      const budget = await Budget.findByPk(req.budget.id, {
+        include: [Expense],
+      })
+
+      if (!budget) {
+        res.status(404).json({ error: '予算が見つかりません' })
+        return
+      }
+
+      if (budget.userId !== req.user.id) {
+        res.status(401).json({ error: 'アクセス権限がありません' })
+        return
+      }
+
+      res.json({
+        budget: budget,
+        user: req.user,
+      })
+    } catch (error) {
+      res.status(500).json({ error: 'サーバーエラーが発生しました' })
+    }
   }
 
   static updateById = async (req: Request, res: Response) => {
