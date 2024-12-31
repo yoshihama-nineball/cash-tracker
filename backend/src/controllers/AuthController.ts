@@ -100,22 +100,60 @@ export class AuthController {
     }
   }
 
-  static forgotPassword = async (
-    req: Request,
-    res: Response,
-  ): Promise<void> => {
-    console.log('パスワードリセット用のテストAPI');
+  static forgotPassword = async (req: Request, res: Response,): Promise<void> => {
+    const { email } = req.body;
+    const user = await User.findOne({ where: { email } })
+    if (!user) {
+      res.status(401).json({ error: 'ユーザが見つかりません' })
+    }
+    user.token = generateToken()
+    await user.save()
+
+    await AuthEmail.sendResetPasswordEmail({
+      name: user.name,
+      email: user.email,
+      token: user.token,
+    })
+    res.status(201).json({
+      message: 'パスワードをリセットしました。メールを確認してください',
+      email: { to: user.email, token: user.token },
+    })
   }
 
-  static validateToken = async (
-    req: Request,
-    res: Response,
-  ): Promise<void> => { }
+  static validateToken = async (req: Request, res: Response,): Promise<void> => {
+    //TODO: パスワードリセット時に生成したtokenが有効か確認する
+    const { token } = req.body
+    const user = await User.findOne({ where: { token } })
+    if (!user) {
+      res.status(401).json({ error: 'ユーザが見つかりません' })
+    }
+    res.status(200).json({ message: '有効なトークンです。新しいパスワードを設定してください。' })
+  }
 
-  static resetPasswordWithToken = async (
-    req: Request,
-    res: Response,
-  ): Promise<void> => { }
+  static resetPasswordWithToken = async (req: Request, res: Response): Promise<void> => {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    try {
+      const user = await User.findOne({ where: { token } });
+
+      if (!user) {
+        res.status(401).json({ error: 'ユーザが見つかりません' })
+        return
+      }
+
+      // パスワードの再設定時も、ハッシュ化して登録する
+      user.password = await hashPassword(password);
+      // 認証コード用のtokenが正しいことが確認出来たら、tokenをnullにして無効にする
+      user.token = null;
+      await user.save();
+
+      res.status(200).json({ message: 'パスワードが更新されました' })
+    } catch (error) {
+      res.status(500).json({ error: 'サーバーエラーが発生しました' });
+    }
+  }
+
 
   static user = async (req: Request, res: Response): Promise<void> => { }
 
