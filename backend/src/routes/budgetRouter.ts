@@ -13,8 +13,12 @@ import {
   validateExpenseId,
   validateExpenseExists,
 } from '../middleware/expense'
+import { authenticate } from '../middleware/auth'
 
 const router = Router()
+
+//MEMO: ユーザ認証を、予算データのCRUDすべてにおいて確認
+router.use(authenticate)
 
 router.param('budgetId', validateBudgetId)
 router.param('budgetId', validateBudgetExists)

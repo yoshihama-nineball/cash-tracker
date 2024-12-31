@@ -23,6 +23,8 @@ export class BudgetController {
     // console.log('予算追加APIです /api/budgets');
     try {
       const budget = new Budget(req.body)
+      //MEMO: JWT認証によって得たユーザIDをBudgetテーブルのuserIdに追加
+      budget.userId = req.user.id
       await budget.save()
       res.status(201).json('予算が正しく作成されました')
     } catch (error) {
