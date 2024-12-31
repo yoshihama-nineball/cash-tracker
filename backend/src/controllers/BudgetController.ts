@@ -8,9 +8,9 @@ export class BudgetController {
         order: [['createdAt', 'DESC']],
         // limit: 1,
         // TODO: 後ほど検索フィルタリング実装
-        // where: {
-        //   name: '食費'
-        // }
+        where: {
+          userId: req.user.id,
+        }
       })
       res.json(budgets)
     } catch (error) {
