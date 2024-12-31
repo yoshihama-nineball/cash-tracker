@@ -163,17 +163,17 @@ export class AuthController {
 
   static user = async (req: Request, res: Response): Promise<void> => {
     res.json(req.user)
-  };
+  }
 
   static updateCurrentUserPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => { }
+  ): Promise<void> => {}
 
   static checkPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => { }
+  ): Promise<void> => {}
 
-  static updateUser = async (req: Request, res: Response): Promise<void> => { }
+  static updateUser = async (req: Request, res: Response): Promise<void> => {}
 }

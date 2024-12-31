@@ -89,10 +89,11 @@ router.post(
   AuthController.resetPasswordWithToken,
 )
 
-router.get('/user',
+router.get(
+  '/user',
   authenticate,
   // handleInputErrors,
-  AuthController.user
+  AuthController.user,
 )
 
 router.put('/user', handleInputErrors, AuthController.user)
