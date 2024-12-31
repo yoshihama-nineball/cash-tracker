@@ -128,11 +128,9 @@ export class AuthController {
     if (!user) {
       res.status(401).json({ error: 'ユーザが見つかりません' })
     }
-    res
-      .status(200)
-      .json({
-        message: '有効なトークンです。新しいパスワードを設定してください。',
-      })
+    res.status(200).json({
+      message: '有効なトークンです。新しいパスワードを設定してください。',
+    })
   }
 
   static resetPasswordWithToken = async (
@@ -162,7 +160,9 @@ export class AuthController {
     }
   }
 
-  static user = async (req: Request, res: Response): Promise<void> => {}
+  static user = async (req: Request, res: Response): Promise<void> => {
+    res.json(req.headers.authorization)
+  }
 
   static updateCurrentUserPassword = async (
     req: Request,
