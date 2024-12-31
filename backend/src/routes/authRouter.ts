@@ -1,4 +1,4 @@
-import { body } from 'express-validator'
+import { body, param } from 'express-validator'
 import { AuthController } from '../controllers/AuthController'
 import { handleInputErrors } from '../middleware/validation'
 import { Router } from 'express'
@@ -51,14 +51,39 @@ router.post(
 
 router.post(
   '/forgot-password',
+  body('email')
+    .isEmail()
+    .withMessage('メールアドレスは有効な形式ではありません'),
   handleInputErrors,
   AuthController.forgotPassword,
 )
 
-router.post('/validate-token', handleInputErrors, AuthController.validateToken)
+router.post(
+  '/validate-token',
+  body('token')
+    .notEmpty()
+    .withMessage('認証コードは必須です')
+    .bail()
+    .isLength({ min: 6, max: 6 })
+    .withMessage('トークンが無効です'),
+  handleInputErrors,
+  AuthController.validateToken,
+)
 
 router.post(
   '/reset-password/:token',
+  // MEMO: paramを使用
+  param('token')
+    .notEmpty()
+    .withMessage('認証コードは必須です')
+    .bail()
+    .isLength({ min: 6, max: 6 })
+    .withMessage('トークンが無効です'),
+  body('password')
+    .notEmpty()
+    .withMessage('パスワードは必須です')
+    .isLength({ min: 8 })
+    .withMessage('パスワードは8文字以上です'),
   handleInputErrors,
   AuthController.resetPasswordWithToken,
 )
