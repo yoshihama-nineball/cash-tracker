@@ -164,16 +164,19 @@ export class AuthController {
   static user = async (req: Request, res: Response): Promise<void> => {
     res.json(req.user)
   }
+  static updateUser = async (req: Request, res: Response): Promise<void> => {
+    res.json('認証されたユーザの更新APIテスト');
 
-  static updateCurrentUserPassword = async (
-    req: Request,
-    res: Response,
-  ): Promise<void> => {}
+  }
+
+  static updateCurrentUserPassword = async (req: Request, res: Response): Promise<void> => {
+    res.json('認証されたユーザのパスワードの変更APIテスト')
+  }
 
   static checkPassword = async (
     req: Request,
     res: Response,
-  ): Promise<void> => {}
+  ): Promise<void> => { }
 
-  static updateUser = async (req: Request, res: Response): Promise<void> => {}
+
 }
