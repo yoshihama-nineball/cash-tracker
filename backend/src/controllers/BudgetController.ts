@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express'
 import Budget from '../models/Budget'
+import Expense from '../models/Expense'
 
 export class BudgetController {
   static getAll = async (req: Request, res: Response) => {
@@ -10,7 +11,7 @@ export class BudgetController {
         // TODO: 後ほど検索フィルタリング実装
         where: {
           userId: req.user.id,
-        }
+        },
       })
       res.json(budgets)
     } catch (error) {
@@ -33,7 +34,28 @@ export class BudgetController {
     }
   }
   static getById = async (req: Request, res: Response): Promise<void> => {
-    res.json(req.budget)
+    try {
+      const budget = await Budget.findByPk(req.budget.id, {
+        include: [Expense],
+      })
+
+      if (!budget) {
+        res.status(404).json({ error: '予算が見つかりません' })
+        return
+      }
+
+      if (budget.userId !== req.user.id) {
+        res.status(401).json({ error: 'アクセス権限がありません' })
+        return
+      }
+
+      res.json({
+        budget: budget,
+        user: req.user,
+      })
+    } catch (error) {
+      res.status(500).json({ error: 'サーバーエラーが発生しました' })
+    }
   }
 
   static updateById = async (req: Request, res: Response) => {

@@ -3,6 +3,7 @@ import { BudgetController } from '../controllers/BudgetController'
 import { ExpenseController } from '../controllers/ExpenseController'
 import { handleInputErrors } from '../middleware/validation'
 import {
+  hasAccess,
   validateBudgetExists,
   validateBudgetId,
   validateBudgetInput,
@@ -22,6 +23,7 @@ router.use(authenticate)
 
 router.param('budgetId', validateBudgetId)
 router.param('budgetId', validateBudgetExists)
+router.param('budgetId', hasAccess)
 
 // MEMO: expenseIdのバリデーションとチェックを追加
 router.param('expenseId', validateExpenseId)
