@@ -4,7 +4,7 @@ import Expense from '../models/Expense'
 
 export class BudgetController {
   static getAll = async (req: Request, res: Response) => {
-    console.log('mockの結果', req.user.id) //ココだけ追加したよ
+    // console.log('mockの結果', req.user.id) //ココだけ追加したよ
 
     try {
       const budgets = await Budget.findAll({
