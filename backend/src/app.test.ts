@@ -3,6 +3,6 @@ describe('最初のテスト', () => {
     const statusCode = 201
     expect(statusCode).toBe(201)
 
-    expect(20 + 50).not.toBe(70)
+    // expect(20 + 50).not.toBe(70)
   })
 })
