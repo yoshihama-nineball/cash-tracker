@@ -37,7 +37,9 @@ export class BudgetController {
   }
   static getById = async (req: Request, res: Response): Promise<void> => {
     try {
-      const budget = await Budget.findByPk(req.budget.id, {
+      const budgetId = req.params.budgetId; // req.paramsからbudgetIdを取得
+
+      const budget = await Budget.findByPk(budgetId, {
         include: [Expense],
       })
 
@@ -46,15 +48,7 @@ export class BudgetController {
         return
       }
 
-      if (budget.userId !== req.user.id) {
-        res.status(401).json({ error: 'アクセス権限がありません' })
-        return
-      }
-
-      res.json({
-        budget: budget,
-        user: req.user,
-      })
+      res.status(200).json(budget)
     } catch (error) {
       res.status(500).json({ error: 'サーバーエラーが発生しました' })
     }
