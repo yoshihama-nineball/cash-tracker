@@ -216,7 +216,7 @@ describe('BudgetController.getById', () => {
     await BudgetController.getById(req, res);
 
     const data = res._getJSONData();
-    console.log(data, 'IDによる予算取得データ');
+    console.log(data, 'IDによる予算取得データでのエラーハンドリング');
 
     expect(res.statusCode).toBe(500);
     expect(Budget.findByPk).toHaveBeenCalled();
@@ -233,10 +233,38 @@ describe('BudgetController.getById', () => {
     await BudgetController.getById(req, res);
 
     const data = res._getJSONData();
-    console.log(data, 'IDによる予算取得データ');
+    console.log(data, 'IDによる予算取得データでIDが見つからない場合のテスト');
 
     expect(res.statusCode).toBe(404);
     expect(Budget.findByPk).toHaveBeenCalled();
   });
 
 });
+
+describe('BudgetController.updateById', () => {
+  it('予算の更新と成功した胸のメッセージ', async () => {
+    const mockBudget = {
+      update: jest.fn().mockResolvedValue(true),
+    }
+    const req = createRequest({
+      method: 'POST',
+      url: '/api/budgets/:budgetId',
+      budget: mockBudget,
+      body: {
+        name: '医療費',
+        amount: 10000,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    })
+    const res = createResponse()
+    await BudgetController.updateById(req, res)
+    const data = res._getJSONData();
+    console.log(data);
+
+    expect(res.statusCode).toBe(200)
+    expect(data).toBe('予算の編集に成功しました')
+    expect(mockBudget.update).toHaveBeenCalled()
+    expect(mockBudget.update).toHaveBeenCalledTimes(1)
+  })
+})
