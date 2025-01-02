@@ -15,9 +15,10 @@ describe('BudgetController.getAll', () => {
   beforeEach(() => {
     //MEMO: Budget.findAllメソッドをリセットする
     (Budget.findAll as jest.Mock).mockReset();
-    //MEMO: 特定ユーザのIDの予算だけをフィルタリングする
+    //MEMO: 特定ユーザのIDの予算だけをフィルタリングする関数の呼び出し
     (Budget.findAll as jest.Mock).mockImplementation((options) => {
       const filteredBudgets = budgets.filter(budget => budget.userId === options.where.userId);
+      //MEMO: Promise.resolveによってmockResolvedValueと同じことをしている
       return Promise.resolve(filteredBudgets);
     })
 
@@ -31,7 +32,7 @@ describe('BudgetController.getAll', () => {
     })
     const res = createResponse();
 
-    console.log(req.user.id, 'ユーザID');
+    // console.log(req.user.id, 'ユーザID');
 
 
     //MEMO: BudgetController.getAllメソッドを実行し、
@@ -55,7 +56,7 @@ describe('BudgetController.getAll', () => {
     })
     const res = createResponse();
 
-    console.log(req.user.id, 'ユーザID');
+    // console.log(req.user.id, 'ユーザID');
 
 
     //MEMO: BudgetController.getAllメソッドを実行し、
@@ -68,6 +69,22 @@ describe('BudgetController.getAll', () => {
     expect(data).toHaveLength(1)
     expect(res.statusCode).toBe(200)
     expect(res.statusCode).not.toBe(404)
+  })
+
+  it('エラーハンドリングのテスト', async () => {
+    const req = createRequest({
+      method: 'GET',
+      url: '/api/budgets',
+      user: { id: 100 },
+    })
+    const res = createResponse();
+
+    //MEMO: Budget.findAllの結果を上書きし、mockRejectedValueを用いてエラーを返すようにしている
+    (Budget.findAll as jest.Mock).mockRejectedValue(new Error);
+    await BudgetController.getAll(req, res)
+
+    expect(res.statusCode).toBe(500)
+    expect(res._getJSONData()).toStrictEqual({ error: 'エラーが発生しました' })
   })
 
 })
