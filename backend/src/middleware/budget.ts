@@ -78,7 +78,7 @@ export const validateBudgetExists = async (
 
 export function hasAccess(req: Request, res: Response, next: NextFunction) {
   if (req.budget.userId !== req.user.id) {
-    return res.status(404).json({ error: 'このURLでのアクセス権はありません' })
+    return res.status(401).json({ error: 'このURLでのアクセス権はありません' })
   }
   next()
 }
