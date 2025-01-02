@@ -268,3 +268,32 @@ describe('BudgetController.updateById', () => {
     expect(mockBudget.update).toHaveBeenCalledTimes(1)
   })
 })
+
+describe('BudgetController.deleteById', () => {
+  it('予算の削除と成功した旨のメッセージ', async () => {
+    const mockBudget = {
+      destroy: jest.fn().mockResolvedValue(true),
+    }
+    const req = createRequest({
+      method: 'DELETE',
+      url: '/api/budgets/:budgetId',
+      budget: mockBudget,
+      // body: {
+      //   name: '医療費',
+      //   amount: 10000,
+      //   createdAt: new Date(),
+      //   updatedAt: new Date(),
+      // },
+    })
+    const res = createResponse()
+    await BudgetController.deleteById(req, res)
+    const data = res._getJSONData();
+    console.log(data);
+
+    expect(res.statusCode).toBe(200)
+    expect(data).toBe('予算の削除に成功しました')
+    expect(mockBudget.destroy).toHaveBeenCalled()
+    expect(mockBudget.destroy).toHaveBeenCalledTimes(1)
+
+  })
+})
