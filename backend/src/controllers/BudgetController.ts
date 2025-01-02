@@ -25,7 +25,7 @@ export class BudgetController {
   static create = async (req: Request, res: Response) => {
     // console.log('予算追加APIです /api/budgets');
     try {
-      const budget = new Budget(req.body)
+      const budget = await Budget.create(req.body)
       //MEMO: JWT認証によって得たユーザIDをBudgetテーブルのuserIdに追加
       budget.userId = req.user.id
       await budget.save()
