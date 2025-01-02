@@ -72,6 +72,22 @@ describe('middleware - hasAccess', () => {
 
   })
 
+  it('アクセス権のない予算にアクセスしたときの検証ミドルウェア', () => {
+    (Budget.findByPk as jest.Mock).mockRejectedValue(new Error)
+    const req = createRequest({
+      budget: budgets[0],
+      user: { id: 2 }
+    })
+    const res = createResponse();
+    const next = jest.fn();
 
+    hasAccess(req, res, next)
+    const data = res._getJSONData();
+    console.log(data, 'アクセス結果のデータ');
+
+    expect(res.statusCode).toBe(401);
+    expect(data).toStrictEqual({ error: 'このURLでのアクセス権はありません' })
+    expect(next).not.toHaveBeenCalled();
+  })
 })
 
