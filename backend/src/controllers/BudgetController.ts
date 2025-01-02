@@ -4,6 +4,8 @@ import Expense from '../models/Expense'
 
 export class BudgetController {
   static getAll = async (req: Request, res: Response) => {
+    // console.log('mockの結果', req.user.id) //ココだけ追加したよ
+
     try {
       const budgets = await Budget.findAll({
         order: [['createdAt', 'DESC']],
@@ -15,7 +17,7 @@ export class BudgetController {
       })
       res.json(budgets)
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       res.status(500).json({ error: 'エラーが発生しました' })
     }
   }
