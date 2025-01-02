@@ -6,6 +6,7 @@ import Budget from '../../../models/Budget'
 //MEMO: BudgetモデルのfindAllメソッドをモック化している
 jest.mock('../../../models/Budget.ts', () => ({
   findAll: jest.fn(),
+  create: jest.fn(),
 }))
 
 describe('BudgetController.getAll', () => {
@@ -80,5 +81,65 @@ describe('BudgetController.getAll', () => {
 
     expect(res.statusCode).toBe(500)
     expect(res._getJSONData()).toStrictEqual({ error: 'エラーが発生しました' })
+  })
+})
+
+describe('BudgetController.create', () => {
+  it('新しい予算が追加され、ステータスコード201が返されるテスト', async () => {
+    const mockBudget = {
+      save: jest.fn().mockResolvedValue(true),
+    }
+    ;(Budget.create as jest.Mock).mockResolvedValue(mockBudget)
+    const req = createRequest({
+      method: 'POST',
+      url: '/api/budgets',
+      user: { id: 2 },
+      body: {
+        name: '医療費',
+        amount: 10000,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    })
+    const res = createResponse()
+
+    await BudgetController.create(req, res)
+
+    const data = res._getJSONData()
+    console.log(data)
+
+    expect(res.statusCode).toBe(201)
+    expect(data).toBe('予算が正しく作成されました')
+    expect(mockBudget.save).toHaveBeenCalled()
+    expect(mockBudget.save).toHaveBeenCalledTimes(1)
+    expect(Budget.create).toHaveBeenCalledWith(req.body)
+  })
+
+  it('予算作成時のエラーハンドリングのテスト', async () => {
+    const mockBudget = {
+      save: jest.fn(),
+    }
+    ;(Budget.create as jest.Mock).mockRejectedValue(new Error())
+    const req = createRequest({
+      method: 'POST',
+      url: '/api/budgets',
+      user: { id: 2 },
+      body: {
+        name: '医療費',
+        amount: 10000,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    })
+    const res = createResponse()
+
+    //MEMO: Budget.findAllの結果を上書きし、mockRejectedValueを用いてエラーを返すようにしている
+    ;(Budget.create as jest.Mock).mockRejectedValue(new Error())
+    await BudgetController.create(req, res)
+
+    expect(res.statusCode).toBe(500)
+    expect(res._getJSONData()).toStrictEqual({ error: 'エラーが発生しました' })
+    expect(mockBudget.save).not.toHaveBeenCalled()
+    expect(Budget.create).toHaveBeenCalledWith(req.body)
   })
 })
