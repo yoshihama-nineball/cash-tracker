@@ -31,7 +31,7 @@ export class BudgetController {
       await budget.save()
       res.status(201).json('予算が正しく作成されました')
     } catch (error) {
-      console.log(error)
+      // console.log(error)
       res.status(500).json({ error: 'エラーが発生しました' })
     }
   }
