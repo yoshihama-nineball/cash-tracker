@@ -76,6 +76,76 @@ describe('ExpensesController.create', () => {
     expect(expenseMock.save).not.toHaveBeenCalled()
     expect(Expense.create).toHaveBeenCalledWith(req.body)
   })
-
 });
+
+describe('ExpenseController.getById', () => {
+  it('IDによる支出取得', async () => {
+    const req = createRequest({
+      method: 'GET',
+      url: '/api/budgets/:budgetId/expenses/:expenseId',
+      expense: expenses[0]
+    });
+    const res = createResponse();
+    await ExpenseController.getById(req, res);
+
+    const data = res._getJSONData();
+    console.log(data, 'IDによる支出取得データ');
+
+    expect(res.statusCode).toBe(200);
+    expect(data).toEqual(expenses[0]);
+  });
+
+})
+
+describe('ExpenseController.updateById', () => {
+  it('支出の更新と成功した旨のメッセージ', async () => {
+    const mockExpense = {
+      ...expenses[0],
+      update: jest.fn().mockResolvedValue(true),
+    }
+    const req = createRequest({
+      method: 'PUT',
+      url: '/api/budgets/:budgetId/expenses/:expenseId',
+      expense: mockExpense,
+      body: {
+        name: '医療費',
+        amount: 10000,
+      },
+    })
+    const res = createResponse()
+    await ExpenseController.updateById(req, res)
+    const data = res._getJSONData();
+    console.log(data, '支出の編集データ');
+
+    expect(res.statusCode).toBe(200)
+    expect(data).toBe('支出の編集に成功しました')
+    expect(mockExpense.update).toHaveBeenCalled()
+    expect(mockExpense.update).toHaveBeenCalledWith(req.body)
+    expect(mockExpense.update).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe('ExpenseController.deleteById', () => {
+  it('支出の削除と成功した旨のメッセージ', async () => {
+    const mockExpense = {
+      ...expenses[0],
+      destroy: jest.fn().mockResolvedValue(true),
+    }
+    const req = createRequest({
+      method: 'DELETE',
+      url: '/api/budgets/:budgetId/expenses/:expenseId',
+      expense: mockExpense,
+    })
+    const res = createResponse()
+    await ExpenseController.deleteById(req, res)
+    const data = res._getJSONData();
+    console.log(data);
+
+    expect(res.statusCode).toBe(200)
+    expect(data).toBe('支出の削除に成功しました')
+    expect(mockExpense.destroy).toHaveBeenCalled()
+    expect(mockExpense.destroy).toHaveBeenCalledTimes(1)
+
+  })
+})
 
