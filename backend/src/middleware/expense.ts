@@ -68,15 +68,15 @@ export const validateExpenseExists = async (
     const expense = await Expense.findByPk(expenseId)
     if (!expense) {
       const error = new Error('支出が見つかりません')
-      console.log(`Expense with ID: ${expenseId} not found`) // デバッグログ
+      // console.log(`Expense with ID: ${expenseId} not found`) // デバッグログ
       res.status(404).json({ error: error.message })
       return
     }
     req.expense = expense
-    console.log(`Expense found: ${JSON.stringify(expense)}`) // デバッグログ
+    // console.log(`Expense found: ${JSON.stringify(expense)}`) // デバッグログ
     next()
   } catch (error) {
-    console.log(`Error while validating expense: ${error.message}`) // デバッグログ
+    // console.log(`Error while validating expense: ${error.message}`) // デバッグログ
     res.status(500).json({ error: error.message })
   }
 }
