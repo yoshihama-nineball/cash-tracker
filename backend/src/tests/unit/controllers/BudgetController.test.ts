@@ -33,14 +33,14 @@ describe('BudgetController.getAll', () => {
     })
     const res = createResponse()
 
-    // console.log(req.user.id, 'ユーザID');
+    // // console.log(req.user.id, 'ユーザID');
 
     //MEMO: BudgetController.getAllメソッドを実行し、
     //MEMO: res._getJSONData()で取得したJSONデータを確認する
     await BudgetController.getAll(req, res)
 
     const data = res._getJSONData()
-    // console.log(data, 'モックデータの結果')
+    // // console.log(data, 'モックデータの結果')
 
     expect(data).toHaveLength(2)
     expect(res.statusCode).toBe(200)
@@ -55,14 +55,14 @@ describe('BudgetController.getAll', () => {
     })
     const res = createResponse()
 
-    // console.log(req.user.id, 'ユーザID');
+    // // console.log(req.user.id, 'ユーザID');
 
     //MEMO: BudgetController.getAllメソッドを実行し、
     //MEMO: res._getJSONData()で取得したJSONデータを確認する
     await BudgetController.getAll(req, res)
 
     const data = res._getJSONData()
-    // console.log(data, 'モックデータの結果')
+    // // console.log(data, 'モックデータの結果')
 
     expect(data).toHaveLength(1)
     expect(res.statusCode).toBe(200)
@@ -108,7 +108,7 @@ describe('BudgetController.create', () => {
     await BudgetController.create(req, res)
 
     const data = res._getJSONData()
-    // console.log(data)
+    // // console.log(data)
 
     expect(res.statusCode).toBe(201)
     expect(data).toBe('予算が正しく作成されました')
@@ -163,7 +163,7 @@ describe('BudgetController.getById', () => {
     await BudgetController.getById(req, res);
 
     const data = res._getJSONData();
-    console.log(data, 'IDによる予算取得データ');
+    // console.log(data, 'IDによる予算取得データ');
 
     expect(res.statusCode).toBe(200);
     expect(data.expenses).toHaveLength(3)
@@ -181,7 +181,7 @@ describe('BudgetController.getById', () => {
     await BudgetController.getById(req, res);
 
     const data = res._getJSONData();
-    console.log(data, 'IDによる予算取得データ');
+    // console.log(data, 'IDによる予算取得データ');
 
     expect(res.statusCode).toBe(200);
     expect(data.expenses).toHaveLength(2)
@@ -198,7 +198,7 @@ describe('BudgetController.getById', () => {
     await BudgetController.getById(req, res);
 
     const data = res._getJSONData();
-    console.log(data, 'IDによる予算取得データ');
+    // console.log(data, 'IDによる予算取得データ');
 
     expect(res.statusCode).toBe(200);
     expect(data.expenses).toHaveLength(0);
@@ -216,7 +216,7 @@ describe('BudgetController.getById', () => {
     await BudgetController.getById(req, res);
 
     const data = res._getJSONData();
-    console.log(data, 'IDによる予算取得データでのエラーハンドリング');
+    // console.log(data, 'IDによる予算取得データでのエラーハンドリング');
 
     expect(res.statusCode).toBe(500);
     expect(Budget.findByPk).toHaveBeenCalled();
@@ -233,7 +233,7 @@ describe('BudgetController.getById', () => {
     await BudgetController.getById(req, res);
 
     const data = res._getJSONData();
-    console.log(data, 'IDによる予算取得データでIDが見つからない場合のテスト');
+    // console.log(data, 'IDによる予算取得データでIDが見つからない場合のテスト');
 
     expect(res.statusCode).toBe(404);
     expect(Budget.findByPk).toHaveBeenCalled();
@@ -244,6 +244,7 @@ describe('BudgetController.getById', () => {
 describe('BudgetController.updateById', () => {
   it('予算の更新と成功した胸のメッセージ', async () => {
     const mockBudget = {
+      ...budgets[0],
       update: jest.fn().mockResolvedValue(true),
     }
     const req = createRequest({
@@ -253,14 +254,14 @@ describe('BudgetController.updateById', () => {
       body: {
         name: '医療費',
         amount: 10000,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        // createdAt: new Date(),
+        // updatedAt: new Date(),
       },
     })
     const res = createResponse()
     await BudgetController.updateById(req, res)
     const data = res._getJSONData();
-    console.log(data);
+    // console.log(data);
 
     expect(res.statusCode).toBe(200)
     expect(data).toBe('予算の編集に成功しました')
@@ -272,6 +273,7 @@ describe('BudgetController.updateById', () => {
 describe('BudgetController.deleteById', () => {
   it('予算の削除と成功した旨のメッセージ', async () => {
     const mockBudget = {
+      ...budgets[0],
       destroy: jest.fn().mockResolvedValue(true),
     }
     const req = createRequest({
@@ -288,7 +290,7 @@ describe('BudgetController.deleteById', () => {
     const res = createResponse()
     await BudgetController.deleteById(req, res)
     const data = res._getJSONData();
-    console.log(data);
+    // console.log(data);
 
     expect(res.statusCode).toBe(200)
     expect(data).toBe('予算の削除に成功しました')

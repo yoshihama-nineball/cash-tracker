@@ -7,6 +7,7 @@ jest.mock('../../../models/Budget.ts', () => ({
   findByPk: jest.fn(),
 }))
 
+
 describe('middleware- validateBudgetExists', () => {
   it('予算が存在しない場合のミドルウェアテスト', async () => {
     // console.log('予算がない場合のミドルウェアテスト log ');
@@ -83,7 +84,7 @@ describe('middleware - hasAccess', () => {
 
     hasAccess(req, res, next)
     const data = res._getJSONData();
-    console.log(data, 'アクセス結果のデータ');
+    // console.log(data, 'アクセス結果のデータ');
 
     expect(res.statusCode).toBe(401);
     expect(data).toStrictEqual({ error: 'このURLでのアクセス権はありません' })
