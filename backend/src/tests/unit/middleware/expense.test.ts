@@ -73,13 +73,14 @@ describe('middleware - hasAccess', () => {
       return Promise.resolve(expense);
     })
   })
-  it('アクセス権がない場合にユーザが支出を追加できないようにするためのテスト', () => {
+
+  it('アクセス権がある場合のテスト', () => {
     // (Expense.findByPk as jest.Mock).mockRejectedValue(new Error)
     const req = createRequest({
       method: 'POST',
       url: '/api/budgets/:budgetId/expenses',
       budget: { userId: 1 },
-      user: { id: 20 },
+      user: { id: 1 },
       body: {
         name: 'Test Expense',
         amount: 500,
@@ -96,5 +97,18 @@ describe('middleware - hasAccess', () => {
     expect(res.statusCode).toBe(401);
     expect(next).not.toHaveBeenCalled()
     expect(data).toStrictEqual({ error: 'このURLでのアクセス権はありません' })
+  })
+  it('アクセス権がある場合の検証テスト', () => {
+    const req = createRequest({
+      budget: { userId: 2 },
+      user: { id: 2 }
+    })
+    const res = createResponse();
+    const next = jest.fn();
+
+    hasAccess(req, res, next)
+
+    expect(next).toHaveBeenCalled()
+    expect(next).toHaveBeenCalledTimes(1)
   })
 })
