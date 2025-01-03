@@ -53,7 +53,7 @@ router.put(
 
 router.delete('/:budgetId', handleInputErrors, BudgetController.deleteById)
 
-router.get('/:budgetId/expenses', handleInputErrors, ExpenseController.getAll)
+// router.get('/:budgetId/expenses', handleInputErrors, ExpenseController.getAll)
 
 router.post(
   '/:budgetId/expenses',
