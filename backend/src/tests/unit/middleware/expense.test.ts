@@ -74,12 +74,12 @@ describe('middleware - hasAccess', () => {
     })
   })
 
-  it('アクセス権がある場合のテスト', () => {
+  it('アクセス権がない場合のテスト', () => {
     // (Expense.findByPk as jest.Mock).mockRejectedValue(new Error)
     const req = createRequest({
       method: 'POST',
       url: '/api/budgets/:budgetId/expenses',
-      budget: { userId: 1 },
+      budget: { userId: 100 },
       user: { id: 1 },
       body: {
         name: 'Test Expense',
