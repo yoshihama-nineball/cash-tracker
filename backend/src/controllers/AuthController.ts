@@ -100,109 +100,109 @@ export class AuthController {
     }
   }
 
-  // static forgotPassword = async (
-  //   req: Request,
-  //   res: Response,
-  // ): Promise<void> => {
-  //   const { email } = req.body
-  //   const user = await User.findOne({ where: { email } })
-  //   if (!user) {
-  //     res.status(401).json({ error: 'ユーザが見つかりません' })
-  //   }
-  //   user.token = generateToken()
-  //   await user.save()
+  static forgotPassword = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {
+    const { email } = req.body
+    const user = await User.findOne({ where: { email } })
+    if (!user) {
+      res.status(401).json({ error: 'ユーザが見つかりません' })
+    }
+    user.token = generateToken()
+    await user.save()
 
-  //   await AuthEmail.sendResetPasswordEmail({
-  //     name: user.name,
-  //     email: user.email,
-  //     token: user.token,
-  //   })
-  //   res.status(201).json({
-  //     message: 'パスワードをリセットしました。メールを確認してください',
-  //     email: { to: user.email, token: user.token },
-  //   })
-  // }
+    await AuthEmail.sendResetPasswordEmail({
+      name: user.name,
+      email: user.email,
+      token: user.token,
+    })
+    res.status(201).json({
+      message: 'パスワードをリセットしました。メールを確認してください',
+      email: { to: user.email, token: user.token },
+    })
+  }
 
-  // static validateToken = async (req: Request, res: Response): Promise<void> => {
-  //   //TODO: パスワードリセット時に生成したtokenが有効か確認する
-  //   const { token } = req.body
-  //   const user = await User.findOne({ where: { token } })
-  //   if (!user) {
-  //     res.status(401).json({ error: 'ユーザが見つかりません' })
-  //   }
-  //   res.status(200).json({
-  //     message: '有効なトークンです。新しいパスワードを設定してください。',
-  //   })
-  // }
+  static validateToken = async (req: Request, res: Response): Promise<void> => {
+    //TODO: パスワードリセット時に生成したtokenが有効か確認する
+    const { token } = req.body
+    const user = await User.findOne({ where: { token } })
+    if (!user) {
+      res.status(401).json({ error: 'ユーザが見つかりません' })
+    }
+    res.status(200).json({
+      message: '有効なトークンです。新しいパスワードを設定してください。',
+    })
+  }
 
-  // static resetPasswordWithToken = async (
-  //   req: Request,
-  //   res: Response,
-  // ): Promise<void> => {
-  //   const { token } = req.params
-  //   const { password } = req.body
+  static resetPasswordWithToken = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {
+    const { token } = req.params
+    const { password } = req.body
 
-  //   try {
-  //     const user = await User.findOne({ where: { token } })
+    try {
+      const user = await User.findOne({ where: { token } })
 
-  //     if (!user) {
-  //       res.status(401).json({ error: 'ユーザが見つかりません' })
-  //       return
-  //     }
+      if (!user) {
+        res.status(401).json({ error: 'ユーザが見つかりません' })
+        return
+      }
 
-  //     // パスワードの再設定時も、ハッシュ化して登録する
-  //     user.password = await hashPassword(password)
-  //     // 認証コード用のtokenが正しいことが確認出来たら、tokenをnullにして無効にする
-  //     user.token = null
-  //     await user.save()
+      // パスワードの再設定時も、ハッシュ化して登録する
+      user.password = await hashPassword(password)
+      // 認証コード用のtokenが正しいことが確認出来たら、tokenをnullにして無効にする
+      user.token = null
+      await user.save()
 
-  //     res.status(200).json({ message: 'パスワードが更新されました' })
-  //   } catch (error) {
-  //     res.status(500).json({ error: 'サーバーエラーが発生しました' })
-  //   }
-  // }
+      res.status(200).json({ message: 'パスワードが更新されました' })
+    } catch (error) {
+      res.status(500).json({ error: 'サーバーエラーが発生しました' })
+    }
+  }
 
-  // static user = async (req: Request, res: Response): Promise<void> => {
-  //   res.json(req.user)
-  // }
-  // static updateUser = async (req: Request, res: Response): Promise<void> => {
-  //   res.json('認証されたユーザの更新APIテスト')
-  // }
+  static user = async (req: Request, res: Response): Promise<void> => {
+    res.json(req.user)
+  }
+  static updateUser = async (req: Request, res: Response): Promise<void> => {
+    res.json('認証されたユーザの更新APIテスト')
+  }
 
-  // static updateCurrentUserPassword = async (
-  //   req: Request,
-  //   res: Response,
-  // ): Promise<void> => {
-  //   const { current_password, password } = req.body
-  //   const { id } = req.user
-  //   const user = await User.findByPk(id)
+  static updateCurrentUserPassword = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {
+    const { current_password, password } = req.body
+    const { id } = req.user
+    const user = await User.findByPk(id)
 
-  //   //MEMO: IDから取得したユーザのパスワードと、current_passwordが一致するか確認
-  //   const isCheckPasswordCorrect = await checkPassword(
-  //     current_password,
-  //     user.password,
-  //   )
-  //   if (!isCheckPasswordCorrect) {
-  //     res.status(401).json({ error: '現在のパスワードが間違っています' })
-  //     return
-  //   }
-  //   //MEMO: 現在のパスワードの入力が正しい場合、再設定したパスワードを保存
-  //   user.password = await hashPassword(password)
-  //   await user.save()
-  //   res.status(200).json({ message: 'パスワードが更新されました' })
-  // }
+    //MEMO: IDから取得したユーザのパスワードと、current_passwordが一致するか確認
+    const isCheckPasswordCorrect = await checkPassword(
+      current_password,
+      user.password,
+    )
+    if (!isCheckPasswordCorrect) {
+      res.status(401).json({ error: '現在のパスワードが間違っています' })
+      return
+    }
+    //MEMO: 現在のパスワードの入力が正しい場合、再設定したパスワードを保存
+    user.password = await hashPassword(password)
+    await user.save()
+    res.status(200).json({ message: 'パスワードが更新されました' })
+  }
 
-  // static checkPassword = async (req: Request, res: Response): Promise<void> => {
-  //   const { password } = req.body
-  //   const { id } = req.user
+  static checkPassword = async (req: Request, res: Response): Promise<void> => {
+    const { password } = req.body
+    const { id } = req.user
 
-  //   const user = await User.findByPk(id)
+    const user = await User.findByPk(id)
 
-  //   const isCorrectPassword = await checkPassword(password, user.password)
-  //   if (!isCorrectPassword) {
-  //     res.status(401).json({ error: 'パスワードが間違っています' })
-  //     return
-  //   }
-  //   res.status(201).json({ message: 'パスワードは正しいです' })
-  // }
+    const isCorrectPassword = await checkPassword(password, user.password)
+    if (!isCorrectPassword) {
+      res.status(401).json({ error: 'パスワードが間違っています' })
+      return
+    }
+    res.status(201).json({ message: 'パスワードは正しいです' })
+  }
 }
