@@ -50,82 +50,82 @@ router.post(
   AuthController.login,
 )
 
-router.post(
-  '/forgot-password',
-  body('email')
-    .isEmail()
-    .withMessage('メールアドレスは有効な形式ではありません'),
-  handleInputErrors,
-  AuthController.forgotPassword,
-)
+// router.post(
+//   '/forgot-password',
+//   body('email')
+//     .isEmail()
+//     .withMessage('メールアドレスは有効な形式ではありません'),
+//   handleInputErrors,
+//   AuthController.forgotPassword,
+// )
 
-router.post(
-  '/validate-token',
-  body('token')
-    .notEmpty()
-    .withMessage('認証コードは必須です')
-    .bail()
-    .isLength({ min: 6, max: 6 })
-    .withMessage('トークンが無効です'),
-  handleInputErrors,
-  AuthController.validateToken,
-)
+// router.post(
+//   '/validate-token',
+//   body('token')
+//     .notEmpty()
+//     .withMessage('認証コードは必須です')
+//     .bail()
+//     .isLength({ min: 6, max: 6 })
+//     .withMessage('トークンが無効です'),
+//   handleInputErrors,
+//   AuthController.validateToken,
+// )
 
-router.post(
-  '/reset-password/:token',
-  // MEMO: paramを使用
-  param('token')
-    .notEmpty()
-    .withMessage('認証コードは必須です')
-    .bail()
-    .isLength({ min: 6, max: 6 })
-    .withMessage('トークンが無効です'),
-  body('password')
-    .notEmpty()
-    .withMessage('パスワードは必須です')
-    .isLength({ min: 8 })
-    .withMessage('パスワードは8文字以上です'),
-  handleInputErrors,
-  AuthController.resetPasswordWithToken,
-)
+// router.post(
+//   '/reset-password/:token',
+//   // MEMO: paramを使用
+//   param('token')
+//     .notEmpty()
+//     .withMessage('認証コードは必須です')
+//     .bail()
+//     .isLength({ min: 6, max: 6 })
+//     .withMessage('トークンが無効です'),
+//   body('password')
+//     .notEmpty()
+//     .withMessage('パスワードは必須です')
+//     .isLength({ min: 8 })
+//     .withMessage('パスワードは8文字以上です'),
+//   handleInputErrors,
+//   AuthController.resetPasswordWithToken,
+// )
 
-router.get(
-  '/user',
-  authenticate,
-  // handleInputErrors,
-  AuthController.user,
-)
+// router.get(
+//   '/user',
+//   authenticate,
+//   // handleInputErrors,
+//   AuthController.user,
+// )
 
-router.put(
-  '/user',
-  authenticate,
-  // handleInputErrors,
-  AuthController.updateUser,
-)
+// router.put(
+//   '/user',
+//   authenticate,
+//   // handleInputErrors,
+//   AuthController.updateUser,
+// )
 
-router.post(
-  '/update-password',
-  authenticate,
-  body('current_password')
-    .notEmpty()
-    .withMessage('現在のパスワードは必須です')
-    .isLength({ min: 8 })
-    .withMessage('現在のパスワードは8文字以上です'),
-  body('password')
-    .notEmpty()
-    .withMessage('再設定するパスワードは必須です')
-    .isLength({ min: 8 })
-    .withMessage('再設定するパスワードは8文字以上です'),
-  handleInputErrors,
-  AuthController.updateCurrentUserPassword,
-)
+// router.post(
+//   '/update-password',
+//   authenticate,
+//   body('current_password')
+//     .notEmpty()
+//     .withMessage('現在のパスワードは必須です')
+//     .isLength({ min: 8 })
+//     .withMessage('現在のパスワードは8文字以上です'),
+//   body('password')
+//     .notEmpty()
+//     .withMessage('再設定するパスワードは必須です')
+//     .isLength({ min: 8 })
+//     .withMessage('再設定するパスワードは8文字以上です'),
+//   handleInputErrors,
+//   AuthController.updateCurrentUserPassword,
+// )
 
-router.post(
-  '/check-password',
-  authenticate,
-  body('password').notEmpty().withMessage('パスワードは必須です'),
-  handleInputErrors,
-  AuthController.checkPassword,
-)
+// router.post(
+//   '/check-password',
+//   authenticate,
+//   body('password').notEmpty().withMessage('パスワードは必須です'),
+//   handleInputErrors,
+//   AuthController.checkPassword,
+// )
 
 export default router
