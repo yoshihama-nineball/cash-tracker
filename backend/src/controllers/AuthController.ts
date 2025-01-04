@@ -7,7 +7,7 @@ import { generateJWT } from '../utils/jwt'
 import jwt from 'jsonwebtoken'
 
 export class AuthController {
-  static createAccount = async (req: Request, res: Response): Promise<void> => {
+  static createAccount = async (req: Request, res: Response) => {
     // res.json(req.body)
     const { email, password } = req.body
     const userExists = await User.findOne({ where: { email } })
@@ -15,9 +15,10 @@ export class AuthController {
       const error = new Error('そのメールアドレスは既に登録されています。')
       //MEMO: 競合がある場合、409エラーを使用する
       res.status(409).json({ error: error.message })
+      return;
     }
     try {
-      const user = new User(req.body)
+      const user = await User.create(req.body)
       user.password = await hashPassword(password)
       const token = generateToken()
       user.token = token

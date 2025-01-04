@@ -18,7 +18,7 @@ describe('middleware - validateExpenseExists', () => {
   })
   it('支出が存在しない場合のミドルウェアテスト', async () => {
     (Expense.findByPk as jest.Mock).mockResolvedValue(undefined);
-    console.log('支出が存在しない場合のミドルウェアテストlog');
+    // console.log('支出が存在しない場合のミドルウェアテストlog');
     const req = createRequest({
       params: {
         expenseId: 1
@@ -75,7 +75,7 @@ describe('middleware - hasAccess', () => {
   })
 
   it('アクセス権がない場合のテスト', () => {
-    // (Expense.findByPk as jest.Mock).mockRejectedValue(new Error)
+    (Expense.findByPk as jest.Mock).mockRejectedValue(new Error)
     const req = createRequest({
       method: 'POST',
       url: '/api/budgets/:budgetId/expenses',
