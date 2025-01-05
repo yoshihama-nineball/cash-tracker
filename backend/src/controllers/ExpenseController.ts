@@ -36,8 +36,8 @@ export class ExpenseController {
     res.json(req.expense)
   }
   static updateById = async (req: Request, res: Response) => {
-    await req.expense.update(req.body);
-    res.json('支出の編集に成功しました');
+    await req.expense.update(req.body)
+    res.json('支出の編集に成功しました')
   }
   static deleteById = async (req: Request, res: Response) => {
     await req.expense.destroy()

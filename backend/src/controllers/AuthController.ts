@@ -15,7 +15,7 @@ export class AuthController {
       const error = new Error('そのメールアドレスは既に登録されています。')
       //MEMO: 競合がある場合、409エラーを使用する
       res.status(409).json({ error: error.message })
-      return;
+      return
     }
     try {
       const user = await User.create(req.body)

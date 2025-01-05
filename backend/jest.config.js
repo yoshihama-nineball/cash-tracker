@@ -5,7 +5,7 @@ module.exports = {
     '^.+.tsx?$': ['ts-jest', {}],
   },
   collectCoverage: true,
-  coverageDirectory: "coverage",
-  coverageReporters: ["text", "html"],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'html'],
   verbose: true,
 }
