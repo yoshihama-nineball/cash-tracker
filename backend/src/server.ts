@@ -29,11 +29,17 @@ app.use(express.json())
 
 app.use(limiter)
 
+app.get('/api/hello', (req, res) => {
+  res.status(200).
+    json({ message: 'Hello, world!' });
+});
+
 app.use('/api/budgets', budgetRouter)
 app.use('/api/auth', authRouter)
 
 app.use('/', (req, res) => {
   res.send('ユニットテストの動作確認')
 })
+
 
 export default app
