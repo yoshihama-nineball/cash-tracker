@@ -1,7 +1,8 @@
 import { AuthEmail } from '../../../emails/AuthEmail';
 import User from '../../../models/User';
 import { hashPassword } from '../../../utils/auth';
-import { generateToken } from '../../../utils/token';
+import { generateJWT } from '../../../utils/jwt';
+import { checkPassword, generateToken } from '../../../utils/token';
 import { AuthController } from './../../../controllers/AuthController';
 import { createRequest, createResponse } from "node-mocks-http";
 
@@ -184,8 +185,8 @@ describe('AuthController.login', () => {
       email: "test@example.com",
       password: "wrongpassword",
       confirmed: true
-    })
-
+    });
+    (checkPassword as jest.Mock).mockResolvedValue(false)
     const res = createResponse()
 
     await AuthController.login(req, res)
@@ -202,8 +203,42 @@ describe('AuthController.login', () => {
       }
     });
   })
-  it('認証が正しいかどうかのテスト', () => {
-    console.log('認証が正しいかどうかのテストケース');
+  it('認証が正しいかどうかのテスト', async () => {
+    // console.log('認証が正しいかどうかのテストケース');
 
+    const userMock = {
+      id: 1,
+      email: "test@example.com",
+      password: "testpassword",
+      confirmed: true
+    };
+    const req = createRequest({
+      method: 'POST',
+      url: '/api/auth/login',
+      body: {
+        email: "test@example.com",
+        password: "testpassword"
+      }
+    });
+    const res = createResponse();
+
+    const temporaryJWT = 'temporary_jwt';
+
+    (User.findOne as jest.Mock).mockResolvedValue(userMock);
+    (checkPassword as jest.Mock).mockResolvedValue(true);
+    (generateJWT as jest.Mock).mockReturnValue(temporaryJWT);
+
+    await AuthController.login(req, res)
+
+    const data = res._getJSONData()
+    // console.log(data, 'JWT結果');
+
+    expect(res.statusCode).toBe(200)
+    expect(data).toEqual({
+      message: 'アカウントのログインに成功しました！',
+      token: temporaryJWT
+    })
+    expect(generateJWT).toHaveBeenCalledTimes(1)
+    expect(generateJWT).toHaveBeenCalledWith(userMock.id)
   })
 })
