@@ -104,17 +104,20 @@ describe('AuthController.login', () => {
     jest.resetAllMocks()
   })
   it('ユーザが存在しないときのテスト', async () => {
-    console.log('ユーザが存在しない場合のテストケース');
-    (User.findOne as jest.Mock).mockResolvedValue(undefined)
+    // console.log('ユーザが存在しない場合のテストケース');
+
+    // const mockUser = { body: {email: 'test@example.com'} };
 
     const req = createRequest({
       method: 'POST',
       url: '/api/auth/login',
       body: {
-        email: "test@test.com",
+        email: "test@example.com",
         password: "testpassword"
       }
-    })
+    });
+
+    (User.findOne as jest.Mock).mockResolvedValue(undefined);
     const res = createResponse()
 
     await AuthController.login(req, res)
@@ -122,12 +125,42 @@ describe('AuthController.login', () => {
     const data = res._getJSONData()
 
     expect(res.statusCode).toBe(401)
-    expect(data).toStrictEqual({ error: 'ユーザが見つかりません' })
+    expect(data).toStrictEqual({
+      error: 'ユーザが見つかりません'
+
+    })
     expect(User.findOne).toHaveBeenCalled()
     expect(User.findOne).toHaveBeenCalledTimes(1)
   })
   it('アカウントが有効化されていない場合のテスト', async () => {
     console.log('アカウントが有効化されていない場合のテストケース');
+
+    const req = createRequest({
+      body: {
+        email: "test@example.com",
+        // password: "testpassword"
+      }
+    })
+
+    const mockUser = { email: 'test@example.com', confirmed: false };
+    (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+
+    const res = createResponse()
+
+    await AuthController.login(req, res)
+
+    const data = res._getJSONData()
+
+    expect(res.statusCode).toBe(401)
+    expect(data).toStrictEqual({ error: 'アカウントがまだ有効化されていません。メールに送信された認証コードを使用してアカウントを有効化してください' })
+    expect(User.findOne).toHaveBeenCalled()
+    expect(User.findOne).toHaveBeenCalledTimes(1)
+    expect(User.findOne).toHaveBeenCalledWith({
+      where: {
+        email: "test@example.com",
+      }
+    });
+
   })
   it('パスワードが間違っている場合のテストケース', async () => {
     console.log('パスワードが間違っている場合のテストケース');
