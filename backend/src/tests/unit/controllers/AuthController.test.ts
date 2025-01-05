@@ -133,17 +133,23 @@ describe('AuthController.login', () => {
     expect(User.findOne).toHaveBeenCalledTimes(1)
   })
   it('アカウントが有効化されていない場合のテスト', async () => {
-    console.log('アカウントが有効化されていない場合のテストケース');
+    // console.log('アカウントが有効化されていない場合のテストケース');
 
     const req = createRequest({
+      method: 'POST',
+      url: '/api/auth/login',
       body: {
         email: "test@example.com",
-        // password: "testpassword"
+        password: "testpassword"
       }
-    })
+    });
 
-    const mockUser = { email: 'test@example.com', confirmed: false };
-    (User.findOne as jest.Mock).mockResolvedValue(mockUser);
+    (User.findOne as jest.Mock).mockResolvedValue({
+      id: 1,
+      email: "test@example.com",
+      password: "password",
+      confirmed: false
+    })
 
     const res = createResponse()
 
@@ -163,7 +169,38 @@ describe('AuthController.login', () => {
 
   })
   it('パスワードが間違っている場合のテストケース', async () => {
-    console.log('パスワードが間違っている場合のテストケース');
+    // console.log('パスワードが間違っている場合のテストケース');
+    const req = createRequest({
+      method: 'POST',
+      url: '/api/auth/login',
+      body: {
+        email: "test@example.com",
+        password: "testpassword"
+      }
+    });
+
+    (User.findOne as jest.Mock).mockResolvedValue({
+      id: 1,
+      email: "test@example.com",
+      password: "wrongpassword",
+      confirmed: true
+    })
+
+    const res = createResponse()
+
+    await AuthController.login(req, res)
+
+    const data = res._getJSONData()
+
+    expect(res.statusCode).toBe(401)
+    expect(data).toStrictEqual({ error: 'パスワードが間違っています' })
+    expect(User.findOne).toHaveBeenCalled()
+    expect(User.findOne).toHaveBeenCalledTimes(1)
+    expect(User.findOne).toHaveBeenCalledWith({
+      where: {
+        email: "test@example.com",
+      }
+    });
   })
   it('認証が正しいかどうかのテスト', () => {
     console.log('認証が正しいかどうかのテストケース');
