@@ -21,10 +21,17 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: cd backend && yarn install
+        run: |
+          cd backend
+          until yarn install; do
+            echo "Retrying in 5 seconds..."
+            sleep 5
+          done
 
       - name: Run tests with coverage
-        run: cd backend && yarn coverage
+        run: |
+          cd backend
+          yarn coverage --verbose
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4

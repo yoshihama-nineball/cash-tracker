@@ -15,3 +15,19 @@ describe('First Integration test', () => {
     expect(response.text).toBe('ユニットテストの動作確認')
   })
 })
+
+
+describe('GET /api/hello', () => {
+  it('should return a greeting message', async () => {
+    console.log('Starting test for GET /api/hello');
+    try {
+      const res = await request(server).get('/');
+      console.log('Received response:', res.statusCode, res.body);
+      expect(res.statusCode).toEqual(200);
+      expect(res.body).toHaveProperty('message', 'Hello, world!');
+    } catch (error) {
+      console.error('Test failed', error);
+      throw error;
+    }
+  });
+});
