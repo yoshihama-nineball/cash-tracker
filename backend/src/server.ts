@@ -32,4 +32,8 @@ app.use(limiter)
 app.use('/api/budgets', budgetRouter)
 app.use('/api/auth', authRouter)
 
+app.use('/', (req, res) => {
+  res.send('ユニットテストの動作確認')
+})
+
 export default app
