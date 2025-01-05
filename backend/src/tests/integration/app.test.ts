@@ -18,7 +18,7 @@ describe('First Integration test', () => {
 });
 
 describe('GET /api/hello', () => {
-  it('should return a greeting message', async () => {
+  it('hello worldメッセージ', async () => {
     console.log('Starting test for GET /api/hello');
     try {
       const res = await request(server).get('/api/hello');
