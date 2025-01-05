@@ -15,15 +15,15 @@ describe('BudgetController.getAll', () => {
   //MEMO: 各テストケースの前に毎回実行される
   beforeEach(() => {
     //MEMO: Budget.findAllメソッドをリセットする
-    ; (Budget.findAll as jest.Mock).mockReset()
-      //MEMO: 特定ユーザのIDの予算だけをフィルタリングする関数の呼び出し
-      ; (Budget.findAll as jest.Mock).mockImplementation((options) => {
-        const filteredBudgets = budgets.filter(
-          (budget) => budget.userId === options.where.userId,
-        )
-        //MEMO: Promise.resolveによってmockResolvedValueと同じことをしている
-        return Promise.resolve(filteredBudgets)
-      })
+    ;(Budget.findAll as jest.Mock).mockReset()
+    //MEMO: 特定ユーザのIDの予算だけをフィルタリングする関数の呼び出し
+    ;(Budget.findAll as jest.Mock).mockImplementation((options) => {
+      const filteredBudgets = budgets.filter(
+        (budget) => budget.userId === options.where.userId,
+      )
+      //MEMO: Promise.resolveによってmockResolvedValueと同じことをしている
+      return Promise.resolve(filteredBudgets)
+    })
   })
   it('ユーザID1を持つユーザは2つの予算のデータを取得できる', async () => {
     const req = createRequest({
@@ -77,8 +77,8 @@ describe('BudgetController.getAll', () => {
     })
     const res = createResponse()
 
-      //MEMO: Budget.findAllの結果を上書きし、mockRejectedValueを用いてエラーを返すようにしている
-      ; (Budget.findAll as jest.Mock).mockRejectedValue(new Error())
+    //MEMO: Budget.findAllの結果を上書きし、mockRejectedValueを用いてエラーを返すようにしている
+    ;(Budget.findAll as jest.Mock).mockRejectedValue(new Error())
     await BudgetController.getAll(req, res)
 
     expect(res.statusCode).toBe(500)
@@ -91,7 +91,7 @@ describe('BudgetController.create', () => {
     const mockBudget = {
       save: jest.fn().mockResolvedValue(true),
     }
-      ; (Budget.create as jest.Mock).mockResolvedValue(mockBudget)
+    ;(Budget.create as jest.Mock).mockResolvedValue(mockBudget)
     const req = createRequest({
       method: 'POST',
       url: '/api/budgets',
@@ -121,7 +121,7 @@ describe('BudgetController.create', () => {
     const mockBudget = {
       save: jest.fn(),
     }
-      ; (Budget.create as jest.Mock).mockRejectedValue(new Error())
+    ;(Budget.create as jest.Mock).mockRejectedValue(new Error())
     const req = createRequest({
       method: 'POST',
       url: '/api/budgets',
@@ -135,8 +135,8 @@ describe('BudgetController.create', () => {
     })
     const res = createResponse()
 
-      //MEMO: Budget.findAllの結果を上書きし、mockRejectedValueを用いてエラーを返すようにしている
-      ; (Budget.create as jest.Mock).mockRejectedValue(new Error())
+    //MEMO: Budget.findAllの結果を上書きし、mockRejectedValueを用いてエラーを返すようにしている
+    ;(Budget.create as jest.Mock).mockRejectedValue(new Error())
     await BudgetController.create(req, res)
 
     expect(res.statusCode).toBe(500)
@@ -147,99 +147,98 @@ describe('BudgetController.create', () => {
 })
 describe('BudgetController.getById', () => {
   beforeEach(() => {
-    (Budget.findByPk as jest.Mock).mockImplementation((id, include) => {
-      const budget = budgets.find(b => b.id === id);
-      return Promise.resolve(budget);
-    });
-  });
+    ;(Budget.findByPk as jest.Mock).mockImplementation((id, include) => {
+      const budget = budgets.find((b) => b.id === id)
+      return Promise.resolve(budget)
+    })
+  })
 
   it('ユーザIDが1で予算IDが1の支出データは3つ取得できるはず', async () => {
     const req = createRequest({
       method: 'GET',
       url: '/api/budgets/:budgetId',
       params: { budgetId: 1 },
-    });
-    const res = createResponse();
-    await BudgetController.getById(req, res);
+    })
+    const res = createResponse()
+    await BudgetController.getById(req, res)
 
-    const data = res._getJSONData();
+    const data = res._getJSONData()
     // console.log(data, 'IDによる予算取得データ');
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(200)
     expect(data.expenses).toHaveLength(3)
-    expect(Budget.findByPk).toHaveBeenCalled();
+    expect(Budget.findByPk).toHaveBeenCalled()
     // expect(Budget.findByPk).toHaveBeenCalledWith(1);
-  });
+  })
 
   it('ユーザIDが1で予算IDが2の支出データは2つ取得できるはず', async () => {
     const req = createRequest({
       method: 'GET',
       url: '/api/budgets/:budgetId',
       params: { budgetId: 2 },
-    });
-    const res = createResponse();
-    await BudgetController.getById(req, res);
+    })
+    const res = createResponse()
+    await BudgetController.getById(req, res)
 
-    const data = res._getJSONData();
+    const data = res._getJSONData()
     // console.log(data, 'IDによる予算取得データ');
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(200)
     expect(data.expenses).toHaveLength(2)
-    expect(Budget.findByPk).toHaveBeenCalled();
-  });
+    expect(Budget.findByPk).toHaveBeenCalled()
+  })
 
   it('ユーザIDが1で予算IDが3の支出データは0個取得できるはず', async () => {
     const req = createRequest({
       method: 'GET',
       url: '/api/budgets/:budgetId',
       params: { budgetId: 3 },
-    });
-    const res = createResponse();
-    await BudgetController.getById(req, res);
+    })
+    const res = createResponse()
+    await BudgetController.getById(req, res)
 
-    const data = res._getJSONData();
+    const data = res._getJSONData()
     // console.log(data, 'IDによる予算取得データ');
 
-    expect(res.statusCode).toBe(200);
-    expect(data.expenses).toHaveLength(0);
-    expect(Budget.findByPk).toHaveBeenCalled();
-  });
+    expect(res.statusCode).toBe(200)
+    expect(data.expenses).toHaveLength(0)
+    expect(Budget.findByPk).toHaveBeenCalled()
+  })
 
   it('ユーザIDが1で予算IDが3の支出データは0個取得できるはず', async () => {
     const req = createRequest({
       method: 'GET',
       url: '/api/budgets/:budgetId',
       params: { budgetId: 3 },
-    });
-    const res = createResponse();
-    (Budget.findByPk as jest.Mock).mockRejectedValue(new Error())
-    await BudgetController.getById(req, res);
+    })
+    const res = createResponse()
+    ;(Budget.findByPk as jest.Mock).mockRejectedValue(new Error())
+    await BudgetController.getById(req, res)
 
-    const data = res._getJSONData();
+    const data = res._getJSONData()
     // console.log(data, 'IDによる予算取得データでのエラーハンドリング');
 
-    expect(res.statusCode).toBe(500);
-    expect(Budget.findByPk).toHaveBeenCalled();
-  });
+    expect(res.statusCode).toBe(500)
+    expect(Budget.findByPk).toHaveBeenCalled()
+  })
 
   it('ユーザIDが1で予算IDが3の支出データは0個取得できるはず', async () => {
     const req = createRequest({
       method: 'GET',
       url: '/api/budgets/:budgetId',
       params: { budgetId: 3 },
-    });
-    const res = createResponse();
-    (Budget.findByPk as jest.Mock).mockResolvedValue(undefined)
-    await BudgetController.getById(req, res);
+    })
+    const res = createResponse()
+    ;(Budget.findByPk as jest.Mock).mockResolvedValue(undefined)
+    await BudgetController.getById(req, res)
 
-    const data = res._getJSONData();
+    const data = res._getJSONData()
     // console.log(data, 'IDによる予算取得データでIDが見つからない場合のテスト');
 
-    expect(res.statusCode).toBe(404);
-    expect(Budget.findByPk).toHaveBeenCalled();
-  });
-
-});
+    expect(res.statusCode).toBe(404)
+    expect(Budget.findByPk).toHaveBeenCalled()
+  })
+})
 
 describe('BudgetController.updateById', () => {
   it('予算の更新と成功した胸のメッセージ', async () => {
@@ -260,7 +259,7 @@ describe('BudgetController.updateById', () => {
     })
     const res = createResponse()
     await BudgetController.updateById(req, res)
-    const data = res._getJSONData();
+    const data = res._getJSONData()
     // console.log(data);
 
     expect(res.statusCode).toBe(200)
@@ -289,13 +288,12 @@ describe('BudgetController.deleteById', () => {
     })
     const res = createResponse()
     await BudgetController.deleteById(req, res)
-    const data = res._getJSONData();
+    const data = res._getJSONData()
     // console.log(data);
 
     expect(res.statusCode).toBe(200)
     expect(data).toBe('予算の削除に成功しました')
     expect(mockBudget.destroy).toHaveBeenCalled()
     expect(mockBudget.destroy).toHaveBeenCalledTimes(1)
-
   })
 })

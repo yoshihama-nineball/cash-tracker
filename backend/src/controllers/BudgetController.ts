@@ -37,7 +37,7 @@ export class BudgetController {
   }
   static getById = async (req: Request, res: Response): Promise<void> => {
     try {
-      const budgetId = req.params.budgetId; // req.paramsからbudgetIdを取得
+      const budgetId = req.params.budgetId // req.paramsからbudgetIdを取得
 
       const budget = await Budget.findByPk(budgetId, {
         include: [Expense],
