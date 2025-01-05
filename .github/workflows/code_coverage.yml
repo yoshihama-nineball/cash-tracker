@@ -21,17 +21,14 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: |
-          cd backend
-          until yarn install; do
-            echo "Retrying in 5 seconds..."
-            sleep 5
-          done
+        run: cd backend && yarn install
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run tests with coverage
-        run: |
-          cd backend
-          yarn coverage --verbose
+        run: cd backend && yarn coverage
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
