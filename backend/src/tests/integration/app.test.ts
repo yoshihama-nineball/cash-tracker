@@ -1,6 +1,7 @@
 import request from 'supertest';
 import server, { connectDB } from '../../server';
 import { AuthController } from '../../controllers/AuthController';
+import { create } from 'ts-node';
 
 // describe('First Integration test', () => {
 //   beforeEach(async () => {
@@ -52,5 +53,54 @@ describe('Authentication: create account', () => {
     expect(createAccountMock).not.toHaveBeenCalled()
   })
 
-  it()
+  it('メールアドレスが無効だった時のバリデーションエラーのテストケース', async () => {
+    // console.log('アドレスが無効です');
+    const userData = {
+      name: '山田太郎',
+      email: 'invalid-email',
+      password: 'test12345',
+    }
+    const response = await request(server)
+      .post('/api/auth/create-account')
+      .send(userData)
+    console.log(response.text, 'メアドが無効だった時のバリデーションエラー');
+
+    const createAccountMock = jest.spyOn(AuthController, 'createAccount')
+
+    expect(response.status).toBe(400)
+    expect(response.body).toHaveProperty('errors')
+    expect(response.body.errors).toHaveLength(1)
+    expect(createAccountMock).not.toHaveBeenCalled()
+    expect(response.body.errors[0].msg).toEqual('メールアドレスは有効な形式ではありません')
+  })
+
+  it('パスワードが8文字未満だった時のバリデーションエラーのテストケース', async () => {
+    // console.log('パスワードは8文字以上で入力してください');
+    const userData = {
+      name: '山田太郎',
+      email: 'test@example.com',
+      password: 'pass',
+    }
+    const response = await request(server)
+      .post('/api/auth/create-account')
+      .send(userData)
+    console.log(response.body.errors[0].msg, 'パスワードが8文字未満だった時のバリデーションエラー');
+
+    const createAccountMock = jest.spyOn(AuthController, 'createAccount')
+
+    expect(response.status).toBe(400)
+    expect(response.body).toHaveProperty('errors')
+    expect(response.body.errors).toHaveLength(1)
+    expect(createAccountMock).not.toHaveBeenCalled()
+    expect(response.body.errors[0].msg).toEqual('パスワードは8文字以上です')
+  })
+  it('パスワードとメールアドレスの入力が有効だった時のテストケース', async () => {
+    console.log('成功！');
+  })
+  it('ユーザ登録時に、すでにメールアドレスが登録されていた場合のテストケース', async () => {
+    console.log('そのメールアドレスは既に登録されています。');
+  })
+  it('ユーザ登録時、何らかの不具合があったときのテストケース', async () => {
+    console.log('ユーザ作成中にエラーが発生しました');
+  })
 })
