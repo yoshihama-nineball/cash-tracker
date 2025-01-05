@@ -89,7 +89,7 @@ describe('ExpenseController.getById', () => {
     await ExpenseController.getById(req, res);
 
     const data = res._getJSONData();
-    console.log(data, 'IDによる支出取得データ');
+    // console.log(data, 'IDによる支出取得データ');
 
     expect(res.statusCode).toBe(200);
     expect(data).toEqual(expenses[0]);
@@ -115,7 +115,7 @@ describe('ExpenseController.updateById', () => {
     const res = createResponse()
     await ExpenseController.updateById(req, res)
     const data = res._getJSONData();
-    console.log(data, '支出の編集データ');
+    // console.log(data, '支出の編集データ');
 
     expect(res.statusCode).toBe(200)
     expect(data).toBe('支出の編集に成功しました')
@@ -139,7 +139,7 @@ describe('ExpenseController.deleteById', () => {
     const res = createResponse()
     await ExpenseController.deleteById(req, res)
     const data = res._getJSONData();
-    console.log(data);
+    // console.log(data);
 
     expect(res.statusCode).toBe(200)
     expect(data).toBe('支出の削除に成功しました')
