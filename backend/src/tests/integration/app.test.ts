@@ -74,6 +74,38 @@ describe('Authentication: create account', () => {
     expect(response.body.errors[0].msg).toEqual('メールアドレスは有効な形式ではありません')
   })
 
+  it('パスワードが8文字未満だった時のバリデーションエラーのテストケース', async () => {
+    // console.log('パスワードは8文字以上で入力してください');
+    const userData = {
+      name: '山田太郎',
+      email: 'test@example.com',
+      password: 'pass',
+    }
+    const response = await request(server)
+      .post('/api/auth/create-account')
+      .send(userData)
+    console.log(response.body.errors[0].msg, 'パスワードが8文字未満だった時のバリデーションエラー');
+
+    const createAccountMock = jest.spyOn(AuthController, 'createAccount')
+
+    expect(response.status).toBe(400)
+    expect(response.body).toHaveProperty('errors')
+    expect(response.body.errors).toHaveLength(1)
+    expect(createAccountMock).not.toHaveBeenCalled()
+    expect(response.body.errors[0].msg).toEqual('パスワードは8文字以上です')
+  })
+  it('パスワードとメールアドレスの入力が有効だった時のテストケース', async () => {
+    // console.log('成功！');
+    const userData = {
+      name: '山田太郎',
+      email: 'dsdskjkljkl@example.com',
+      password: 'password',
+    }
+    const response = await request(server)
+      .post('/api/auth/create-account')
+      .send(userData)
+    console.log(response.body.message, 'アカウントを作成しました');
+  })
 
 
 })
