@@ -98,3 +98,42 @@ describe('AuthController.createAccount', () => {
     expect(res.statusCode).toBe(500)
   })
 })
+
+describe('AuthController.login', () => {
+  beforeEach(() => {
+    jest.resetAllMocks()
+  })
+  it('ユーザが存在しないときのテスト', async () => {
+    console.log('ユーザが存在しない場合のテストケース');
+    (User.findOne as jest.Mock).mockResolvedValue(undefined)
+
+    const req = createRequest({
+      method: 'POST',
+      url: '/api/auth/login',
+      body: {
+        email: "test@test.com",
+        password: "testpassword"
+      }
+    })
+    const res = createResponse()
+
+    await AuthController.login(req, res)
+
+    const data = res._getJSONData()
+
+    expect(res.statusCode).toBe(401)
+    expect(data).toStrictEqual({ error: 'ユーザが見つかりません' })
+    expect(User.findOne).toHaveBeenCalled()
+    expect(User.findOne).toHaveBeenCalledTimes(1)
+  })
+  it('アカウントが有効化されていない場合のテスト', async () => {
+    console.log('アカウントが有効化されていない場合のテストケース');
+  })
+  it('パスワードが間違っている場合のテストケース', async () => {
+    console.log('パスワードが間違っている場合のテストケース');
+  })
+  it('認証が正しいかどうかのテスト', () => {
+    console.log('認証が正しいかどうかのテストケース');
+
+  })
+})
