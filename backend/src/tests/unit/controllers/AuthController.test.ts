@@ -241,4 +241,40 @@ describe('AuthController.login', () => {
     expect(generateJWT).toHaveBeenCalledTimes(1)
     expect(generateJWT).toHaveBeenCalledWith(userMock.id)
   })
+  it('何らかの不具合で認証できなかった場合のテストケース', async () => {
+    // console.log('認証が正しいかどうかのテストケース');
+
+    const userMock = {
+      id: 1,
+      email: "test@example.com",
+      password: "testpassword",
+      confirmed: true
+    };
+    const req = createRequest({
+      method: 'POST',
+      url: '/api/auth/login',
+      body: {
+        email: "test@example.com",
+        password: "testpassword"
+      }
+    });
+    const res = createResponse();
+
+    const temporaryJWT = 'temporary_jwt';
+
+    (User.findOne as jest.Mock).mockRejectedValue(new Error());
+    // (checkPassword as jest.Mock).mockRejectedValue(new Error());
+    (checkPassword as jest.Mock).mockResolvedValue(true);
+    (generateJWT as jest.Mock).mockReturnValue(temporaryJWT);
+
+    await AuthController.login(req, res)
+
+    const data = res._getJSONData()
+    // console.log(data, 'JWT結果');
+
+    expect(res.statusCode).toBe(500)
+    expect(data).toStrictEqual({ error: 'サーバーエラーが発生しました' })
+    expect(generateJWT).not.toHaveBeenCalled()
+    expect(generateJWT).not.toHaveBeenCalledWith(userMock.id)
+  })
 })
