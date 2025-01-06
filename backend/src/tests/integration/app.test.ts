@@ -1,3 +1,4 @@
+import { log } from 'node:console';
 import request from 'supertest'
 import server, { connectDB } from '../../server'
 import { AuthController } from '../../controllers/AuthController'
@@ -94,4 +95,77 @@ describe('Authentication: create account', () => {
     expect(response.body).not.toHaveProperty('errors')
     expect(createAccountMock).not.toHaveBeenCalled()
   })
+})
+
+describe('Authentication: confirm account', () => {
+  it('tokenが空で送信された場合のユーザ確認時のバリデーションエラーのテストケース', async () => {
+    // console.log('tokenが空で送信された場合のユーザ確認時のバリデーションエラー');
+    // const userData = {
+    //   token: ''
+    // }
+    const response = await request(server)
+      .post('/api/auth/confirm-account')
+      .send({})
+
+    console.log(response.body.errors[0].msg, 'tokenが空の場合')
+    const confirmAccountMock = jest.spyOn(AuthController, 'confirmAccount')
+
+    expect(response.statusCode).toBe(400)
+    expect(response.body.errors[0].msg).toEqual('認証コードは必須です');
+    expect(confirmAccountMock).not.toHaveBeenCalled()
+    expect(response.body.errors[0]).toHaveProperty('msg')
+  })
+
+  it('tokenが6文字でない場合のユーザ確認時のバリデーションエラーのテストケース', async () => {
+    // console.log('tokenが無効な場合のユーザ確認時のバリデーションエラー');
+    const userData = {
+      token: '3493'
+    }
+    const response = await request(server)
+      .post('/api/auth/confirm-account')
+      .send(userData)
+
+
+    console.log(response.body.errors[0].msg, 'tokenが無効の場合')
+    const confirmAccountMock = jest.spyOn(AuthController, 'confirmAccount')
+
+    expect(response.statusCode).toBe(400)
+    expect(response.body.errors[0].msg).toEqual('トークンが無効です');
+    expect(confirmAccountMock).not.toHaveBeenCalled()
+    expect(response.body.errors[0]).toHaveProperty('msg')
+  })
+
+  it('tokenが存在しない場合のテストケース', async () => {
+    const response = await request(server)
+      .post('/api/auth/confirm-account')
+      .send({
+        token: "123456"
+      })
+    console.log(response.body, 'tokenが無効な場合の結果');
+
+
+    expect(response.status).toBe(401)
+    // expect(response).toHaveProperty('body')
+    expect(response.body).toStrictEqual({ error: '認証コードが無効です' })
+    expect(response.status).not.toBe(200)
+  })
+
+  // it('tokenが有効な場合のユーザ確認時のテストケース', async () => {
+  //   // const userData = {
+  //   //   token: '349378'
+  //   // }
+  //   // const token = globalThis.cashTrackerConfirmationToken
+  //   // const response = await request(server)
+  //   //   .post('/api/auth/confirm-account')
+  //   //   .send({ token })
+
+
+  //   // console.log(response.body, 'tokenが有効の場合')
+  //   // console.log(response.statusCode, 'tokenが有効な場合のステータスコード')
+  //   // const confirmAccountMock = jest.spyOn(AuthController, 'confirmAccount')
+
+  //   // expect(response.statusCode).toBe(201)
+  //   // expect(response.body.).toEqual('')
+  // })
+
 })

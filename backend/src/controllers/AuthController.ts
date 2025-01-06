@@ -57,6 +57,7 @@ export class AuthController {
     if (!user) {
       const error = new Error('認証コードが無効です')
       res.status(401).json({ error: error.message })
+      return;
     }
     //MEMO:MEMO: confirmedをtrueにすることで、ユーザ登録を完了する
     user.confirmed = true
