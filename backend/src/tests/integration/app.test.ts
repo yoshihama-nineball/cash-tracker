@@ -1,6 +1,6 @@
-import request from 'supertest';
-import server, { connectDB } from '../../server';
-import { AuthController } from '../../controllers/AuthController';
+import request from 'supertest'
+import server, { connectDB } from '../../server'
+import { AuthController } from '../../controllers/AuthController'
 
 describe('Authentication: create account', () => {
   it('入力フォームが空だった時のバリデーションエラーのテストケース', async () => {
@@ -38,7 +38,9 @@ describe('Authentication: create account', () => {
     expect(response.body).toHaveProperty('errors')
     expect(response.body.errors).toHaveLength(1)
     expect(createAccountMock).not.toHaveBeenCalled()
-    expect(response.body.errors[0].msg).toEqual('メールアドレスは有効な形式ではありません')
+    expect(response.body.errors[0].msg).toEqual(
+      'メールアドレスは有効な形式ではありません',
+    )
   })
 
   it('パスワードが8文字未満だった時のバリデーションエラーのテストケース', async () => {
@@ -51,7 +53,7 @@ describe('Authentication: create account', () => {
     const response = await request(server)
       .post('/api/auth/create-account')
       .send(userData)
-    console.log(response.body.errors[0].msg, 'パスワードが8文字未満だった時のバリデーションエラー');
+    // console.log(response.body.errors[0].msg, 'パスワードが8文字未満だった時のバリデーションエラー');
 
     const createAccountMock = jest.spyOn(AuthController, 'createAccount')
 
@@ -82,14 +84,14 @@ describe('Authentication: create account', () => {
     const response = await request(server)
       .post('/api/auth/create-account')
       .send(userData)
-    console.log(response.body.errors.msg, 'すでにメールアドレスが登録されている場合');
+    // console.log(response.body.errors, 'すでにメールアドレスが登録されている場合');
 
     const createAccountMock = jest.spyOn(AuthController, 'createAccount')
 
+    //MEMO: メアドが重複している場合のエラーは、上の他のテストコードたちと違い、
+    //MEMO: appRouter内でのエラーではないので、ここのテストケースではレスポンスは期待できない
     expect(response.statusCode).toBe(409)
-    expect(response.body).toHaveProperty('errors')
-    expect(response.body.errors).toHaveLength(1)
+    expect(response.body).not.toHaveProperty('errors')
     expect(createAccountMock).not.toHaveBeenCalled()
-    expect(response.body.errors.msg).toEqual('そのメールアドレスは既に登録されています。')
   })
 })

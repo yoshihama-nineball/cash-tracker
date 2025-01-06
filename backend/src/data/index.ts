@@ -19,5 +19,3 @@
 // if (process.argv[2] === '--clear') {
 //   clearData();
 // }
-
-
