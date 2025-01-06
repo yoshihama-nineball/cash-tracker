@@ -21,6 +21,11 @@ export class AuthController {
       const user = await User.create(req.body)
       user.password = await hashPassword(password)
       const token = generateToken()
+
+      if (process.env.NODE_ENV !== 'production') {
+        globalThis.cashTrackerConfirmation = token
+      }
+
       user.token = token
 
       // if(process.env.NODE_ENV !== 'production') {

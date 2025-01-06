@@ -150,22 +150,19 @@ describe('Authentication: confirm account', () => {
     expect(response.status).not.toBe(200)
   })
 
-  // it('tokenが有効な場合のユーザ確認時のテストケース', async () => {
-  //   // const userData = {
-  //   //   token: '349378'
-  //   // }
-  //   // const token = globalThis.cashTrackerConfirmationToken
-  //   // const response = await request(server)
-  //   //   .post('/api/auth/confirm-account')
-  //   //   .send({ token })
+  it('tokenが有効な場合のユーザ確認時のテストケース', async () => {
+    const token = globalThis.cashTrackerConfirmation
+    const response = await request(server)
+      .post('/api/auth/confirm-account')
+      .send({ token })
 
+    console.log(globalThis, 'globalThis');
 
-  //   // console.log(response.body, 'tokenが有効の場合')
-  //   // console.log(response.statusCode, 'tokenが有効な場合のステータスコード')
-  //   // const confirmAccountMock = jest.spyOn(AuthController, 'confirmAccount')
+    console.log(response.body, 'tokenが有効の場合')
+    console.log(response.statusCode, 'tokenが有効な場合のステータスコード')
 
-  //   // expect(response.statusCode).toBe(201)
-  //   // expect(response.body.).toEqual('')
-  // })
+    expect(response.statusCode).toBe(200)
+    expect(response.body).toEqual('アカウントの認証に成功しました！')
+  })
 
 })
