@@ -82,7 +82,7 @@ describe('Authentication: create account', () => {
     const response = await request(server)
       .post('/api/auth/create-account')
       .send(userData)
-    console.log(response.body.errors[0].msg, 'すでにメールアドレスが登録されている場合');
+    console.log(response.body.errors.msg, 'すでにメールアドレスが登録されている場合');
 
     const createAccountMock = jest.spyOn(AuthController, 'createAccount')
 
