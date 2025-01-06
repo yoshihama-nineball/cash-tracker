@@ -51,7 +51,7 @@ describe('Authentication: create account', () => {
     const response = await request(server)
       .post('/api/auth/create-account')
       .send(userData)
-    // console.log(response.body.errors[0].msg, 'パスワードが8文字未満だった時のバリデーションエラー');
+    console.log(response.body.errors[0].msg, 'パスワードが8文字未満だった時のバリデーションエラー');
 
     const createAccountMock = jest.spyOn(AuthController, 'createAccount')
 
@@ -65,7 +65,7 @@ describe('Authentication: create account', () => {
     // console.log('成功！');
     const userData = {
       name: '山田太郎',
-      email: 'yamadaaa@example.com',
+      email: 'test@example.com',
       password: 'password',
     }
     const response = await request(server)
@@ -77,7 +77,7 @@ describe('Authentication: create account', () => {
     const userData = {
       name: '山田太郎',
       email: 'test@example.com',
-      password: 'pass',
+      password: 'password',
     }
     const response = await request(server)
       .post('/api/auth/create-account')
@@ -86,7 +86,7 @@ describe('Authentication: create account', () => {
 
     const createAccountMock = jest.spyOn(AuthController, 'createAccount')
 
-    expect(response.statusCode).toBe(400)
+    expect(response.statusCode).toBe(409)
     expect(response.body).toHaveProperty('errors')
     expect(response.body.errors).toHaveLength(1)
     expect(createAccountMock).not.toHaveBeenCalled()
