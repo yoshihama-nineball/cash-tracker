@@ -24,11 +24,13 @@ jobs:
         run: cd backend && yarn install
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NODE_ENV: ${{ secrets.NODE_ENV }}
 
       - name: Run tests with coverage
         run: cd backend && yarn coverage
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          NODE_ENV: ${{ secrets.NODE_ENV }}
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4

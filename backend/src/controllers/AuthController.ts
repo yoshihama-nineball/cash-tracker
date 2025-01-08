@@ -21,6 +21,11 @@ export class AuthController {
       const user = await User.create(req.body)
       user.password = await hashPassword(password)
       const token = generateToken()
+
+      if (process.env.NODE_ENV !== 'production') {
+        globalThis.cashTrackerConfirmation = token
+      }
+
       user.token = token
 
       // if(process.env.NODE_ENV !== 'production') {
@@ -57,6 +62,7 @@ export class AuthController {
     if (!user) {
       const error = new Error('認証コードが無効です')
       res.status(401).json({ error: error.message })
+      return;
     }
     //MEMO:MEMO: confirmedをtrueにすることで、ユーザ登録を完了する
     user.confirmed = true

@@ -3,10 +3,10 @@ module.exports = {
   testEnvironment: 'node',
   testTimeout: 30000,
   transform: {
-    '^.+.tsx?$': ['ts-jest', {}],
+    '^.+\\.tsx?$': 'ts-jest'
   },
   collectCoverage: true,
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'html'],
   verbose: true,
-}
+};

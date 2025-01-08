@@ -17,7 +17,7 @@ describe('AuthController.createAccount', () => {
   })
 
   it('ユーザ登録時に、すでにメールアドレスが登録されていた場合', async () => {
-    ;(User.findOne as jest.Mock).mockResolvedValue(true)
+    ; (User.findOne as jest.Mock).mockResolvedValue(true)
 
     const req = createRequest({
       method: 'POST',
@@ -40,7 +40,7 @@ describe('AuthController.createAccount', () => {
     expect(User.findOne).toHaveBeenCalledTimes(1)
   })
   it('ユーザ登録成功時のテスト', async () => {
-    ;(User.findOne as jest.Mock).mockResolvedValue(null)
+    ; (User.findOne as jest.Mock).mockResolvedValue(null)
     const req = createRequest({
       method: 'POST',
       url: '/api/auth/create-account',
@@ -53,9 +53,9 @@ describe('AuthController.createAccount', () => {
     const res = createResponse()
     const mockUser = { ...req.body, save: jest.fn() }
 
-    ;(User.create as jest.Mock).mockResolvedValue(mockUser)
-    ;(hashPassword as jest.Mock).mockReturnValue('alsjalslj./fh')
-    ;(generateToken as jest.Mock).mockReturnValue('123456')
+      ; (User.create as jest.Mock).mockResolvedValue(mockUser)
+      ; (hashPassword as jest.Mock).mockReturnValue('alsjalslj./fh')
+      ; (generateToken as jest.Mock).mockReturnValue('123456')
     jest
       .spyOn(AuthEmail, 'sendConfirmationEmail')
       .mockImplementation(() => Promise.resolve())
@@ -80,7 +80,7 @@ describe('AuthController.createAccount', () => {
     const mockUser = {
       save: jest.fn(),
     }
-    ;(User.create as jest.Mock).mockRejectedValue(new Error())
+      ; (User.create as jest.Mock).mockRejectedValue(new Error())
     const req = createRequest({
       method: 'POST',
       url: '/api/auth/create-account',
@@ -120,7 +120,7 @@ describe('AuthController.login', () => {
       },
     })
 
-    ;(User.findOne as jest.Mock).mockResolvedValue(undefined)
+      ; (User.findOne as jest.Mock).mockResolvedValue(undefined)
     const res = createResponse()
 
     await AuthController.login(req, res)
@@ -146,12 +146,12 @@ describe('AuthController.login', () => {
       },
     })
 
-    ;(User.findOne as jest.Mock).mockResolvedValue({
-      id: 1,
-      email: 'test@example.com',
-      password: 'password',
-      confirmed: false,
-    })
+      ; (User.findOne as jest.Mock).mockResolvedValue({
+        id: 1,
+        email: 'test@example.com',
+        password: 'password',
+        confirmed: false,
+      })
 
     const res = createResponse()
 
@@ -183,13 +183,13 @@ describe('AuthController.login', () => {
       },
     })
 
-    ;(User.findOne as jest.Mock).mockResolvedValue({
-      id: 1,
-      email: 'test@example.com',
-      password: 'wrongpassword',
-      confirmed: true,
-    })
-    ;(checkPassword as jest.Mock).mockResolvedValue(false)
+      ; (User.findOne as jest.Mock).mockResolvedValue({
+        id: 1,
+        email: 'test@example.com',
+        password: 'wrongpassword',
+        confirmed: true,
+      })
+      ; (checkPassword as jest.Mock).mockResolvedValue(false)
     const res = createResponse()
 
     await AuthController.login(req, res)
@@ -227,9 +227,9 @@ describe('AuthController.login', () => {
 
     const temporaryJWT = 'temporary_jwt'
 
-    ;(User.findOne as jest.Mock).mockResolvedValue(userMock)
-    ;(checkPassword as jest.Mock).mockResolvedValue(true)
-    ;(generateJWT as jest.Mock).mockReturnValue(temporaryJWT)
+      ; (User.findOne as jest.Mock).mockResolvedValue(userMock)
+      ; (checkPassword as jest.Mock).mockResolvedValue(true)
+      ; (generateJWT as jest.Mock).mockReturnValue(temporaryJWT)
 
     await AuthController.login(req, res)
 
@@ -265,10 +265,10 @@ describe('AuthController.login', () => {
 
     const temporaryJWT = 'temporary_jwt'
 
-    ;(User.findOne as jest.Mock).mockRejectedValue(new Error())
-    // (checkPassword as jest.Mock).mockRejectedValue(new Error());
-    ;(checkPassword as jest.Mock).mockResolvedValue(true)
-    ;(generateJWT as jest.Mock).mockReturnValue(temporaryJWT)
+      ; (User.findOne as jest.Mock).mockRejectedValue(new Error())
+      // (checkPassword as jest.Mock).mockRejectedValue(new Error());
+      ; (checkPassword as jest.Mock).mockResolvedValue(true)
+      ; (generateJWT as jest.Mock).mockReturnValue(temporaryJWT)
 
     await AuthController.login(req, res)
 
