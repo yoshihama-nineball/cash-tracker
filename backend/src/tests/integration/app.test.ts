@@ -1,7 +1,7 @@
-import { log } from 'node:console';
 import request from 'supertest'
 import server, { connectDB } from '../../server'
 import { AuthController } from '../../controllers/AuthController'
+
 
 describe('Authentication: create account', () => {
   it('入力フォームが空だった時のバリデーションエラーのテストケース', async () => {
@@ -161,8 +161,8 @@ describe('Authentication: confirm account', () => {
     console.log(response.body, 'tokenが有効の場合')
     console.log(response.statusCode, 'tokenが有効な場合のステータスコード')
 
-    // expect(response.statusCode).toBe(200)
-    expect(response.body).toEqual('アカウントの認証に成功しました！')
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual('アカウントの認証に成功しました！');
   })
 
 })
