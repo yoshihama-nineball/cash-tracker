@@ -1,0 +1,19 @@
+name: Dependabot
+
+on:
+  schedule:
+    - cron: '0 2 * * 1'  # 毎週月曜日の午前2時に実行
+
+jobs:
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: cd backend && yarn install
+
+      - name: Run security scan
+        run: cd backend && yarn audit
