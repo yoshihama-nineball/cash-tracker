@@ -20,22 +20,13 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Cache Node.js modules
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('backend/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       - name: Install dependencies
         run: cd backend && yarn install
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Run tests with debug logging
-        run: |
-          cd backend && DEBUG=* yarn coverage
+      - name: Run tests with coverage
+        run: cd backend && yarn coverage
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
