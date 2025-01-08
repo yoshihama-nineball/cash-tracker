@@ -98,6 +98,11 @@ describe('Authentication: create account', () => {
 })
 
 describe('Authentication: confirm account', () => {
+  beforeAll(async () => {
+    await connectDB();
+    // 必要な初期データを挿入
+  });
+
   it('tokenが空で送信された場合のユーザ確認時のバリデーションエラーのテストケース', async () => {
     // console.log('tokenが空で送信された場合のユーザ確認時のバリデーションエラー');
     // const userData = {
