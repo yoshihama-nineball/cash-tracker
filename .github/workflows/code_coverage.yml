@@ -24,7 +24,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-node-${{ hashFiles('backend/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
@@ -35,7 +35,7 @@ jobs:
 
       - name: Run tests with debug logging
         run: |
-          DEBUG=* yarn coverage
+          cd backend && DEBUG=* yarn coverage
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
