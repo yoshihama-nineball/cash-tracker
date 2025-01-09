@@ -1,6 +1,10 @@
 import request from 'supertest'
 import server, { connectDB } from '../../server'
 import { AuthController } from '../../controllers/AuthController'
+import User from '../../models/User'
+import * as jwtUtils from '../../utils/jwt'
+import * as authUtils from '../../utils/token'
+import { generateToken } from '../../utils/token'
 
 
 describe('Authentication: create account', () => {
@@ -108,7 +112,7 @@ describe('Authentication: confirm account', () => {
       .post('/api/auth/confirm-account')
       .send({})
 
-    console.log(response.body.errors[0].msg, 'tokenが空の場合')
+    // console.log(response.body.errors[0].msg, 'tokenが空の場合')
     const confirmAccountMock = jest.spyOn(AuthController, 'confirmAccount')
 
     expect(response.statusCode).toBe(400)
@@ -127,7 +131,7 @@ describe('Authentication: confirm account', () => {
       .send(userData)
 
 
-    console.log(response.body.errors[0].msg, 'tokenが無効の場合')
+    // console.log(response.body.errors[0].msg, 'tokenが無効の場合')
     const confirmAccountMock = jest.spyOn(AuthController, 'confirmAccount')
 
     expect(response.statusCode).toBe(400)
@@ -142,7 +146,7 @@ describe('Authentication: confirm account', () => {
       .send({
         token: "123456"
       })
-    console.log(response.body, 'tokenが無効な場合の結果');
+    // console.log(response.body, 'tokenが無効な場合の結果');
 
 
     expect(response.status).toBe(401)
@@ -157,13 +161,146 @@ describe('Authentication: confirm account', () => {
       .post('/api/auth/confirm-account')
       .send({ token })
 
-    console.log(globalThis, 'globalThis');
+    // console.log(globalThis, 'globalThis');
 
-    console.log(response.body, 'tokenが有効の場合')
-    console.log(response.statusCode, 'tokenが有効な場合のステータスコード')
+    // console.log(response.body, 'tokenが有効の場合')
+    // console.log(response.statusCode, 'tokenが有効な場合のステータスコード')
 
     // expect(response.statusCode).toBe(200);
     // expect(response.body).toEqual('アカウントの認証に成功しました！');
   })
+})
 
+describe('Authentication: user authentication', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+  it('空のフォームが入力された場合のバリデーションエラーのテストケース', async () => {
+    // console.log('空のフォームが送信されました');
+    const response = await request(server)
+      .post('/api/auth/login')
+      .send({})
+    const loginMock = jest.spyOn(AuthController, 'login')
+
+    expect(response.statusCode).toBe(400)
+    expect(loginMock).not.toHaveBeenCalled()
+  })
+  it('メールアドレスが無効な場合のバリデーションエラーのテストケース', async () => {
+    // console.log('メールアドレスが無効です');
+    const userData = {
+      email: 'djshdlkwhdad',
+      password: 'password',
+    }
+    const response = await request(server)
+      .post('/api/auth/login')
+      .send(userData);
+
+    const loginMock = jest.spyOn(AuthController, 'login');
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.errors[0].msg).toEqual('メールアドレスは有効な形式ではありません')
+    expect(loginMock).not.toHaveBeenCalled();
+  })
+  it('ユーザが存在しない場合のテストケース', async () => {
+    // console.log('ユーザが存在しません');
+    const userData = {
+      email: 'not_found_user@example.com',
+      password: 'password',
+    }
+    const response = await request(server)
+      .post('/api/auth/login')
+      .send(userData)
+
+    const loginMock = jest.spyOn(AuthController, 'login');
+
+    // (User.findOne as jest.Mock).mockResolvedValue(undefined);
+
+    // console.log(response.body, 'ユーザが存在しない場合のレスポンスデータ');
+
+    expect(response.status).toBe(401);
+    expect(loginMock).not.toHaveBeenCalled()
+
+
+  })
+  it('アカウントがまだ有効化されていない場合のテストケース', async () => {
+    // console.log('アカウントがまだ有効化されていません');
+    (jest.spyOn(User, 'findOne') as jest.Mock)
+      .mockResolvedValue({
+        id: 500,
+        confirmed: false,
+        password: "hashed_password"
+      })
+    const userData = {
+      email: 'yamada@example.com',
+      password: 'password',
+    }
+    const response = await request(server)
+      .post('/api/auth/login')
+      .send(userData)
+
+    const loginMock = jest.spyOn(AuthController, 'login');
+
+    expect(response.statusCode).toBe(401)
+    expect(response.body.error).toStrictEqual('アカウントがまだ有効化されていません。メールに送信された認証コードを使用してアカウントを有効化してください')
+    expect(loginMock).not.toHaveBeenCalled()
+  })
+  it('パスワードが間違えている場合のテストケース', async () => {
+    // console.log('パスワードは8文字以上で入力してください');
+    const findOne = (jest.spyOn(User, 'findOne') as jest.Mock)
+      .mockResolvedValue({
+        id: 500,
+        confirmed: true,
+        password: "hashed_password"
+      })
+    const checkPassword = jest.spyOn(authUtils, 'checkPassword').mockResolvedValue(undefined);
+    const userData = {
+      email: 'yamada@example.com',
+      password: 'wrong_password',
+    }
+
+    const response = await request(server)
+      .post('/api/auth/login')
+      .send(userData)
+
+    const loginMock = jest.spyOn(AuthController, 'login');
+    // console.log(response.body, 'パスワードが間違えている場合のレスポンスデータ');
+
+    expect(response.statusCode).toBe(401);
+    expect(loginMock).not.toHaveBeenCalled();
+    expect(response.body.error).toStrictEqual('パスワードが間違っています')
+    expect(findOne).toHaveBeenCalledTimes(1);
+    expect(checkPassword).toHaveBeenCalledTimes(1)
+  })
+  it('ログインの成功と、JWTの検証テスト', async () => {
+    // console.log('ログインに成功しました/JWTが発行されました');
+    const findOne = (jest.spyOn(User, 'findOne') as jest.Mock)
+      .mockResolvedValue({
+        id: 500,
+        confirmed: true,
+        password: "hashed_password"
+      })
+    const checkPassword = jest.spyOn(authUtils, 'checkPassword').mockResolvedValue(true)
+    const generateJWT = jest.spyOn(jwtUtils, 'generateJWT').mockReturnValue('test_jwt')
+    const userData = {
+      email: 'yamada@example.com',
+      password: 'pure_password',
+    }
+    const response = request(server)
+      .post('/api/auth/login')
+      .send(userData);
+
+    // console.log((await response).body, 'ログイン成功時のレスポンスデータ');
+
+    expect((await response).body.message).toEqual('アカウントのログインに成功しました！')
+    expect((await response).body.token).toEqual('test_jwt')
+
+    expect(checkPassword).toHaveBeenCalled()
+    expect(checkPassword).toHaveBeenCalledTimes(1)
+    expect(checkPassword).toHaveBeenCalledWith('pure_password', 'hashed_password')
+
+    expect(generateJWT).toHaveBeenCalled()
+    expect(generateJWT).toHaveBeenCalledTimes(1)
+
+    expect(findOne).toHaveBeenCalledTimes(1)
+  })
 })

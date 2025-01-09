@@ -100,7 +100,7 @@ export class AuthController {
 
       // JWTの生成
       const token = generateJWT(user.id)
-      res.json({ message: 'アカウントのログインに成功しました！', token })
+      res.status(200).json({ message: 'アカウントのログインに成功しました！', token })
     } catch (error) {
       res.status(500).json({ error: 'サーバーエラーが発生しました' })
     }
