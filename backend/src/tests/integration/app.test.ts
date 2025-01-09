@@ -165,5 +165,45 @@ describe('Authentication: confirm account', () => {
     // expect(response.statusCode).toBe(200);
     // expect(response.body).toEqual('アカウントの認証に成功しました！');
   })
+})
 
+describe('Authentication: user authentication', () => {
+  it('空のフォームが入力された場合のバリデーションエラーのテストケース', async () => {
+    // console.log('空のフォームが送信されました');
+    const response = await request(server)
+      .post('/api/auth/login')
+      .send({})
+    const loginMock = jest.spyOn(AuthController, 'login')
+
+    expect(response.statusCode).toBe(400)
+    expect(loginMock).not.toHaveBeenCalled()
+  })
+  it('メールアドレスが無効な場合のバリデーションエラーのテストケース', async () => {
+    // console.log('メールアドレスが無効です');
+    const userData = {
+      email: 'djshdlkwhdad',
+      password: 'password',
+    }
+    const response = await request(server)
+      .post('/api/auth/login')
+      .send(userData);
+
+    const loginMock = jest.spyOn(AuthController, 'login');
+
+    expect(response.statusCode).toBe(400);
+    expect(response.body.errors[0].msg).toEqual('メールアドレスは有効な形式ではありません')
+    expect(loginMock).not.toHaveBeenCalled();
+  })
+  it('ユーザが存在しない場合のテストケース', async () => {
+    console.log('ユーザが存在しません');
+  })
+  it('アカウントがまだ有効化されていない場合のテストケース', async () => {
+    console.log('アカウントがまだ有効化されていません');
+  })
+  it('パスワードが8文字未満の場合のテストケース', async () => {
+    console.log('パスワードは8文字以上で入力してください');
+  })
+  it('ログインの成功と、JWTの検証テスト', async () => {
+    console.log('ログインに成功しました/JWTが発行されました');
+  })
 })
