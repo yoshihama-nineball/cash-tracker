@@ -26,7 +26,7 @@ export const authenticate = async (
   const [, token] = bearer.split(' ')
 
   if (!token) {
-    res.status(401).json({ error: 'トークンが無効です' })
+    res.status(401).json({ error: 'トークンが存在しません' })
     return
   }
 
@@ -45,6 +45,6 @@ export const authenticate = async (
       next()
     }
   } catch (error) {
-    res.status(500).json({ error: 'サーバーエラーが発生しました' })
+    res.status(500).json({ error: 'トークンが無効です' })
   }
 }

@@ -1,3 +1,4 @@
+import { Accessor } from './../../../node_modules/@babel/types/lib/index-legacy.d';
 import request from 'supertest'
 import server, { connectDB } from '../../server'
 import { AuthController } from '../../controllers/AuthController'
@@ -302,5 +303,67 @@ describe('Authentication: user authentication', () => {
     expect(generateJWT).toHaveBeenCalledTimes(1)
 
     expect(findOne).toHaveBeenCalledTimes(1)
+  })
+})
+
+let jwt: string
+
+async function authenticateUser() {
+  const response = await request(server)
+    .post('/api/auth/login')
+    .send({
+      email: 'test@example.com',
+      password: 'password'
+    })
+  // jwt = response.body;
+  console.log(response.body.token, 'JWT');
+
+  // expect(response.status).toBe(200);
+}
+
+describe('GET /api/budgets', () => {
+  let jwt: string
+  beforeAll(() => {
+    jest.restoreAllMocks();
+  })
+  beforeAll(async () => {
+    const response = await request(server)
+      .post('/api/auth/login')
+      .send({
+        email: 'test@example.com',
+        password: 'password'
+      })
+    jwt = response.body.token;
+
+    expect(response.status).toBe(200);
+    expect(response.body.message).toEqual('アカウントのログインに成功しました！')
+  })
+  it('JWT認証されていないユーザが予算データにアクセスしようとしたときのテスト', async () => {
+    const response = await request(server)
+      .get('/api/budgets')
+
+    expect(response.status).toBe(401)
+    expect(response.body.error).toBe('認証が必要です')
+  })
+
+  it('JWTが無効だった時、予算データにアクセスしようとしたときのテスト', async () => {
+    const response = await request(server)
+      .get('/api/budgets')
+      .auth('not_valid', { type: 'bearer' })
+
+    expect(response.status).toBe(500)
+    expect(response.body.error).toBe('トークンが無効です')
+  })
+  it('JWTが正しいとき、予算データにアクセスしようとしたときのテスト', async () => {
+    const response = await request(server)
+      .get('/api/budgets')
+      .auth(jwt, { type: 'bearer' })
+
+    console.log(response.body, 'JWTが正しい場合の予算アクセス時の結果');
+
+    expect(response.body).toHaveLength(0)
+    expect(response.status).not.toBe(401)
+    expect(response.body.error).not.toBe('認証が必要です')
+    expect(response.status).toBe(200)
   })
 })
