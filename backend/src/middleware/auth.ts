@@ -45,6 +45,6 @@ export const authenticate = async (
       next()
     }
   } catch (error) {
-    res.status(500).json({ error: 'サーバーエラーが発生しました' })
+    res.status(500).json({ error: 'トークンが無効です' })
   }
 }

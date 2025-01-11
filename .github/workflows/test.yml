@@ -16,11 +16,11 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Set up database
-        run: |
-          cd backend && ts-node ./src/data --clear
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      # - name: Set up database
+      #   run: |
+      #     cd backend && ts-node ./src/data --clear
+      #   env:
+      #     DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run tests with coverage
         run: cd backend && yarn coverage
