@@ -315,16 +315,31 @@ async function authenticateUser() {
       email: 'test@example.com',
       password: 'password'
     })
-  jwt = response.body;
+  // jwt = response.body;
+  console.log(response.body.token, 'JWT');
+
   // expect(response.status).toBe(200);
 }
 
 describe('GET /api/budgets', () => {
+  let jwt: string
   beforeAll(() => {
     jest.restoreAllMocks();
   })
   beforeAll(async () => {
-    await authenticateUser();
+    // await authenticateUser();
+    const response = await request(server)
+      .post('/api/auth/login')
+      .send({
+        email: 'test@example.com',
+        password: 'password'
+      })
+    jwt = response.body.token;
+    console.log(response.body.token, 'JWT');
+    console.log(response.status, '認証ステータスコード');
+
+    expect(response.status).toBe(200);
+    expect(response.body.message).toEqual('アカウントのログインに成功しました！')
   })
   it('JWT認証されていないユーザが予算データにアクセスしようとしたときのテスト', async () => {
     // console.log('JWT認証されていないユーザが予算データにアクセスしようとしたときのテスト');
@@ -340,7 +355,7 @@ describe('GET /api/budgets', () => {
   it('JWTが無効だった時、予算データにアクセスしようとしたときのテスト', async () => {
     // console.log('予算IDが無効だった時、予算データにアクセスしようとしたときのテスト');
     const response = await request(server)
-      .post('/api/budgets')
+      .get('/api/budgets')
       .auth('not_valid', { type: 'bearer' })
     console.log(response.body, 'JWTが無効の場合');
 
@@ -349,7 +364,7 @@ describe('GET /api/budgets', () => {
   })
   it('JWTが正しいとき、予算データにアクセスしようとしたときのテスト', async () => {
     const response = await request(server)
-      .post('/api/budgets')
+      .get('/api/budgets')
       .auth(jwt, { type: 'bearer' })
 
     console.log(response.body, 'JWTが正しい場合の予算アクセス時の結果');
