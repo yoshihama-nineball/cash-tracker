@@ -327,7 +327,6 @@ describe('GET /api/budgets', () => {
     jest.restoreAllMocks();
   })
   beforeAll(async () => {
-    // await authenticateUser();
     const response = await request(server)
       .post('/api/auth/login')
       .send({
@@ -335,32 +334,25 @@ describe('GET /api/budgets', () => {
         password: 'password'
       })
     jwt = response.body.token;
-    console.log(response.body.token, 'JWT');
-    console.log(response.status, '認証ステータスコード');
 
     expect(response.status).toBe(200);
     expect(response.body.message).toEqual('アカウントのログインに成功しました！')
   })
   it('JWT認証されていないユーザが予算データにアクセスしようとしたときのテスト', async () => {
-    // console.log('JWT認証されていないユーザが予算データにアクセスしようとしたときのテスト');
     const response = await request(server)
-      .post('/api/budgets')
-
-    console.log(response.body, 'JWT認証されていないユーザの結果');
+      .get('/api/budgets')
 
     expect(response.status).toBe(401)
     expect(response.body.error).toBe('認証が必要です')
   })
 
   it('JWTが無効だった時、予算データにアクセスしようとしたときのテスト', async () => {
-    // console.log('予算IDが無効だった時、予算データにアクセスしようとしたときのテスト');
     const response = await request(server)
       .get('/api/budgets')
       .auth('not_valid', { type: 'bearer' })
-    console.log(response.body, 'JWTが無効の場合');
 
-    // expect(response.status).toBe(400)
-    // expect(response.body.error).toBe('IDの値が数字以外で無効です')
+    expect(response.status).toBe(500)
+    expect(response.body.error).toBe('トークンが無効です')
   })
   it('JWTが正しいとき、予算データにアクセスしようとしたときのテスト', async () => {
     const response = await request(server)
@@ -369,7 +361,9 @@ describe('GET /api/budgets', () => {
 
     console.log(response.body, 'JWTが正しい場合の予算アクセス時の結果');
 
-    // expect(response.status).toBe(404)
-    // expect(response.body.error).toBe('予算が見つかりません')
+    expect(response.body).toHaveLength(0)
+    expect(response.status).not.toBe(401)
+    expect(response.body.error).not.toBe('認証が必要です')
+    expect(response.status).toBe(200)
   })
 })
