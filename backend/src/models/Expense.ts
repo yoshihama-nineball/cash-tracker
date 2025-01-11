@@ -8,16 +8,15 @@ import {
   ForeignKey,
   AllowNull,
 } from 'sequelize-typescript'
-import Expense from './Expense'
-import User from './User'
+import Budget from './Budget'
 // import Expense from './Expense'
 // import User from './User'
 
 @Table({
-  tableName: 'budgets',
+  tableName: 'expenses',
   timestamps: true,
 })
-class Budget extends Model {
+class Expense extends Model {
   //MEMO: nameがnull非許容でstring型であることを定義
   @AllowNull(false)
   @Column({
@@ -45,17 +44,17 @@ class Budget extends Model {
   })
   declare updatedAt: Date
 
-  @HasMany(() => Expense, {
-    onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
-  })
-  declare expenses: Expense[]
+  @ForeignKey(() => Budget)
+  declare budgetId: number
 
-  @ForeignKey(() => User)
-  declare userId: number
+  @BelongsTo(() => Budget)
+  declare budget: Budget
 
-  @BelongsTo(() => User)
-  declare user: User
+  // @ForeignKey(() => User)
+  // declare userId: number
+
+  // @BelongsTo(() => User)
+  // declare user: User
 }
 
-export default Budget
+export default Expense
