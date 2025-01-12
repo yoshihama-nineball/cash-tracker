@@ -315,28 +315,18 @@ async function authenticateUser() {
       email: 'test@example.com',
       password: 'password'
     })
-  // jwt = response.body;
-  console.log(response.body.token, 'JWT');
+  jwt = response.body.token;
 
-  // expect(response.status).toBe(200);
+  expect(response.status).toBe(200);
+  expect(response.body.message).toEqual('アカウントのログインに成功しました！')
 }
 
 describe('GET /api/budgets', () => {
-  let jwt: string
   beforeAll(() => {
     jest.restoreAllMocks();
   })
   beforeAll(async () => {
-    const response = await request(server)
-      .post('/api/auth/login')
-      .send({
-        email: 'test@example.com',
-        password: 'password'
-      })
-    jwt = response.body.token;
-
-    expect(response.status).toBe(200);
-    expect(response.body.message).toEqual('アカウントのログインに成功しました！')
+    await authenticateUser()
   })
   it('JWT認証されていないユーザが予算データにアクセスしようとしたときのテスト', async () => {
     const response = await request(server)
@@ -359,11 +349,65 @@ describe('GET /api/budgets', () => {
       .get('/api/budgets')
       .auth(jwt, { type: 'bearer' })
 
-    console.log(response.body, 'JWTが正しい場合の予算アクセス時の結果');
-
     expect(response.body).toHaveLength(0)
     expect(response.status).not.toBe(401)
     expect(response.body.error).not.toBe('認証が必要です')
     expect(response.status).toBe(200)
   })
 })
+
+describe('POST /api/budgets', () => {
+  beforeAll(async () => {
+    await authenticateUser();
+  })
+  it('JWT認証されていないユーザが、予算作成をしようとしたときの結合テストケース', async () => {
+    const response = await request(server)
+      .post('/api/budgets')
+
+    expect(response.status).toBe(401)
+    expect(response.body.error).toBe('認証が必要です')
+  })
+
+  it('JWTが無効だった時、予算作成しようとした場合の結合テストケース', async () => {
+    const response = await request(server)
+      .post('/api/budgets')
+      .auth('invalid_token', { type: 'bearer' })
+      .send({})
+
+    expect(response.status).toBe(500)
+    expect(response.body.error).toBe('トークンが無効です')
+  })
+  it('未入力の場合の予算作成の結合テストケース', async () => {
+    const response = await request(server)
+      .post('/api/budgets')
+      .auth(jwt, { type: 'bearer' })
+      .send({})
+
+    expect(response.status).not.toBe(401)
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ msg: '予算タイトルは必須です' }),
+        expect.objectContaining({ msg: '予算金額は必須です' }),
+        expect.objectContaining({ msg: '予算金額の値が無効です' })
+      ])
+    );
+
+    expect(response.status).toBe(400)
+  })
+
+  it('予算作成の結合が成功する場合のテストケース', async () => {
+    const response = await request(server)
+      .post('/api/budgets')
+      .auth(jwt, { type: 'bearer' })
+      .send({
+        'name': '食費',
+        'amount': 30000
+      })
+
+    expect(response.status).not.toBe(401)
+    expect(response.body.error).not.toBe('認証が必要です')
+    expect(response.status).toBe(201)
+    expect(response.body).toEqual('予算が正しく作成されました')
+  })
+})
+
