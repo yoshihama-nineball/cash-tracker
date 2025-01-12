@@ -411,3 +411,137 @@ describe('POST /api/budgets', () => {
   })
 })
 
+describe('GET /api/budgets/:id', () => {
+  beforeAll(async () => {
+    await authenticateUser();
+  })
+  it('JWT認証されていないユーザが、予算データの取得をしようとしたときの結合テストケース', async () => {
+    const response = await request(server)
+      .get('/api/budgets/1')
+
+    expect(response.status).toBe(401)
+    expect(response.body.error).toBe('認証が必要です')
+  })
+  it('JWTが無効だった時、予算データの取得をしようとした場合の結合テストケース', async () => {
+    const response = await request(server)
+      .get('/api/budgets/1')
+      .auth('invalid_token', { type: 'bearer' })
+
+    expect(response.status).toBe(500)
+    expect(response.body.error).toBe('トークンが無効です')
+  })
+  it('存在しないIDの場合の予算データの取得の結合テストケース', async () => {
+    const response = await request(server)
+      .get('/api/budgets/99999')
+      .auth(jwt, { type: 'bearer' })
+
+    expect(response.status).toBe(404)
+    expect(response.body.error).toBe('予算が見つかりません')
+  })
+
+  it('存在するIDの場合の予算データの取得の結合テストケース', async () => {
+    const response = await request(server)
+      .get('/api/budgets/1')
+      .auth(jwt, { type: 'bearer' })
+
+    expect(response.status).not.toBe(401)
+    expect(response.body.error).not.toBe('認証が必要です')
+    expect(response.status).toBe(200)
+    // expect(response.body).toEqual('予算が正しく作成されました')
+  })
+})
+
+describe('PUT /api/budgets/:id', () => {
+  it('JWT認証されていないユーザが、予算データの更新をしようとしたときの結合テストケース', async () => {
+    const response = await request(server)
+      .put('/api/budgets/1')
+
+    expect(response.status).toBe(401)
+    expect(response.body.error).toBe('認証が必要です')
+  })
+  it('JWTが無効だった時、予算データの更新をしようとした場合の結合テストケース', async () => {
+    const response = await request(server)
+      .put('/api/budgets/1')
+      .auth('invalid_token', { type: 'bearer' })
+      .send({})
+
+    expect(response.status).toBe(500)
+    expect(response.body.error).toBe('トークンが無効です')
+  })
+  it('存在しないIDの場合の予算データの更新の結合テストケース', async () => {
+    const response = await request(server)
+      .put('/api/budgets/99999')
+      .auth(jwt, { type: 'bearer' })
+      .send({})
+
+    expect(response.status).toBe(404)
+    expect(response.body.error).toBe('予算が見つかりません')
+  })
+  it('未入力の場合の予算データの更新の結合テストケース', async () => {
+    const response = await request(server)
+      .put('/api/budgets/1')
+      .auth(jwt, { type: 'bearer' })
+      .send({})
+
+    expect(response.status).not.toBe(401)
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ msg: '予算タイトルは必須です' }),
+        expect.objectContaining({ msg: '予算金額は必須です' }),
+        expect.objectContaining({ msg: '予算金額の値が無効です' })
+      ])
+    );
+
+    expect(response.status).toBe(400)
+  })
+  it('存在するIDの場合の予算データの更新の結合が成功する場合のテストケース', async () => {
+    const response = await request(server)
+      .put('/api/budgets/1')
+      .auth(jwt, { type: 'bearer' })
+      .send({
+        'name': '光熱費',
+        'amount': 15000
+      })
+
+    expect(response.status).not.toBe(401)
+    expect(response.body.error).not.toBe('認証が必要です')
+    expect(response.status).toBe(200)
+    expect(response.body).toEqual('予算の編集に成功しました')
+  })
+})
+
+describe('DELETE /api/budgets/:id', () => {
+  it('JWT認証されていないユーザが、予算データの削除をしようとしたときの結合テストケース', async () => {
+    const response = await request(server)
+      .delete('/api/budgets/1')
+
+    expect(response.status).toBe(401)
+    expect(response.body.error).toBe('認証が必要です')
+  })
+  it('JWTが無効だった時、予算データの削除をしようとした場合の結合テストケース', async () => {
+    const response = await request(server)
+      .delete('/api/budgets/1')
+      .auth('invalid_token', { type: 'bearer' })
+
+    expect(response.status).toBe(500)
+    expect(response.body.error).toBe('トークンが無効です')
+  })
+  it('存在しないIDの場合の予算データの削除の結合テストケース', async () => {
+    const response = await request(server)
+      .delete('/api/budgets/99999')
+      .auth(jwt, { type: 'bearer' })
+
+    expect(response.status).toBe(404)
+    expect(response.body.error).toBe('予算が見つかりません')
+  })
+  it('存在するIDの場合の予算データの削除の結合が成功する場合のテストケース', async () => {
+    const response = await request(server)
+      .delete('/api/budgets/1')
+      .auth(jwt, { type: 'bearer' })
+
+    expect(response.status).not.toBe(401)
+    expect(response.body.error).not.toBe('認証が必要です')
+    expect(response.status).toBe(200)
+    expect(response.body).toEqual('予算の削除に成功しました')
+  })
+})
