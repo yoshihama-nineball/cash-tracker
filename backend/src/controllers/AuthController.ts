@@ -33,11 +33,12 @@ export class AuthController {
       // }
 
       await user.save()
-      await AuthEmail.sendConfirmationEmail({
-        name: user.name,
-        email: user.email,
-        token: user.token,
-      })
+      // MEMO: 一時退避
+      // await AuthEmail.sendConfirmationEmail({
+      //   name: user.name,
+      //   email: user.email,
+      //   token: user.token,
+      // })
       // res.status(201).json({ message: 'アカウントを作成しました' });
       res.status(201).json({
         message: 'アカウントを作成しました',
@@ -118,11 +119,12 @@ export class AuthController {
     user.token = generateToken()
     await user.save()
 
-    await AuthEmail.sendResetPasswordEmail({
-      name: user.name,
-      email: user.email,
-      token: user.token,
-    })
+    // MEMO: 一時退避
+    // await AuthEmail.sendResetPasswordEmail({
+    //   name: user.name,
+    //   email: user.email,
+    //   token: user.token,
+    // })
     res.status(201).json({
       message: 'パスワードをリセットしました。メールを確認してください',
       email: { to: user.email, token: user.token },
