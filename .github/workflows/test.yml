@@ -25,24 +25,36 @@ jobs:
       - name: Clear Yarn cache
         run: yarn cache clean
 
-      - name: Install dependencies
+      - name: Install backend dependencies
         run: cd backend && yarn install
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Set up database
+      - name: Set up backend database
         run: |
           cd backend && ts-node ./src/data --clear
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Run tests with coverage
+      - name: Run backend tests with coverage
         run: cd backend && yarn coverage
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Upload coverage report
+      - name: Install frontend dependencies
+        run: cd frontend && yarn install
+
+      - name: Run frontend tests with coverage
+        run: cd frontend && yarn test --coverage
+
+      - name: Upload backend coverage report
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
+          name: backend-coverage-report
           path: backend/coverage
+
+      - name: Upload frontend coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-report
+          path: frontend/coverage
