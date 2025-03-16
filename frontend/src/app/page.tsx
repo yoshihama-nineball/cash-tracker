@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { Add as AddIcon, Menu as MenuIcon } from '@mui/icons-material';
+import { Add as AddIcon, Menu as MenuIcon } from "@mui/icons-material";
 import {
   AppBar,
   Box,
@@ -14,10 +14,10 @@ import {
   Paper,
   Toolbar,
   Typography,
-  useTheme
-} from '@mui/material';
-import Link from 'next/link';
-import { useState } from 'react';
+  useTheme,
+} from "@mui/material";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function HomePage() {
   const theme = useTheme();
@@ -25,9 +25,9 @@ export default function HomePage() {
 
   // ダミーの予算データ
   const budgets = [
-    { id: 1, name: '生活費', amount: 150000, spent: 120000 },
-    { id: 2, name: '貯金', amount: 50000, spent: 50000 },
-    { id: 3, name: '趣味・娯楽', amount: 30000, spent: 15000 },
+    { id: 1, name: "生活費", amount: 150000, spent: 120000 },
+    { id: 2, name: "貯金", amount: 50000, spent: 50000 },
+    { id: 3, name: "趣味・娯楽", amount: 30000, spent: 15000 },
   ];
 
   return (
@@ -48,9 +48,13 @@ export default function HomePage() {
             キャッシュトラッカー
           </Typography>
           {isLoggedIn ? (
-            <Button color="inherit" onClick={() => setIsLoggedIn(false)}>ログアウト</Button>
+            <Button color="inherit" onClick={() => setIsLoggedIn(false)}>
+              ログアウト
+            </Button>
           ) : (
-            <Button color="inherit" onClick={() => setIsLoggedIn(true)}>ログイン</Button>
+            <Button color="inherit" onClick={() => setIsLoggedIn(true)}>
+              ログイン
+            </Button>
           )}
         </Toolbar>
       </AppBar>
@@ -58,13 +62,13 @@ export default function HomePage() {
       {/* メインコンテンツ */}
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
         {/* ウェルカムセクション */}
-        <Paper 
-          elevation={3} 
-          sx={{ 
-            p: 4, 
-            mb: 4, 
+        <Paper
+          elevation={3}
+          sx={{
+            p: 4,
+            mb: 4,
             background: `linear-gradient(45deg, ${theme.palette.primary.main} 30%, ${theme.palette.primary.light} 90%)`,
-            color: 'white'
+            color: "white",
           }}
         >
           <Typography variant="h4" gutterBottom>
@@ -76,17 +80,17 @@ export default function HomePage() {
           </Typography>
           {!isLoggedIn && (
             <Box sx={{ mt: 2 }}>
-              <Button 
-                variant="contained" 
-                color="secondary" 
+              <Button
+                variant="contained"
+                color="secondary"
                 size="large"
                 sx={{ mr: 2 }}
               >
                 今すぐ始める
               </Button>
-              <Button 
-                variant="outlined" 
-                sx={{ color: 'white', borderColor: 'white' }}
+              <Button
+                variant="outlined"
+                sx={{ color: "white", borderColor: "white" }}
               >
                 詳細を見る
               </Button>
@@ -98,12 +102,19 @@ export default function HomePage() {
           <>
             {/* 予算サマリー */}
             <Box sx={{ mb: 4 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 2,
+                }}
+              >
                 <Typography variant="h5">予算の概要</Typography>
-                <Button 
-                  variant="contained" 
+                <Button
+                  variant="contained"
                   startIcon={<AddIcon />}
-                  component={Link} 
+                  component={Link}
                   href="/budgets/new"
                 >
                   予算を追加
@@ -121,28 +132,44 @@ export default function HomePage() {
                           予算: ¥{budget.amount.toLocaleString()}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
-                          使用済み: ¥{budget.spent.toLocaleString()} ({Math.round(budget.spent / budget.amount * 100)}%)
+                          使用済み: ¥{budget.spent.toLocaleString()} (
+                          {Math.round((budget.spent / budget.amount) * 100)}%)
                         </Typography>
                         {/* プログレスバー代わりのカラーボックス */}
-                        <Box sx={{ 
-                          mt: 1,
-                          height: 10, 
-                          bgcolor: 'grey.300',
-                          borderRadius: 5
-                        }}>
-                          <Box sx={{ 
-                            height: '100%', 
-                            width: `${Math.min(Math.round(budget.spent / budget.amount * 100), 100)}%`, 
-                            bgcolor: budget.spent / budget.amount > 0.9 ? 'error.main' : 'primary.main',
-                            borderRadius: 5
-                          }} />
+                        <Box
+                          sx={{
+                            mt: 1,
+                            height: 10,
+                            bgcolor: "grey.300",
+                            borderRadius: 5,
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              height: "100%",
+                              width: `${Math.min(Math.round((budget.spent / budget.amount) * 100), 100)}%`,
+                              bgcolor:
+                                budget.spent / budget.amount > 0.9
+                                  ? "error.main"
+                                  : "primary.main",
+                              borderRadius: 5,
+                            }}
+                          />
                         </Box>
                       </CardContent>
                       <CardActions>
-                        <Button size="small" component={Link} href={`/budgets/${budget.id}`}>
+                        <Button
+                          size="small"
+                          component={Link}
+                          href={`/budgets/${budget.id}`}
+                        >
                           詳細を見る
                         </Button>
-                        <Button size="small" component={Link} href={`/expenses/new?budgetId=${budget.id}`}>
+                        <Button
+                          size="small"
+                          component={Link}
+                          href={`/expenses/new?budgetId=${budget.id}`}
+                        >
                           支出を追加
                         </Button>
                       </CardActions>
@@ -154,15 +181,17 @@ export default function HomePage() {
 
             {/* 最近の取引 */}
             <Box>
-              <Typography variant="h5" sx={{ mb: 2 }}>最近の取引</Typography>
+              <Typography variant="h5" sx={{ mb: 2 }}>
+                最近の取引
+              </Typography>
               <Paper>
                 {/* ここに最近の取引リストを表示 */}
-                <Box sx={{ p: 2, textAlign: 'center' }}>
+                <Box sx={{ p: 2, textAlign: "center" }}>
                   <Typography variant="body2" color="text.secondary">
                     まだ取引データがありません。支出を追加してください。
                   </Typography>
-                  <Button 
-                    variant="contained" 
+                  <Button
+                    variant="contained"
                     sx={{ mt: 2 }}
                     startIcon={<AddIcon />}
                   >
@@ -176,7 +205,7 @@ export default function HomePage() {
           // 未ログイン時のコンテンツ
           <Grid container spacing={4}>
             <Grid item xs={12} md={4}>
-              <Card sx={{ height: '100%' }}>
+              <Card sx={{ height: "100%" }}>
                 <CardContent>
                   <Typography variant="h5" gutterBottom color="primary">
                     シンプルな支出管理
@@ -189,7 +218,7 @@ export default function HomePage() {
               </Card>
             </Grid>
             <Grid item xs={12} md={4}>
-              <Card sx={{ height: '100%' }}>
+              <Card sx={{ height: "100%" }}>
                 <CardContent>
                   <Typography variant="h5" gutterBottom color="primary">
                     予算の設定と管理
@@ -202,7 +231,7 @@ export default function HomePage() {
               </Card>
             </Grid>
             <Grid item xs={12} md={4}>
-              <Card sx={{ height: '100%' }}>
+              <Card sx={{ height: "100%" }}>
                 <CardContent>
                   <Typography variant="h5" gutterBottom color="primary">
                     データの視覚化
@@ -219,18 +248,26 @@ export default function HomePage() {
       </Container>
 
       {/* フッター */}
-      <Box component="footer" sx={{ bgcolor: 'background.paper', py: 6, mt: 4 }}>
+      <Box
+        component="footer"
+        sx={{ bgcolor: "background.paper", py: 6, mt: 4 }}
+      >
         <Container maxWidth="lg">
           <Typography variant="h6" align="center" gutterBottom>
             キャッシュトラッカー
           </Typography>
-          <Typography variant="subtitle1" align="center" color="text.secondary" component="p">
+          <Typography
+            variant="subtitle1"
+            align="center"
+            color="text.secondary"
+            component="p"
+          >
             あなたの家計をシンプルに管理
           </Typography>
           <Typography variant="body2" color="text.secondary" align="center">
-            {'© '}
+            {"© "}
             {new Date().getFullYear()}
-            {' キャッシュトラッカー. All rights reserved.'}
+            {" キャッシュトラッカー. All rights reserved."}
           </Typography>
         </Container>
       </Box>
