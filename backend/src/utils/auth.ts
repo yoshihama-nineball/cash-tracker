@@ -1,6 +1,6 @@
-import bcrypt from 'bcrypt'
+import bcryptjs from 'bcryptjs'
 
 export const hashPassword = async (password: string): Promise<string> => {
   const saltRounds = 10
-  return await bcrypt.hash(password, saltRounds)
+  return await bcryptjs.hash(password, saltRounds)
 }

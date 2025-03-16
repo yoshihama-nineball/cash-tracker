@@ -1,11 +1,22 @@
 module.exports = {
-  testEnvironment: 'jsdom',  // jsdom環境を指定
-  transform: {
-    '^.+\\.(ts|tsx)$': 'babel-jest',  // TypeScriptもbabel-jestで変換
-    '^.+\\.jsx?$': 'babel-jest',  // JSXもbabel-jestで変換
+  collectCoverage: true,
+  collectCoverageFrom: [
+    '**/*.{js,jsx,ts,tsx}',
+    '!**/*.d.ts',
+    '!**/node_modules/**',
+    '!**/.next/**',
+  ],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
- "setupFilesAfterEnv": ["<rootDir>/src/setupTests.js"]
-  // transformIgnorePatterns: [
-  //   '/node_modules/(?!your-module-name)/',  // 必要なnode_modulesを指定して変換する
-  // ],
+  testPathIgnorePatterns: ['/node_modules/', '/.next/'],
+  testEnvironment: 'jsdom',
+  transform: {
+    '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['next/babel'] }],
+  },
+  transformIgnorePatterns: [
+    '/node_modules/',
+    '^.+\\.module\\.(css|sass|scss)$',
+  ],
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
 };

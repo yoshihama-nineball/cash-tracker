@@ -1,20 +1,18 @@
-import 'reflect-metadata'
-import express from 'express'
 import colors from 'colors'
+import express from 'express'
 import morgan from 'morgan'
+import 'reflect-metadata'
 import { db } from './config/db'
-import budgetRouter from './routes/budgetRouter'
-import authRouter from './routes/authRouter'
 import { limiter } from './config/limiter'
-// import authRouter from './routes/authRouter'
+import authRouter from './routes/authRouter'
+import budgetRouter from './routes/budgetRouter'
 
 export async function connectDB() {
   try {
     await db.authenticate()
     db.sync()
-    console.log(colors.blue.bold('Sequelizeに接続しました'))
-  } catch (error) {
-    // console.log(error)
+    console.log(colors.blue.bold('MongoDBに接続しました'))
+  } catch (error: any) {
     console.log(colors.red.bold(error.message))
   }
 }
@@ -22,7 +20,7 @@ connectDB()
 
 const app = express()
 
-//morganミドルウェアを使ったHTTPリスエスト結果の表示
+// morganミドルウェアを使ったHTTPリクエスト結果の表示
 app.use(morgan('dev'))
 
 app.use(express.json())

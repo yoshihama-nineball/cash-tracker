@@ -1,11 +1,12 @@
-import jwt from 'jsonwebtoken'
 import { NextFunction, Request, Response } from 'express'
+import jwt from 'jsonwebtoken'
 import User from '../models/User'
 
+// Requestインターフェースを拡張
 declare global {
   namespace Express {
     interface Request {
-      user?: User
+      user?: any // MongoDBのユーザーオブジェクト
     }
   }
 }
@@ -22,7 +23,7 @@ export const authenticate = async (
     return
   }
 
-  //MEMO: sBearer <JWT> の間のスペースを利用してJWTのみを取得
+  //MEMO: Bearer <JWT> の間のスペースを利用してJWTのみを取得
   const [, token] = bearer.split(' ')
 
   if (!token) {
@@ -36,13 +37,20 @@ export const authenticate = async (
 
     //MEMO: デコードされたトークンがオブジェクトであり、idプロパティを持っていることを確認
     if (typeof decoded === 'object' && decoded.id) {
-      // MEMO: 秘密鍵とJWTを用いて検証、JWTが有効であればデコードする
-      req.user = await User.findByPk(decoded.id, {
-        attributes: ['id', 'name', 'email'],
-      })
+      // MongoDBのfindByIdを使用してユーザーを検索
+      // 必要なフィールドだけを選択（パスワードは除外）
+      req.user = await User.findById(decoded.id).select('_id name email')
+
+      if (!req.user) {
+        res.status(404).json({ error: 'ユーザーが見つかりません' })
+        return
+      }
+
       //MEMO: authRouterのuser
       //MEMO: authenticateの次にあるAuthController.userにreq.userを渡す
       next()
+    } else {
+      res.status(401).json({ error: 'トークンが無効です' })
     }
   } catch (error) {
     res.status(500).json({ error: 'トークンが無効です' })
