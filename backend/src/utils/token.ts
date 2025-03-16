@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt'
+import bcryptjs from 'bcryptjs'
 export const generateToken = () =>
   Math.floor(100000 + Math.random() * 900000).toString()
 
@@ -6,5 +6,5 @@ export const checkPassword = async (
   password: string,
   hash: string,
 ): Promise<boolean> => {
-  return await bcrypt.compare(password, hash)
+  return await bcryptjs.compare(password, hash)
 }

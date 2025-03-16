@@ -1,11 +1,13 @@
-import { Request, Response, NextFunction } from 'express'
+import { NextFunction, Request, Response } from 'express'
 import { body, param, validationResult } from 'express-validator'
+import mongoose from 'mongoose'
 import Budget from '../models/Budget'
 
+// Requestインターフェースを拡張
 declare global {
   namespace Express {
     interface Request {
-      budget?: Budget
+      budget?: any // Budget型をanyに変更
     }
   }
 }
@@ -16,12 +18,9 @@ export const validateBudgetId = async (
   next: NextFunction,
 ) => {
   await param('budgetId')
-    //MEMO: bail()を使うことで、不要なエラーメッセージをスキップする
-    .isInt()
-    .withMessage('IDの値が数字以外で無効です')
-    .bail()
-    .custom((value) => value > 0)
-    .withMessage('IDがマイナスの値です')
+    // MongoDBのIDはObjectIDなので、数値ではなく正しい形式かチェック
+    .custom((value) => mongoose.Types.ObjectId.isValid(value))
+    .withMessage('無効なID形式です')
     .run(req)
 
   let errors = validationResult(req)
@@ -63,7 +62,16 @@ export const validateBudgetExists = async (
 ): Promise<void> => {
   try {
     const { budgetId } = req.params
-    const budget = await Budget.findByPk(budgetId)
+
+    // ObjectIDの形式チェック
+    if (!mongoose.Types.ObjectId.isValid(budgetId)) {
+      res.status(400).json({ error: '無効なID形式です' })
+      return
+    }
+
+    // findByPkをfindByIdに変更
+    const budget = await Budget.findById(budgetId)
+
     if (!budget) {
       const error = new Error('予算が見つかりません')
       res.status(404).json({ error: error.message })
@@ -77,7 +85,8 @@ export const validateBudgetExists = async (
 }
 
 export function hasAccess(req: Request, res: Response, next: NextFunction) {
-  if (req.budget.userId !== req.user.id) {
+  // MongoDBのIDはオブジェクトなので、文字列に変換して比較
+  if (req.budget.userId.toString() !== req.user.id.toString()) {
     return res.status(401).json({ error: 'このURLでのアクセス権はありません' })
   }
   next()

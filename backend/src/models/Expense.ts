@@ -1,60 +1,58 @@
-import {
-  Table,
-  Column,
-  Model,
-  DataType,
-  HasMany,
-  BelongsTo,
-  ForeignKey,
-  AllowNull,
-} from 'sequelize-typescript'
-import Budget from './Budget'
-// import Expense from './Expense'
-// import User from './User'
+import mongoose, { Document, Schema } from 'mongoose'
+import { IBudget } from './Budget'
 
-@Table({
-  tableName: 'expenses',
-  timestamps: true,
-})
-class Expense extends Model {
-  //MEMO: nameがnull非許容でstring型であることを定義
-  @AllowNull(false)
-  @Column({
-    type: DataType.STRING(100),
-  })
-  declare name: string
-
-  @AllowNull(false)
-  @Column({
-    type: DataType.DECIMAL,
-  })
-  declare amount: number
-
-  @AllowNull(false)
-  @Column({
-    type: DataType.DATE,
-    defaultValue: DataType.NOW,
-  })
-  declare createdAt: Date
-
-  @AllowNull(false)
-  @Column({
-    type: DataType.DATE,
-    defaultValue: DataType.NOW,
-  })
-  declare updatedAt: Date
-
-  @ForeignKey(() => Budget)
-  declare budgetId: number
-
-  @BelongsTo(() => Budget)
-  declare budget: Budget
-
-  // @ForeignKey(() => User)
-  // declare userId: number
-
-  // @BelongsTo(() => User)
-  // declare user: User
+// Expenseインターフェースの定義
+export interface IExpense extends Document {
+  name: string
+  amount: number
+  createdAt: Date
+  updatedAt: Date
+  budgetId: IBudget['_id']
+  budget: IBudget['_id']
 }
+
+// Expenseスキーマの定義
+const expenseSchema = new Schema<IExpense>(
+  {
+    name: {
+      type: String,
+      required: [true, '支出名は必須です'],
+      maxlength: [100, '支出名は100文字以内である必要があります'],
+    },
+    amount: {
+      type: Number,
+      required: [true, '金額は必須です'],
+    },
+    budgetId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Budget',
+      required: true,
+    },
+    // 仮想フィールドとしてbudget参照を保持
+    budget: {
+      type: Schema.Types.ObjectId,
+      ref: 'Budget',
+      required: true,
+    },
+  },
+  {
+    timestamps: true, // createdAtとupdatedAtを自動生成
+  },
+)
+
+// toJSONオプションを設定して仮想フィールドも出力されるようにする
+expenseSchema.set('toJSON', { virtuals: true })
+expenseSchema.set('toObject', { virtuals: true })
+
+// Mongooseの保存前処理: budgetIdをbudgetにコピー
+expenseSchema.pre('save', function (next) {
+  if (this.budgetId) {
+    this.budget = this.budgetId
+  }
+  next()
+})
+
+// Expenseモデルの作成とエクスポート
+const Expense = mongoose.model<IExpense>('Expense', expenseSchema)
 
 export default Expense
