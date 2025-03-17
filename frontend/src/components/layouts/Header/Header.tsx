@@ -43,7 +43,7 @@ export default function Header() {
             color: 'inherit' 
           }}
         >
-          キャッシュトラッカー
+          家計簿アプリ
         </Typography>
         
         <Button 

@@ -39,7 +39,7 @@ export default function HomePage() {
             家計簿をもっとシンプルに
           </Typography>
           <Typography variant="subtitle1" paragraph>
-            キャッシュトラッカーで支出を管理し、賢く節約しましょう。
+            家計簿アプリで支出を管理し、賢く節約しましょう。
             シンプルで使いやすいインターフェースと、詳細な分析機能であなたの家計をサポートします。
           </Typography>
           {!isLoggedIn && (
@@ -73,7 +73,7 @@ export default function HomePage() {
       >
         <Container maxWidth="lg">
           <Typography variant="h6" align="center" gutterBottom>
-            キャッシュトラッカー
+            家計簿アプリ
           </Typography>
           <Typography
             variant="subtitle1"
@@ -86,7 +86,7 @@ export default function HomePage() {
           <Typography variant="body2" color="text.secondary" align="center">
             {"© "}
             {new Date().getFullYear()}
-            {" キャッシュトラッカー. All rights reserved."}
+            {" 家計簿アプリ. All rights reserved."}
           </Typography>
         </Container>
       </Box>

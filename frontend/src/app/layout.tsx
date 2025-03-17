@@ -7,7 +7,7 @@ import Loading from '../components/feedback/Loading'
 import { ClientThemeProvider } from '../components/layouts/ClientThemeProvider'
 
 export const metadata: Metadata = {
-  title: "キャッシュトラッカー",
+  title: "家計簿アプリ | TOP",
   description: "家計簿管理アプリ",
   icons: {
     icon: '/icon.png',
