@@ -83,5 +83,4 @@ describe("LinkButton", () => {
     await userEvent.click(screen.getByText("Click me"));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
-  
 });

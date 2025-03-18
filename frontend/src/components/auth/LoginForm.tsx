@@ -18,8 +18,6 @@ import { useForm } from "react-hook-form";
 import { LoginFormValues, loginSchema } from "../../../libs/schemas/auth";
 import Button from "../ui/Button/Button";
 
-
-
 export default function LoginForm() {
   const ref = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
@@ -75,7 +73,7 @@ export default function LoginForm() {
           {error}
         </Alert>
       ))}
-      
+
       {formState.success && (
         <Alert severity="success">{formState.success}</Alert>
       )}
@@ -120,7 +118,6 @@ export default function LoginForm() {
           <FormHelperText>{errors.password.message}</FormHelperText>
         )}
       </FormControl>
-
 
       <Button
         type="submit"
