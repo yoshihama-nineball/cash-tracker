@@ -32,16 +32,6 @@ export default function Alert({ children, severity = "info" }: AlertProps) {
       <MuiAlert
         icon={getIcon()}
         severity={severity}
-        sx={{
-          fontWeight: "bold",
-          fontSize: "0.875rem",
-          textAlign: "center",
-          bgcolor: `${severity}.main`,
-          color: "white",
-          "& .MuiAlert-icon": {
-            color: "white",
-          },
-        }}
       >
         {children}
       </MuiAlert>
