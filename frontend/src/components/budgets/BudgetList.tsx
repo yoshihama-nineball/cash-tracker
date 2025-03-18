@@ -5,7 +5,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import {
   Box,
-  Button,
   Link as MuiLink,
   Paper,
   Table,
@@ -20,6 +19,7 @@ import {
 import Link from "next/link";
 import { useState } from "react";
 import { Budget } from "../../../types/budget";
+import Button from "../ui/Button/Button";
 
 interface BudgetListProps {
   budgets: Budget[];
@@ -57,9 +57,7 @@ export default function BudgetList({ budgets }: BudgetListProps) {
           予算がまだ登録されていません
         </Typography>
         <Link href="/budgets/new" passHref>
-          <Button variant="contained" color="primary">
-            最初の予算を作成する
-          </Button>
+          <Button variant="primary">最初の予算を作成する</Button>
         </Link>
       </Box>
     );
