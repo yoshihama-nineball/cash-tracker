@@ -1,5 +1,5 @@
 // frontend/types/budget.ts
-import { Expense } from './expense';
+import { Expense } from "./expense";
 
 export interface Budget {
   _id: string;

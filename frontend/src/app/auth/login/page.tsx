@@ -1,10 +1,10 @@
 "use client";
-import RegisterForm from "@/components/auth/RegisterForm";
+import LoginForm from "@/components/auth/LoginForm";
 import LinkButton from "@/components/ui/LinkButton/LinkButton";
 // import RegisterForm from "@/components/auth/RegisterForm";
 import { Box, Container, Paper, Typography } from "@mui/material";
 
-const RegisterPage = () => {
+const LoginPage = () => {
   return (
     <Container maxWidth="sm">
       <Paper elevation={3} sx={{ p: 4, mt: 8, borderRadius: 2 }}>
@@ -15,19 +15,15 @@ const RegisterPage = () => {
             color="primary.dark"
             gutterBottom
           >
-            アカウント作成
+            ログイン
           </Typography>
         </Box>
 
-        <RegisterForm />
+        <LoginForm />
 
         <Box sx={{ mt: 4, display: "flex", flexDirection: "column", gap: 2 }}>
-          <LinkButton href="/auth/login">
-            アカウントをお持ちの方はこちら
-          </LinkButton>
-
-          <LinkButton href="/auth/forgot-password">
-            パスワードをお忘れの方はこちら
+          <LinkButton href="/auth/register">
+            アカウントをお持ちでない方はこちら
           </LinkButton>
         </Box>
       </Paper>
@@ -35,4 +31,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default LoginPage;

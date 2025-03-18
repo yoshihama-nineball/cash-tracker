@@ -1,18 +1,18 @@
 // components/ThemeRegistry.tsx
-'use client';
+"use client";
 
-import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { ReactNode } from 'react';
+import CssBaseline from "@mui/material/CssBaseline";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { ReactNode } from "react";
 
 // テーマのカスタマイズ
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1976d2',
+      main: "#1976d2",
     },
     secondary: {
-      main: '#dc004e',
+      main: "#dc004e",
     },
   },
 });

@@ -4,83 +4,105 @@
 import { Menu as MenuIcon } from "@mui/icons-material";
 import {
   AppBar,
+  Box,
   Button,
   IconButton,
+  Tab,
+  Tabs,
   Toolbar,
-  Typography,
 } from "@mui/material";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
+
 export default function Header() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [value, setValue] = useState(0);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const pathname = usePathname();
 
   const handleLoginToggle = () => {
     setIsLoggedIn(!isLoggedIn);
   };
 
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
+
+  const toggleDrawer =
+    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+      if (
+        event.type === "keydown" &&
+        ((event as React.KeyboardEvent).key === "Tab" ||
+          (event as React.KeyboardEvent).key === "Shift")
+      ) {
+        return;
+      }
+      setDrawerOpen(open);
+    };
   return (
-    <AppBar position="static">
-      <Toolbar>
-        <IconButton
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          sx={{ mr: 2 }}
-        >
-          <MenuIcon />
-        </IconButton>
-        <Typography
-          variant="h6"
-          component={Link}
-          href="/"
-          sx={{ 
-            flexGrow: 1, 
-            textDecoration: 'none', 
-            color: 'inherit' 
-          }}
-        >
-          家計簿アプリ
-        </Typography>
-        
-        <Button 
-          color="inherit" 
-          component={Link} 
-          href="/budgets"
+    <AppBar position="static" color="inherit">
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Box
           sx={{
-            mx: 1,
-            ...(pathname === '/budgets' ? { 
-              borderBottom: '2px solid white',
-              borderRadius: 0,
-            } : {})
+            display: "flex",
+            alignItems: "center",
           }}
         >
-          予算管理
-        </Button>
-        <Button 
-          color="inherit" 
-          component={Link} 
-          href="/expenses"
-          sx={{
-            mx: 1,
-            ...(pathname === '/expenses' ? { 
-              borderBottom: '2px solid white',
-              borderRadius: 0,
-            } : {})
-          }}
-        >
-          支出管理
-        </Button>
-        
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={toggleDrawer(true)}
+          >
+            <MenuIcon />
+          </IconButton>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            aria-label="basic tabs example"
+            sx={{
+              "& .MuiTab-root": {
+                color: "neutral.main",
+                "&.Mui-selected": {
+                  color: "primary.main",
+                },
+              },
+            }}
+          >
+            <Tab component={Link} href="/" label="Home" {...a11yProps(0)} />
+            <Tab
+              component={Link}
+              href="/budgets"
+              label="予算管理"
+              {...a11yProps(1)}
+            />
+            <Tab
+              component={Link}
+              href="/expenses"
+              label="支出監理"
+              {...a11yProps(2)}
+            />
+          </Tabs>
+        </Box>
+
         {isLoggedIn ? (
           <Button color="inherit" onClick={handleLoginToggle}>
             ログアウト
           </Button>
         ) : (
-          <Button color="inherit" onClick={handleLoginToggle}>
+          <Button
+            color="inherit"
+            href="/auth/login"
+            onClick={handleLoginToggle}
+          >
             ログイン
           </Button>
         )}

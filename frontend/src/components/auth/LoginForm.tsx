@@ -15,10 +15,12 @@ import {
 } from "@mui/material";
 import { useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { RegisterFormValues, registerSchema } from "../../../libs/schemas/auth";
+import { LoginFormValues, loginSchema } from "../../../libs/schemas/auth";
 import Button from "../ui/Button/Button";
 
-export default function RegisterForm() {
+
+
+export default function LoginForm() {
   const ref = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
   const [formState, setFormState] = useState<{
@@ -30,33 +32,24 @@ export default function RegisterForm() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
-      name: "",
       password: "",
-      password_confirmation: "",
     },
   });
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleClickShowConfirmPassword = () =>
-    setShowConfirmPassword(!showConfirmPassword);
-
-  const onSubmit = async (data: RegisterFormValues) => {
+  const onSubmit = async (data: LoginFormValues) => {
     const formData = new FormData();
     formData.append("email", data.email);
-    formData.append("name", data.name);
     formData.append("password", data.password);
-    formData.append("password_confirmation", data.password_confirmation);
 
     // Server Actionを呼び出し
     // startTransition(async () => {
@@ -82,7 +75,7 @@ export default function RegisterForm() {
           {error}
         </Alert>
       ))}
-
+      
       {formState.success && (
         <Alert severity="success">{formState.success}</Alert>
       )}
@@ -101,20 +94,6 @@ export default function RegisterForm() {
         {errors.email && (
           <FormHelperText>{errors.email.message}</FormHelperText>
         )}
-      </FormControl>
-
-      <FormControl error={!!errors.name}>
-        <FormLabel htmlFor="name">ユーザ名</FormLabel>
-        <TextField
-          id="name"
-          type="text"
-          placeholder="お名前"
-          fullWidth
-          variant="outlined"
-          error={!!errors.name}
-          {...register("name")}
-        />
-        {errors.name && <FormHelperText>{errors.name.message}</FormHelperText>}
       </FormControl>
 
       <FormControl error={!!errors.password}>
@@ -142,32 +121,6 @@ export default function RegisterForm() {
         )}
       </FormControl>
 
-      <FormControl error={!!errors.password_confirmation}>
-        <FormLabel htmlFor="password_confirmation">パスワード(確認)</FormLabel>
-        <TextField
-          id="password_confirmation"
-          type={showConfirmPassword ? "text" : "password"}
-          placeholder="パスワード（再入力）"
-          fullWidth
-          variant="outlined"
-          error={!!errors.password_confirmation}
-          {...register("password_confirmation")}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={handleClickShowConfirmPassword} edge="end">
-                  {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-        {errors.password_confirmation && (
-          <FormHelperText>
-            {errors.password_confirmation.message}
-          </FormHelperText>
-        )}
-      </FormControl>
 
       <Button
         type="submit"
@@ -178,7 +131,7 @@ export default function RegisterForm() {
         }}
         disabled={isSubmitting || isPending}
       >
-        {isSubmitting || isPending ? "送信中..." : "アカウント作成"}
+        {isSubmitting || isPending ? "送信中..." : "ログイン"}
       </Button>
     </Box>
   );

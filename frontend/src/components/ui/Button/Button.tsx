@@ -1,33 +1,101 @@
-import { ButtonProps, Button as MuiButton } from "@mui/material";
-import { styled } from "@mui/material/styles";
+"use client";
+
+import {
+  Button as MuiButton,
+  ButtonProps as MuiButtonProps,
+} from "@mui/material";
+import Link from "next/link";
 import React from "react";
 
-// スタイル付きボタンコンポーネント
-const StyledButton = styled(MuiButton)(({ theme }) => ({
-  borderRadius: theme.shape.borderRadius * 2,
-  textTransform: "none",
-  padding: "8px 16px",
-  "&:hover": {
-    boxShadow: theme.shadows[2],
-  },
-}));
+export type ButtonVariant =
+  | "primary"
+  | "secondary"
+  | "delete"
+  | "success"
+  | "warning"
+  | "info"
+  | "black";
 
-interface CustomButtonProps extends ButtonProps {
-  customColor?: "success" | "warning" | "info";
+export interface ButtonProps extends Omit<MuiButtonProps, "color" | "variant"> {
+  variant?: ButtonVariant;
+  href?: string;
+  loading?: boolean;
+  startIcon?: React.ReactNode;
+  endIcon?: React.ReactNode;
 }
-
-export const Button: React.FC<CustomButtonProps> = ({
+/**
+ * 共通ボタンコンポーネント
+ * Material UIのボタンをラップして、アプリ全体で一貫したスタイルを提供します
+ */
+const Button: React.FC<ButtonProps> = ({
   children,
-  customColor,
+  variant = "primary",
+  href,
+  loading = false,
+  disabled = false,
+  startIcon,
+  endIcon,
   ...props
 }) => {
-  // customColor に基づいてカラープロパティを設定
-  const buttonProps: ButtonProps = { ...props };
-  if (customColor) {
-    buttonProps.color = customColor;
+  // バリアントに基づいてMUI用のpropsを設定
+  const getButtonProps = (): Partial<MuiButtonProps> => {
+    const baseProps: Partial<MuiButtonProps> = {
+      variant: "contained",
+      startIcon,
+      endIcon,
+      disabled: disabled || loading,
+    };
+
+    // 各バリアント別の設定
+    switch (variant) {
+      case "primary":
+        return { ...baseProps, color: "primary" };
+      case "secondary":
+        return { ...baseProps, color: "secondary" };
+      case "delete":
+        return { ...baseProps, color: "error" };
+      case "success":
+        return { ...baseProps, color: "success" };
+      case "warning":
+        return { ...baseProps, color: "warning" };
+      case "info":
+        return { ...baseProps, color: "info" };
+      case "black":
+        return {
+          ...baseProps,
+          sx: {
+            bgcolor: "#000",
+            "&:hover": {
+              bgcolor: "#333",
+            },
+            color: "#fff",
+            ...(props.sx || {}),
+          },
+        };
+      default:
+        return { ...baseProps, color: "primary" };
+    }
+  };
+
+  const buttonProps = getButtonProps();
+
+  // リンク用ボタン
+  if (href) {
+    return (
+      <Link href={href} passHref style={{ textDecoration: "none" }}>
+        <MuiButton {...buttonProps} {...props}>
+          {children}
+        </MuiButton>
+      </Link>
+    );
   }
 
-  return <StyledButton {...buttonProps}>{children}</StyledButton>;
+  // 通常ボタン
+  return (
+    <MuiButton {...buttonProps} {...props}>
+      {loading ? "Loading..." : children}
+    </MuiButton>
+  );
 };
 
 export default Button;
