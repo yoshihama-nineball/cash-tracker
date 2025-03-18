@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import LoginForm from "./LoginForm";
+import RegisterForm from "./RegisterForm";
 
-// モックの作成
+//モックの作成
 jest.mock("@hookform/resolvers/zod", () => ({
   zodResolver: jest.fn(() => ({})),
 }));
@@ -11,7 +11,12 @@ jest.mock("react-hook-form", () => ({
     register: jest.fn(),
     handleSubmit: jest.fn((fn) => (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      return fn({ email: "test@example.com", password: "Password123" });
+      return fn({
+        email: "test@example.com",
+        name: "name",
+        password: "password",
+        password_confirmation: "password",
+      });
     }),
     formState: {
       errors: {},
@@ -21,56 +26,70 @@ jest.mock("react-hook-form", () => ({
   }),
 }));
 
-describe("LoginFormコンポーネントのテスト", () => {
+describe("RegisterFormコンポーネントのテスト", () => {
   beforeEach(() => {
-    // 各テスト前に状態をリセット
     jest.clearAllMocks();
   });
 
-  it("ログインフォームが正しくレンダリングされるかのテストケース", () => {
-    render(<LoginForm />);
+  it("ユーザ登録フォームが正しくレンダリングされるかのテストケース", () => {
+    render(<RegisterForm />);
 
-    // 重要な要素が表示されているか確認
     expect(screen.getByLabelText(/メールアドレス/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/パスワード/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/ユーザ名/i)).toBeInTheDocument();
+    expect(screen.getByLabelText("パスワード")).toBeInTheDocument();
+    expect(screen.getByLabelText(/パスワード.*確認/i)).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /ログイン/i }),
+      screen.getByRole("button", { name: /アカウント作成/i }),
     ).toBeInTheDocument();
   });
 
-  it("パスワードを表示するボタンが正しく動作するかのテスト", async () => {
-    render(<LoginForm />);
+  it("パスワードとパスワード確認の表示ボタンが正しく動作するかのテスト", async () => {
+    render(<RegisterForm />);
 
-    // パスワードフィールドを取得
-    const passwordField = screen.getByLabelText(/パスワード/i);
+    // パスワードフィールドとボタンを取得
+    const passwordField = screen.getByLabelText("パスワード");
+    const confirmPasswordField = screen.getByLabelText(/パスワード.*確認/i);
+    const passwordButtons = screen.getAllByRole("button", { name: "" });
 
-    // 初期状態では非表示(typeがpasswordになる)
+    // 最初のボタンはパスワード用、2番目はパスワード確認用と想定
+    const passwordVisibilityButton = passwordButtons[0];
+    const confirmPasswordVisibilityButton = passwordButtons[1];
+
+    // 初期状態の確認
     expect(passwordField).toHaveAttribute("type", "password");
+    expect(confirmPasswordField).toHaveAttribute("type", "password");
 
-    // 表示切替ボタンをクリック
-    const visibilityButton = screen.getByRole("button", { name: "" });
-    fireEvent.click(visibilityButton);
-
-    // パスワードが表示される(typeがtextになる)
+    // パスワードの表示/非表示テスト
+    fireEvent.click(passwordVisibilityButton);
     expect(passwordField).toHaveAttribute("type", "text");
+    expect(confirmPasswordField).toHaveAttribute("type", "password"); // 確認用は変わらない
 
-    // もう一度クリックすると非表示に戻る
-    fireEvent.click(visibilityButton);
+    fireEvent.click(passwordVisibilityButton);
     expect(passwordField).toHaveAttribute("type", "password");
+
+    // パスワード確認の表示/非表示テスト
+    fireEvent.click(confirmPasswordVisibilityButton);
+    expect(confirmPasswordField).toHaveAttribute("type", "text");
+    expect(passwordField).toHaveAttribute("type", "password"); // 通常のパスワードは変わらない
+
+    fireEvent.click(confirmPasswordVisibilityButton);
+    expect(confirmPasswordField).toHaveAttribute("type", "password");
   });
 
   it("フォーム送信に成功したとき、成功のAlertコンポーネントとメッセージを表示する", async () => {
     // フォーム送信の成功状態をシミュレート
-    const { rerender } = render(<LoginForm />);
+    const { rerender } = render(<RegisterForm />);
 
     // 成功メッセージが初期状態では表示されていない
     expect(screen.queryByText(/success/i)).not.toBeInTheDocument();
 
     // コンポーネントの状態を変更して再レンダリング
-    rerender(<LoginForm />);
+    rerender(<RegisterForm />);
 
     // フォーム送信のシミュレーション
-    const submitButton = screen.getByRole("button", { name: /ログイン/i });
+    const submitButton = screen.getByRole("button", {
+      name: /アカウント作成/i,
+    });
     fireEvent.click(submitButton);
 
     // useStateのモックを用いて成功状態をシミュレート
@@ -85,7 +104,9 @@ describe("LoginFormコンポーネントのテスト", () => {
       formState: {
         errors: {
           email: { message: "メールアドレスは必須です" },
+          name: { message: "ユーザー名は必須です" },
           password: { message: "パスワードは必須です" },
+          password_confirmation: { message: "パスワード(確認)は必須です" },
         },
         isSubmitting: false,
       },
