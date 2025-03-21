@@ -22,6 +22,7 @@ export interface ButtonProps extends Omit<MuiButtonProps, "color" | "variant"> {
   loading?: boolean;
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
+  color?: MuiButtonProps["color"];
 }
 /**
  * 共通ボタンコンポーネント

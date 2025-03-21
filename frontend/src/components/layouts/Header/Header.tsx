@@ -1,16 +1,8 @@
-// components/layouts/Header.tsx
 "use client";
 
-import { Menu as MenuIcon } from "@mui/icons-material";
-import {
-  AppBar,
-  Box,
-  Button,
-  IconButton,
-  Tab,
-  Tabs,
-  Toolbar,
-} from "@mui/material";
+import Button from "@/components/ui/Button/Button";
+import { AppBar, Box, Tab, Tabs, Toolbar } from "@mui/material";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -56,14 +48,35 @@ export default function Header() {
             alignItems: "center",
           }}
         >
-          <IconButton
+          {/* <IconButton
             edge="start"
             color="inherit"
             aria-label="menu"
             onClick={toggleDrawer(true)}
           >
             <MenuIcon />
-          </IconButton>
+          </IconButton> */}
+          <Box sx={{ display: "flex", alignItems: "center", mr: 3 }}>
+            <Link
+              href="/"
+              passHref
+              style={{
+                display: "flex",
+                alignItems: "center",
+                textDecoration: "none",
+                color: "neutral",
+              }}
+            >
+              <Image
+                src="/icon.png"
+                alt="ロゴ"
+                width={35}
+                height={35}
+                priority
+              />
+            </Link>
+          </Box>
+
           <Tabs
             value={value}
             onChange={handleChange}
@@ -94,12 +107,12 @@ export default function Header() {
         </Box>
 
         {isLoggedIn ? (
-          <Button color="inherit" onClick={handleLoginToggle}>
+          <Button color="primary" onClick={handleLoginToggle}>
             ログアウト
           </Button>
         ) : (
           <Button
-            color="inherit"
+            color="primary"
             href="/auth/login"
             onClick={handleLoginToggle}
           >

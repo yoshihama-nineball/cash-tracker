@@ -1,24 +1,21 @@
 "use client";
 
 // import { registerUser } from "@/app/actions/auth-actions";
+import Alert from "@/components/feedback/Alert/Alert";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
-  Alert,
   Box,
   FormControl,
   FormHelperText,
   FormLabel,
-  IconButton,
-  InputAdornment,
-  TextField,
+  TextField
 } from "@mui/material";
 import { useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { LoginFormValues, loginSchema } from "../../../libs/schemas/auth";
-import Button from "../ui/Button/Button";
+import { RegisterFormValues, registerSchema } from "../../../libs/schemas/auth";
+import Button from "../../components/ui/Button/Button";
 
-export default function LoginForm() {
+export default function ForgotPassword() {
   const ref = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
   const [formState, setFormState] = useState<{
@@ -30,24 +27,33 @@ export default function LoginForm() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
       email: "",
+      name: "",
       password: "",
+      password_confirmation: "",
     },
   });
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const onSubmit = async (data: LoginFormValues) => {
+  const handleClickShowConfirmPassword = () =>
+    setShowConfirmPassword(!showConfirmPassword);
+
+  const onSubmit = async (data: RegisterFormValues) => {
     const formData = new FormData();
     formData.append("email", data.email);
+    formData.append("name", data.name);
     formData.append("password", data.password);
+    formData.append("password_confirmation", data.password_confirmation);
 
     // Server Actionを呼び出し
     // startTransition(async () => {
@@ -68,12 +74,14 @@ export default function LoginForm() {
       noValidate
       onSubmit={handleSubmit(onSubmit)}
     >
+      {/* カスタムAlertコンポーネントを使用して、エラーメッセージを表示 */}
       {formState.errors.map((error, index) => (
         <Alert severity="error" key={index}>
           {error}
         </Alert>
       ))}
 
+      {/* 成功メッセージの表示にもカスタムAlertを使用 */}
       {formState.success && (
         <Alert severity="success">{formState.success}</Alert>
       )}
@@ -94,31 +102,6 @@ export default function LoginForm() {
         )}
       </FormControl>
 
-      <FormControl error={!!errors.password}>
-        <FormLabel htmlFor="password">パスワード</FormLabel>
-        <TextField
-          id="password"
-          type={showPassword ? "text" : "password"}
-          placeholder="パスワード"
-          fullWidth
-          variant="outlined"
-          error={!!errors.password}
-          {...register("password")}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton onClick={handleClickShowPassword} edge="end">
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            ),
-          }}
-        />
-        {errors.password && (
-          <FormHelperText>{errors.password.message}</FormHelperText>
-        )}
-      </FormControl>
-
       <Button
         type="submit"
         sx={{
@@ -128,7 +111,7 @@ export default function LoginForm() {
         }}
         disabled={isSubmitting || isPending}
       >
-        {isSubmitting || isPending ? "送信中..." : "ログイン"}
+        {isSubmitting || isPending ? "送信中..." : "パスワードのリセット"}
       </Button>
     </Box>
   );
