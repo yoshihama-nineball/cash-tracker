@@ -32,6 +32,14 @@ export const loginSchema = z.object({
   password: z.string().min(1, "パスワードは必須です"),
 });
 
+export const confirmAccountSchema = z.object({
+  token: z
+    .string()
+    .min(1, "認証コードは必須です")
+    .length(6, "トークンが無効です")
+    .regex(/^\d+$/, "認証コードは数字のみで入力してください"),
+});
+
 export const forgotPasswordSchema = z.object({
   email: z
     .string()
