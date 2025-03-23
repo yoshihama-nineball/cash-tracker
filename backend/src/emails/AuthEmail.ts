@@ -42,7 +42,7 @@ export class AuthEmail {
         html: `<p>こんにちは: ${user.name}さん！パスワードのリセットを受け付けました</p>
         　　　　<p>パスワードの再設定用の認証コードを共有します。もう少しで設定完了です。</p>
                 <p>次のリンクをクリックしてパスワードの再設定を行ってください:</p>
-                <a href="${process.env.FRONTEND_URL}/auth/forgot-password">パスワードの再設定を行う</a>
+                <a href="${process.env.FRONTEND_URL}/auth/forgot-password" target="_blank" rel="noopener noreferrer">パスワードの再設定を行う</a>
                 <p>この認証コードを入力してください: <b>${user.token}</b></p>`,
       })
       // メール送信の結果をログに出力
