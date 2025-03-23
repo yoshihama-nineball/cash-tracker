@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express'
+import { AuthEmail } from '../emails/AuthEmail'
 import User from '../models/User'
 import { hashPassword } from '../utils/auth'
 import { generateJWT } from '../utils/jwt'
@@ -28,6 +29,12 @@ export class AuthController {
         ...req.body,
         // password: hashedPassword,  <- この行を削除
         token: token,
+      })
+
+      await AuthEmail.sendConfirmationEmail({
+        name: user.name,
+        email: user.email,
+        token: user.token,
       })
 
       // 残りの処理はそのまま...
@@ -143,11 +150,11 @@ export class AuthController {
     await User.findByIdAndUpdate(user._id, { token })
 
     // MEMO: 一時退避
-    // await AuthEmail.sendResetPasswordEmail({
-    //   name: user.name,
-    //   email: user.email,
-    //   token: user.token,
-    // })
+    await AuthEmail.sendResetPasswordEmail({
+      name: user.name,
+      email: user.email,
+      token: user.token,
+    })
     res.status(201).json({
       message: 'パスワードをリセットしました。メールを確認してください',
       email: { to: user.email, token },
