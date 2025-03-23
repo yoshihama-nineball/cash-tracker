@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { RegisterFormValues, registerSchema } from "../../../libs/schemas/auth";
+import { RegisterFormValues, RegisterSchema } from "../../../libs/schemas/auth";
 import Button from "../../components/ui/Button/Button";
 
 export default function ForgotPassword() {
@@ -35,7 +35,7 @@ export default function ForgotPassword() {
     formState: { errors, isSubmitting },
     reset,
   } = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(RegisterSchema),
     defaultValues: {
       email: "",
       name: "",

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const registerSchema = z
+export const RegisterSchema = z
   .object({
     email: z
       .string()
@@ -24,7 +24,7 @@ export const registerSchema = z
     path: ["password_confirmation"],
   });
 
-export const loginSchema = z.object({
+export const LoginSchema = z.object({
   email: z
     .string()
     .min(1, "メールアドレスは必須です")
@@ -32,7 +32,7 @@ export const loginSchema = z.object({
   password: z.string().min(1, "パスワードは必須です"),
 });
 
-export const confirmAccountSchema = z.object({
+export const ConfirmAccountSchema = z.object({
   token: z
     .string()
     .min(1, "認証コードは必須です")
@@ -40,13 +40,22 @@ export const confirmAccountSchema = z.object({
     .regex(/^\d+$/, "認証コードは数字のみで入力してください"),
 });
 
-export const forgotPasswordSchema = z.object({
+export const ForgotPasswordSchema = z.object({
   email: z
     .string()
     .min(1, "メールアドレスは必須です")
     .email("有効なメールアドレスを入力してください"),
 });
 
-export type RegisterFormValues = z.infer<typeof registerSchema>;
-export type LoginFormValues = z.infer<typeof loginSchema>;
-export type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
+export const SuccessSchema = z.string()
+export const ErrorResponseSchema = z.object({
+        error: z.string()
+})
+
+
+export type RegisterFormValues = z.infer<typeof RegisterSchema>;
+export type LoginFormValues = z.infer<typeof LoginSchema>;
+export type ForgotPasswordFormValues = z.infer<typeof ForgotPasswordSchema>;
+// export type SuccessSchemaValues = z.infer<typeof SuccessSchema>
+// export type ErrorResponseEchemaValues = z.infer<typeof ErrorResponseSchema>
+
