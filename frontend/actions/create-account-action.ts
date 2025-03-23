@@ -2,9 +2,8 @@
 
 import {
   ErrorResponseSchema,
-  RegisterSchema,
-  SuccessSchema,
-} from "@/src/schemas";
+  RegisterSchema
+} from "../libs/schemas/auth";
 
 type ActionStateType = {
   errors: string[];
@@ -19,7 +18,7 @@ export async function register(prevState: ActionStateType, formData: FormData) {
     password_confirmation: formData.get("password_confirmation"),
   };
 
-  // validar
+  // バリデーション
   const register = RegisterSchema.safeParse(registerData);
   if (!register.success) {
     const errors = register.error.errors.map((error) => error.message);
@@ -29,7 +28,7 @@ export async function register(prevState: ActionStateType, formData: FormData) {
     };
   }
 
-  // registrar el usuario
+  // ユーザー登録
   const url = `${process.env.API_URL}/auth/create-account`;
   const req = await fetch(url, {
     method: "POST",
@@ -44,6 +43,10 @@ export async function register(prevState: ActionStateType, formData: FormData) {
   });
 
   const json = await req.json();
+  
+  // APIレスポンスの構造をコンソールに出力してデバッグ
+  console.log("API Response:", json);
+  
   if (req.status === 409) {
     const { error } = ErrorResponseSchema.parse(json);
     return {
@@ -52,9 +55,33 @@ export async function register(prevState: ActionStateType, formData: FormData) {
     };
   }
 
-  const success = SuccessSchema.parse(json);
+  // SuccessSchemaの定義に関わらず、実際のレスポンス構造に基づいて処理
+  if (typeof json === 'string') {
+    // レスポンスが文字列の場合
+    return {
+      errors: [],
+      success: json,
+    };
+  } else if (json && typeof json === 'object') {
+    // レスポンスがオブジェクトの場合
+    if ('success' in json && typeof json.success === 'string') {
+      // success プロパティが存在し、文字列の場合
+      return {
+        errors: [],
+        success: json.success,
+      };
+    } else if ('message' in json && typeof json.message === 'string') {
+      // message プロパティが存在し、文字列の場合
+      return {
+        errors: [],
+        success: json.message,
+      };
+    }
+  }
+  
+  // どのケースにも当てはまらない場合
   return {
-    errors: [],
-    success,
+    errors: ["レスポンス形式が予期しないものでした。管理者にお問い合わせください。"],
+    success: "",
   };
 }

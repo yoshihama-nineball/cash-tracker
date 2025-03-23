@@ -1,6 +1,5 @@
 "use client";
 
-// import { registerUser } from "@/app/actions/auth-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
@@ -13,32 +12,30 @@ import {
   InputAdornment,
   TextField,
 } from "@mui/material";
-import { useRef, useState, useTransition } from "react";
+import { useActionState, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { RegisterFormValues, registerSchema } from "../../../libs/schemas/auth";
+import { register as registerUser } from "../../../actions/create-account-action";
+import { RegisterFormValues, RegisterSchema } from "../../../libs/schemas/auth";
 import Button from "../ui/Button/Button";
 
 export default function RegisterForm() {
   const ref = useRef<HTMLFormElement>(null);
-  const [isPending, startTransition] = useTransition();
-  const [formState, setFormState] = useState<{
-    errors: string[];
-    success: string;
-  }>({
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Server Action用のFormState
+  const [formState, dispatch] = useActionState(registerUser, {
     errors: [],
     success: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
   const {
     register,
-    handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
   } = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(RegisterSchema),
     defaultValues: {
       email: "",
       name: "",
@@ -47,27 +44,32 @@ export default function RegisterForm() {
     },
   });
 
+  // formData取得用の関数
+  const handleFormSubmit = (event) => {
+    // フォームの自動送信を一時停止
+    event.preventDefault();
+    
+    // フォームデータの取得
+    const formData = new FormData(event.target);
+    
+    // React Hook Form の状態更新
+    setValue("email", formData.get("email") as string);
+    setValue("name", formData.get("name") as string);
+    
+    // Server Actionへ送信
+    dispatch(formData);
+  };
+
+  // 成功時のみフォームをリセット
+  useEffect(() => {
+    if (formState.success) {
+      reset();
+    }
+  }, [formState.success, reset]);
+
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleClickShowConfirmPassword = () =>
     setShowConfirmPassword(!showConfirmPassword);
-
-  const onSubmit = async (data: RegisterFormValues) => {
-    const formData = new FormData();
-    formData.append("email", data.email);
-    formData.append("name", data.name);
-    formData.append("password", data.password);
-    formData.append("password_confirmation", data.password_confirmation);
-
-    // Server Actionを呼び出し
-    // startTransition(async () => {
-    //   const result = await registerUser(formData);
-    //   setFormState(result);
-
-    //   if (result.success) {
-    //     reset(); // フォームリセット
-    //   }
-    // });
-  };
 
   return (
     <Box
@@ -75,7 +77,7 @@ export default function RegisterForm() {
       ref={ref}
       sx={{ mt: 4, display: "flex", flexDirection: "column", gap: 3 }}
       noValidate
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleFormSubmit}
     >
       {formState.errors.map((error, index) => (
         <Alert severity="error" key={index}>
@@ -176,9 +178,9 @@ export default function RegisterForm() {
           fontSize: "1.1rem",
           fontWeight: "bold",
         }}
-        disabled={isSubmitting || isPending}
+        disabled={isSubmitting}
       >
-        {isSubmitting || isPending ? "送信中..." : "アカウント作成"}
+        {isSubmitting ? "送信中..." : "アカウント作成"}
       </Button>
     </Box>
   );
