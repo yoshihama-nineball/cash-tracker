@@ -17,10 +17,7 @@ import {
 } from "@mui/material";
 import { useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import {
-  RegisterFormValues,
-  registerSchema,
-} from "../../../libs/schemas/auth";
+import { RegisterFormValues, registerSchema } from "../../../libs/schemas/auth";
 import Button from "../../components/ui/Button/Button";
 
 export default function ResetPasswordForm() {
