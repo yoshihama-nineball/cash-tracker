@@ -1,6 +1,14 @@
 "use client";
 
-import { Box, Button, Container, Link, Paper, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Link,
+  Paper,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import { useEffect } from "react";
 
 export default function Error({
@@ -43,8 +51,8 @@ export default function Error({
           <Button
             component={Link}
             href="/"
-            variant="outlined"
-            sx={{ color: "white", borderColor: "white" }}
+            variant="contained"
+            color="primary"
           >
             トップページへ戻る
           </Button>
@@ -53,7 +61,10 @@ export default function Error({
 
       <Box sx={{ mt: 4 }}>
         {process.env.NODE_ENV === "development" && (
-          <Paper elevation={2} sx={{ p: 3, bgcolor: theme.palette.background.default }}>
+          <Paper
+            elevation={2}
+            sx={{ p: 3, bgcolor: theme.palette.background.default }}
+          >
             <Typography variant="body1">
               <strong>エラー詳細:</strong> {error.message}
             </Typography>
@@ -63,7 +74,8 @@ export default function Error({
 
       <Box sx={{ mt: 4, textAlign: "center" }}>
         <Typography variant="subtitle1" color="text.secondary">
-          お困りの場合は <Link href="/contact">サポート</Link>までお問い合わせください。
+          お困りの場合は <Link href="/contact">サポート</Link>
+          までお問い合わせください。
         </Typography>
       </Box>
     </Container>

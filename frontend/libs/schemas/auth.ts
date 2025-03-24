@@ -47,15 +47,13 @@ export const ForgotPasswordSchema = z.object({
     .email("有効なメールアドレスを入力してください"),
 });
 
-export const SuccessSchema = z.string()
+export const SuccessSchema = z.string();
 export const ErrorResponseSchema = z.object({
-        error: z.string()
-})
-
+  error: z.string(),
+});
 
 export type RegisterFormValues = z.infer<typeof RegisterSchema>;
 export type LoginFormValues = z.infer<typeof LoginSchema>;
 export type ForgotPasswordFormValues = z.infer<typeof ForgotPasswordSchema>;
 // export type SuccessSchemaValues = z.infer<typeof SuccessSchema>
 // export type ErrorResponseEchemaValues = z.infer<typeof ErrorResponseSchema>
-

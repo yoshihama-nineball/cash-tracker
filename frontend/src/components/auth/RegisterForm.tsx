@@ -48,14 +48,14 @@ export default function RegisterForm() {
   const handleFormSubmit = (event) => {
     // フォームの自動送信を一時停止
     event.preventDefault();
-    
+
     // フォームデータの取得
     const formData = new FormData(event.target);
-    
+
     // React Hook Form の状態更新
     setValue("email", formData.get("email") as string);
     setValue("name", formData.get("name") as string);
-    
+
     // Server Actionへ送信
     dispatch(formData);
   };
