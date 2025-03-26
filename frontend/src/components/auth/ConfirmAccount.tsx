@@ -1,6 +1,6 @@
 "use client";
-// import { confirmAccount } from '@/actions /confirm-account-action';
 import {
+  Alert,
   Box,
   Container,
   Paper,
@@ -9,46 +9,47 @@ import {
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useFormState } from "react-dom";
+import { confirm_account } from '../../../actions/confirm-account-action';
 
 const ConfirmAccountForm = () => {
   const router = useRouter();
   const [isComplete, setIsComplete] = useState(false);
   const [token, setToken] = useState(["", "", "", "", "", ""]);
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const inputRefs = useRef([]);
+  const formRef = useRef(null);
 
-  // 配列のトークンを単一の文字列に結合
-  const tokenString = token.join("");
+  // 初期状態
+  const initialState = {
+    errors: [],
+    success: ''
+  };
 
-  // const confirmAccountWithToken = confirmAccount.bind(null, tokenString);
-  // const [state, dispatch] = useFormState(confirmAccountWithToken, {
-  //   errors: [],
-  //   success: ''
-  // });
+  // useFormStateフックを使用してサーバーアクションとフォーム状態を連携
+  const [formState, formAction] = useFormState(confirm_account, initialState);
 
-  // useEffect(() => {
-  //   if (isComplete) {
-  //     dispatch();
-  //   }
-  // }, [isComplete, dispatch]);
+  // 成功時の処理
+  useEffect(() => {
+    if (formState.success) {
+      // 成功メッセージが表示された後、ログインページにリダイレクト
+      const timer = setTimeout(() => {
+        router.push('/auth/login');
+      }, 3000); // 3秒後にリダイレクト
+      
+      return () => clearTimeout(timer);
+    }
+  }, [formState.success, router]);
 
-  // useEffect(() => {
-  //   if (state.errors) {
-  //     state.errors.forEach(error => {
-  //       toast.error(error);
-  //     });
-  //   }
-  //   if (state.success) {
-  //     toast.success(state.success, {
-  //       onClose: () => {
-  //         router.push('/auth/login');
-  //       }
-  //     });
-  //   }
-  // }, [state, router]);
+  // すべてのトークンが入力されたら自動的にフォームを送信
+  useEffect(() => {
+    if (isComplete && formRef.current) {
+      formRef.current.requestSubmit();
+    }
+  }, [isComplete]);
 
   // 入力した値をstateに保存し、次のフィールドにフォーカスを移動
-  const handleChange = (index: number, value: string) => {
+  const handleChange = (index, value) => {
     // コピペ対応: 複数の数字が入力された場合（長さが1より大きい場合）
     if (value.length > 1) {
       // 数字のみのパターンにマッチするか確認
@@ -108,10 +109,7 @@ const ConfirmAccountForm = () => {
   };
 
   // バックスペースキーの処理
-  const handleKeyDown = (
-    index: number,
-    e: React.KeyboardEvent<HTMLInputElement>,
-  ) => {
+  const handleKeyDown = (index, e) => {
     if (e.key === "Backspace" && !token[index] && index > 0) {
       // 現在のフィールドが空で、バックスペースが押された場合は前のフィールドにフォーカスを移動
       inputRefs.current[index - 1]?.focus();
@@ -119,17 +117,41 @@ const ConfirmAccountForm = () => {
   };
 
   // 入力フィールドの参照を保存
-  const setInputRef = (index: number, ref: HTMLInputElement | null) => {
+  const setInputRef = (index, ref) => {
     inputRefs.current[index] = ref;
   };
 
+  // トークン結合（フォーム送信用）
+  const tokenString = token.join("");
+
   return (
     <Container maxWidth="sm">
+      {/* アラートを上部に表示 */}
+      <Box sx={{ mt: 4, mb: 2 }}>
+        {formState.errors.map((error, index) => (
+          <Alert 
+            severity="error" 
+            key={index}
+            sx={{ mb: 2 }} // 複数のエラーがある場合に間隔を空ける
+          >
+            {error}
+          </Alert>
+        ))}
+        
+        {formState.success && (
+          <Alert 
+            severity="success"
+            sx={{ mb: 2 }}
+          >
+            {formState.success}
+          </Alert>
+        )}
+      </Box>
+      
       <Paper
         elevation={3}
         sx={{
           p: 4,
-          mt: 8,
           mb: 4,
           borderRadius: 2,
         }}
@@ -138,12 +160,13 @@ const ConfirmAccountForm = () => {
           認証コードを入力してください
         </Typography>
 
+        {/* 非表示のフォームでサーバーアクションに接続 */}
+        <form ref={formRef} action={formAction} style={{ display: 'none' }}>
+          <input type="hidden" name="token" value={tokenString} />
+        </form>
+
         <Box sx={{ display: "flex", justifyContent: "center", my: 6 }}>
-          {" "}
-          {/* 上下のマージンを増やす */}
           <Stack direction="row" spacing={2}>
-            {" "}
-            {/* 入力フィールド間の間隔を広げる */}
             {token.map((digit, index) => (
               <TextField
                 key={index}
@@ -167,7 +190,7 @@ const ConfirmAccountForm = () => {
                   height: "65px",
                   "& .MuiOutlinedInput-root": {
                     "& fieldset": {
-                      borderRadius: 2, // 角を少し丸く
+                      borderRadius: 1,
                     },
                   },
                 }}

@@ -53,6 +53,7 @@ export const ErrorResponseSchema = z.object({
 });
 
 export type RegisterFormValues = z.infer<typeof RegisterSchema>;
+export type ConfirmAccountFormValues = z.infer<typeof ConfirmAccountSchema>
 export type LoginFormValues = z.infer<typeof LoginSchema>;
 export type ForgotPasswordFormValues = z.infer<typeof ForgotPasswordSchema>;
 // export type SuccessSchemaValues = z.infer<typeof SuccessSchema>
