@@ -1,10 +1,8 @@
 "use client";
 
-// import { registerUser } from "@/app/actions/auth-actions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
-  Alert,
   Box,
   FormControl,
   FormHelperText,
@@ -13,22 +11,29 @@ import {
   InputAdornment,
   TextField,
 } from "@mui/material";
-import { useRef, useState, useTransition } from "react";
+// useTransitionと同時にuseEffectをインポート
+import { useRouter } from "next/navigation";
+import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { LoginFormValues, loginSchema } from "../../../libs/schemas/auth";
+import { authenticate } from "../../../actions/authenticate-user-action";
+import { LoginFormValues, LoginSchema } from "../../../libs/schemas/auth";
+import Alert from "../feedback/Alert/Alert";
 import Button from "../ui/Button/Button";
 
+interface AuthResponse {
+  errors: string[];
+  success: string;
+}
+
 export default function LoginForm() {
+  const router = useRouter()
   const ref = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
-  const [formState, setFormState] = useState<{
-    errors: string[];
-    success: string;
-  }>({
+  // useActionStateの第一引数にcreateとなっていたのをauthenticateに修正
+  const [formState, dispatch] = useActionState<AuthResponse, FormData>(authenticate, {
     errors: [],
     success: "",
   });
-
   const [showPassword, setShowPassword] = useState(false);
   const {
     register,
@@ -36,12 +41,22 @@ export default function LoginForm() {
     formState: { errors, isSubmitting },
     reset,
   } = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+    resolver: zodResolver(LoginSchema),
     defaultValues: {
       email: "",
       password: "",
     },
   });
+
+  // 成功時にフォームをリセットするためのuseEffect追加
+  useEffect(() => {
+    if (formState.success) {
+      reset();
+      router.push('/budgets')
+    }
+  }, [formState.success, reset]);
+
+  
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const onSubmit = async (data: LoginFormValues) => {
@@ -49,11 +64,17 @@ export default function LoginForm() {
     formData.append("email", data.email);
     formData.append("password", data.password);
 
-    // Server Actionを呼び出し
+    // 直接dispatchを使用するように修正
+    // Server Actionを直接呼び出さず、useActionStateのdispatchメソッドを使用
+    startTransition(() => {
+      dispatch(formData);
+    });
+    
+    // 以下のコードは不要なので削除
     // startTransition(async () => {
-    //   const result = await registerUser(formData);
+    //   const result = await authenticate(formData);
     //   setFormState(result);
-
+    //
     //   if (result.success) {
     //     reset(); // フォームリセット
     //   }
@@ -68,14 +89,17 @@ export default function LoginForm() {
       noValidate
       onSubmit={handleSubmit(onSubmit)}
     >
+      {/* アラートをより意味のある説明にするためにaria-labelを追加 */}
       {formState.errors.map((error, index) => (
-        <Alert severity="error" key={index}>
+        <Alert severity="error" key={index} aria-label="ログインエラー">
           {error}
         </Alert>
       ))}
 
       {formState.success && (
-        <Alert severity="success">{formState.success}</Alert>
+        <Alert severity="success" aria-label="ログイン成功">
+          {formState.success}
+        </Alert>
       )}
 
       <FormControl error={!!errors.email}>
@@ -83,7 +107,8 @@ export default function LoginForm() {
         <TextField
           id="email"
           type="email"
-          placeholder="登録用メールアドレス"
+          // プレースホルダーテキストを適切なものに修正
+          placeholder="メールアドレスを入力"
           fullWidth
           variant="outlined"
           error={!!errors.email}
@@ -107,7 +132,12 @@ export default function LoginForm() {
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={handleClickShowPassword} edge="end">
+                {/* アクセシビリティのためにaria-labelを追加 */}
+                <IconButton 
+                  onClick={handleClickShowPassword} 
+                  edge="end"
+                  aria-label="パスワードの表示切替"
+                >
                   {showPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
