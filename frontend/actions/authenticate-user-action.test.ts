@@ -1,131 +1,205 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { NextRequest, NextResponse } from 'next/server';
-import { LoginForm } from '../path/to/LoginForm';
-import { authenticate } from '../path/to/authenticate';
-import * as nextHeaders from 'next/headers';
-import { vi, describe, it, expect, beforeEach } from 'vitest';
+import { LoginSchema } from "../libs/schemas/auth";
+import { authenticate } from './authenticate-user-action';
 
-// authenticate関数のモック
-vi.mock('../path/to/authenticate', () => ({
-  authenticate: vi.fn(),
-}));
+// process.env.API_URLを設定
+process.env.API_URL = 'http://localhost:4000/api';
 
 // next/headersのモック
-vi.mock('next/headers', () => {
-  const cookiesSet = vi.fn();
+jest.mock('next/headers', () => {
+  const mockCookieStore = {
+    set: jest.fn(),
+  };
   return {
-    cookies: vi.fn(() => ({
-      set: cookiesSet,
-      get: vi.fn(),
-    })),
-    cookiesSet, // モック関数への直接アクセス用
+    cookies: jest.fn(() => mockCookieStore),
   };
 });
 
-// next/navigationのモック
-vi.mock('next/navigation', () => ({
-  useRouter: vi.fn(() => ({
-    push: vi.fn(),
-  })),
-}));
+// LoginSchemaのモック
+jest.mock("../libs/schemas/auth", () => {
+  return {
+    LoginSchema: {
+      safeParse: jest.fn(),
+    },
+  };
+});
 
-describe('認証フロー統合テスト', () => {
+// グローバルなfetchをモック
+global.fetch = jest.fn();
+
+// console.errorをモック
+console.error = jest.fn();
+
+describe('authenticate関数', () => {
+  const prevState = { errors: [], success: '' };
+  
   beforeEach(() => {
-    vi.resetAllMocks();
+    jest.clearAllMocks();
   });
 
-  it('成功時のフロー: フォーム送信 → 認証 → リダイレクト', async () => {
-    // 認証成功のモック
-    authenticate.mockResolvedValue({
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('バリデーションエラーの場合、エラーメッセージを返す', async () => {
+    // バリデーション失敗のモック
+    (LoginSchema.safeParse).mockReturnValue({
+      success: false,
+      error: {
+        errors: [
+          { message: 'メールアドレスの形式が正しくありません' },
+          { message: 'パスワードは8文字以上で入力してください' }
+        ]
+      }
+    });
+
+    // FormDataを作成
+    const formData = new FormData();
+    formData.append('email', 'invalid-email');
+    formData.append('password', '123');
+
+    const result = await authenticate(prevState, formData);
+
+    // fetchは呼ばれない
+    expect(fetch).not.toHaveBeenCalled();
+    
+    // エラーメッセージが含まれている
+    expect(result.errors.length).toBeGreaterThan(0);
+    expect(result.errors).toContain('メールアドレスの形式が正しくありません');
+    expect(result.errors).toContain('パスワードは8文字以上で入力してください');
+    expect(result.success).toBe('');
+  });
+
+  it('認証に成功した場合、成功メッセージとリダイレクトURLを返す', async () => {
+    // バリデーション成功のモック
+    (LoginSchema.safeParse).mockReturnValue({
+      success: true,
+      data: {
+        email: 'user@example.com',
+        password: 'password123'
+      }
+    });
+
+    // fetchのレスポンスをモック
+    const mockResponse = {
+      ok: true,
+      json: jest.fn().mockResolvedValue('mock-token'),
+    };
+    fetch.mockResolvedValue(mockResponse);
+
+    // FormDataを作成
+    const formData = new FormData();
+    formData.append('email', 'user@example.com');
+    formData.append('password', 'password123');
+
+    const result = await authenticate(prevState, formData);
+
+    // APIが正しいパラメータで呼ばれる
+    expect(fetch).toHaveBeenCalledWith(
+      `${process.env.API_URL}/auth/login`,
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+    );
+
+    // bodyの内容を個別に検証（順序に依存しないため）
+    const callArgs = fetch.mock.calls[0][1];
+    const bodyContent = JSON.parse(callArgs.body);
+    expect(bodyContent).toEqual({
+      email: 'user@example.com',
+      password: 'password123'
+    });
+
+    // cookieが設定される
+    const cookieStore = require('next/headers').cookies();
+    expect(cookieStore.set).toHaveBeenCalledWith({
+      name: 'CASHTRACKR_TOKEN',
+      value: 'mock-token',
+      httpOnly: true,
+      path: '/',
+      secure: expect.any(Boolean),
+      sameSite: 'strict',
+    });
+
+    // 成功レスポンス
+    expect(result).toEqual({
       errors: [],
       success: 'ログインに成功しました',
       redirectUrl: '/budgets',
     });
-
-    render(<LoginForm />);
-
-    // フォーム入力
-    fireEvent.change(screen.getByLabelText(/メールアドレス/i), {
-      target: { value: 'user@example.com' },
-    });
-    
-    fireEvent.change(screen.getByLabelText(/パスワード/i), {
-      target: { value: 'password123' },
-    });
-
-    // フォーム送信
-    fireEvent.click(screen.getByRole('button', { name: /ログイン/i }));
-
-    // 成功メッセージが表示されることを確認
-    await waitFor(() => {
-      expect(screen.getByText('ログインに成功しました')).toBeInTheDocument();
-    });
-
-    // authenticate関数が正しく呼び出されたことを確認
-    expect(authenticate).toHaveBeenCalledWith(
-      expect.anything(), // prevState
-      expect.any(FormData) // formData
-    );
-
-    // リダイレクトが発生することを確認（useRouterのモックをチェック）
-    await waitFor(() => {
-      expect(require('next/navigation').useRouter().push).toHaveBeenCalledWith('/budgets');
-    });
   });
 
-  it('失敗時のフロー: フォーム送信 → 認証エラー → エラーメッセージ表示', async () => {
+  it('APIがエラーを返した場合、エラーメッセージを返す', async () => {
+    // バリデーション成功のモック
+    (LoginSchema.safeParse).mockReturnValue({
+      success: true,
+      data: {
+        email: 'user@example.com',
+        password: 'password123'
+      }
+    });
+
+    // FormDataを作成
+    const formData = new FormData();
+    formData.append('email', 'user@example.com');
+    formData.append('password', 'password123');
+
     // 認証失敗のモック
-    authenticate.mockResolvedValue({
+    const mockResponse = {
+      ok: false,
+      json: jest.fn().mockResolvedValue({ message: 'Authentication failed' }),
+    };
+    fetch.mockResolvedValue(mockResponse);
+
+    const result = await authenticate(prevState, formData);
+
+    // APIが呼ばれる
+    expect(fetch).toHaveBeenCalled();
+    
+    // エラーメッセージ
+    expect(result).toEqual({
       errors: ['メールアドレスまたはパスワードが正しくありません'],
       success: '',
     });
-
-    render(<LoginForm />);
-
-    // フォーム入力
-    fireEvent.change(screen.getByLabelText(/メールアドレス/i), {
-      target: { value: 'user@example.com' },
-    });
     
-    fireEvent.change(screen.getByLabelText(/パスワード/i), {
-      target: { value: 'wrong-password' },
-    });
-
-    // フォーム送信
-    fireEvent.click(screen.getByRole('button', { name: /ログイン/i }));
-
-    // エラーメッセージが表示されることを確認
-    await waitFor(() => {
-      expect(screen.getByText('メールアドレスまたはパスワードが正しくありません')).toBeInTheDocument();
-    });
-
-    // リダイレクトは発生しないことを確認
-    expect(require('next/navigation').useRouter().push).not.toHaveBeenCalled();
+    // cookieは設定されない
+    const cookieStore = require('next/headers').cookies();
+    expect(cookieStore.set).not.toHaveBeenCalled();
   });
 
-  it('バリデーション失敗のフロー: 無効な入力 → クライアント側バリデーション', async () => {
-    render(<LoginForm />);
-
-    // 無効なメールアドレス
-    fireEvent.change(screen.getByLabelText(/メールアドレス/i), {
-      target: { value: 'invalid-email' },
+  it('APIリクエスト中に例外が発生した場合、エラーメッセージを返す', async () => {
+    // バリデーション成功のモック
+    (LoginSchema.safeParse).mockReturnValue({
+      success: true,
+      data: {
+        email: 'user@example.com',
+        password: 'password123'
+      }
     });
+
+    // FormDataを作成
+    const formData = new FormData();
+    formData.append('email', 'user@example.com');
+    formData.append('password', 'password123');
+
+    // ネットワークエラーなどのシミュレーション
+    fetch.mockRejectedValue(new Error('Network error'));
+
+    const result = await authenticate(prevState, formData);
+
+    // APIが呼ばれる
+    expect(fetch).toHaveBeenCalled();
     
-    fireEvent.change(screen.getByLabelText(/パスワード/i), {
-      target: { value: '123' }, // 短すぎるパスワード
+    // エラーログ
+    expect(console.error).toHaveBeenCalled();
+    
+    // エラーメッセージ
+    expect(result).toEqual({
+      errors: ['ログイン処理中にエラーが発生しました。後ほど再試行してください。'],
+      success: '',
     });
-
-    // フォーム送信
-    fireEvent.click(screen.getByRole('button', { name: /ログイン/i }));
-
-    // クライアント側のバリデーションエラーが表示されることを確認
-    await waitFor(() => {
-      // React Hook FormとZodの具体的なエラーメッセージに合わせて変更する必要があります
-      expect(screen.getByText(/有効なメールアドレスを入力してください/i)).toBeInTheDocument();
-      expect(screen.getByText(/パスワードは8文字以上である必要があります/i)).toBeInTheDocument();
-    });
-
-    // authenticate関数は呼び出されないことを確認（クライアント側バリデーションで止まるため）
-    expect(authenticate).not.toHaveBeenCalled();
   });
 });
