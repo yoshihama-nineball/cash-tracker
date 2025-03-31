@@ -3,6 +3,7 @@
 import Header from "@/components/layouts/Header/Header";
 import { Metadata } from "next";
 import React from "react";
+import { verifySession } from "../../libs/auth/dal";
 import Loading from "../components/feedback/Loading";
 import { ClientThemeProvider } from "../components/layouts/ClientThemeProvider";
 
@@ -14,16 +15,18 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const userData = await verifySession();
+
   return (
     <html lang="ja">
       <body>
         <ClientThemeProvider>
-          <Header />
+          <Header userData={userData} />
           <main>
             <React.Suspense fallback={<Loading />}>{children}</React.Suspense>
           </main>
