@@ -11,7 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useFormState } from "react-dom";
-import { confirm_account } from '../../../actions/confirm-account-action';
+import { confirm_account } from "../../../actions/confirm-account-action";
 
 const ConfirmAccountForm = () => {
   const router = useRouter();
@@ -23,7 +23,7 @@ const ConfirmAccountForm = () => {
   // 初期状態
   const initialState = {
     errors: [],
-    success: ''
+    success: "",
   };
 
   // useFormStateフックを使用してサーバーアクションとフォーム状態を連携
@@ -34,9 +34,9 @@ const ConfirmAccountForm = () => {
     if (formState.success) {
       // 成功メッセージが表示された後、ログインページにリダイレクト
       const timer = setTimeout(() => {
-        router.push('/auth/login');
+        router.push("/auth/login");
       }, 3000); // 3秒後にリダイレクト
-      
+
       return () => clearTimeout(timer);
     }
   }, [formState.success, router]);
@@ -129,25 +129,22 @@ const ConfirmAccountForm = () => {
       {/* アラートを上部に表示 */}
       <Box sx={{ mt: 4, mb: 2 }}>
         {formState.errors.map((error, index) => (
-          <Alert 
-            severity="error" 
+          <Alert
+            severity="error"
             key={index}
             sx={{ mb: 2 }} // 複数のエラーがある場合に間隔を空ける
           >
             {error}
           </Alert>
         ))}
-        
+
         {formState.success && (
-          <Alert 
-            severity="success"
-            sx={{ mb: 2 }}
-          >
+          <Alert severity="success" sx={{ mb: 2 }}>
             {formState.success}
           </Alert>
         )}
       </Box>
-      
+
       <Paper
         elevation={3}
         sx={{
@@ -161,7 +158,7 @@ const ConfirmAccountForm = () => {
         </Typography>
 
         {/* 非表示のフォームでサーバーアクションに接続 */}
-        <form ref={formRef} action={formAction} style={{ display: 'none' }}>
+        <form ref={formRef} action={formAction} style={{ display: "none" }}>
           <input type="hidden" name="token" value={tokenString} />
         </form>
 
