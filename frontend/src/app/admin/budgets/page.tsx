@@ -1,9 +1,9 @@
 // app/budgets/page.tsx
 import Link from "next/link";
 import { Suspense } from "react";
-import { getBudgets } from "../../../libs/api";
-import BudgetList from "../../components/budgets/BudgetList";
-import BudgetSkeleton from "../../components/budgets/BudgetSkeleton";
+import { getBudgets } from "../../../../libs/api";
+import BudgetList from "../../../components/budgets/BudgetList";
+import BudgetSkeleton from "../../../components/budgets/BudgetSkeleton";
 
 export const metadata = {
   title: "予算一覧 | 家計簿アプリ",
