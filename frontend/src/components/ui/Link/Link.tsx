@@ -7,10 +7,15 @@ interface CustomLinkProps extends MuiLinkProps {
 }
 
 const Link: React.FC<CustomLinkProps> = ({ href, children, ...props }) => {
+  // MuiLinkに渡すprops - passHrefなどのNextLink固有のpropsを除外
+  const muiLinkProps = { ...props };
+
   return (
     <NextLink href={href} passHref legacyBehavior>
+      {/* as="a"を追加してDOM要素として明示的にマークする */}
       <MuiLink
-        {...props}
+        component="a"
+        {...muiLinkProps}
         sx={{
           textDecoration: "none",
           color: "neutral.main",
