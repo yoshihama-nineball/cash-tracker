@@ -124,10 +124,12 @@ export class AuthController {
       console.log('ログイン成功、JWTトークン生成...')
       const token = generateJWT(user._id.toString())
       console.log('トークン生成完了:', token ? '成功' : '失敗')
+      console.log(token, 'トークンテスト/backend')
 
-      res
-        .status(200)
-        .json({ message: 'アカウントのログインに成功しました！', token })
+      // res
+      //   .status(200)
+      //   .json({ message: 'アカウントのログインに成功しました！', token })
+      res.json(token)
       console.log('===== ログイン処理完了 =====')
     } catch (error) {
       console.error('ログイン処理中にエラー発生:', error)

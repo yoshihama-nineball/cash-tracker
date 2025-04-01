@@ -13,7 +13,13 @@ import {
 } from "@mui/material";
 // useTransitionと同時にuseEffectをインポート
 import { useRouter } from "next/navigation";
-import { useActionState, useEffect, useRef, useState, useTransition } from "react";
+import {
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { useForm } from "react-hook-form";
 import { authenticate } from "../../../actions/authenticate-user-action";
 import { LoginFormValues, LoginSchema } from "../../../libs/schemas/auth";
@@ -26,14 +32,17 @@ interface AuthResponse {
 }
 
 export default function LoginForm() {
-  const router = useRouter()
+  const router = useRouter();
   const ref = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
   // useActionStateの第一引数にcreateとなっていたのをauthenticateに修正
-  const [formState, dispatch] = useActionState<AuthResponse, FormData>(authenticate, {
-    errors: [],
-    success: "",
-  });
+  const [formState, dispatch] = useActionState<AuthResponse, FormData>(
+    authenticate,
+    {
+      errors: [],
+      success: "",
+    },
+  );
   const [showPassword, setShowPassword] = useState(false);
   const {
     register,
@@ -52,11 +61,9 @@ export default function LoginForm() {
   useEffect(() => {
     if (formState.success) {
       reset();
-      router.push('/budgets')
+      router.push("/budgets");
     }
   }, [formState.success, reset]);
-
-  
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const onSubmit = async (data: LoginFormValues) => {
@@ -69,7 +76,7 @@ export default function LoginForm() {
     startTransition(() => {
       dispatch(formData);
     });
-    
+
     // 以下のコードは不要なので削除
     // startTransition(async () => {
     //   const result = await authenticate(formData);
@@ -133,8 +140,8 @@ export default function LoginForm() {
             endAdornment: (
               <InputAdornment position="end">
                 {/* アクセシビリティのためにaria-labelを追加 */}
-                <IconButton 
-                  onClick={handleClickShowPassword} 
+                <IconButton
+                  onClick={handleClickShowPassword}
                   edge="end"
                   aria-label="パスワードの表示切替"
                 >
