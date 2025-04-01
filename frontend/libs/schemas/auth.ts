@@ -52,9 +52,17 @@ export const ErrorResponseSchema = z.object({
   error: z.string(),
 });
 
+export const UserSchema = z.object({
+  id: z.string(),
+  _id: z.string(),
+  name: z.string(),
+  email: z.string().email(),
+});
+
 export type RegisterFormValues = z.infer<typeof RegisterSchema>;
-export type ConfirmAccountFormValues = z.infer<typeof ConfirmAccountSchema>
+export type ConfirmAccountFormValues = z.infer<typeof ConfirmAccountSchema>;
 export type LoginFormValues = z.infer<typeof LoginSchema>;
 export type ForgotPasswordFormValues = z.infer<typeof ForgotPasswordSchema>;
-// export type SuccessSchemaValues = z.infer<typeof SuccessSchema>
-// export type ErrorResponseEchemaValues = z.infer<typeof ErrorResponseSchema>
+export type SuccessSchemaValues = z.infer<typeof SuccessSchema>;
+export type ErrorResponseEchemaValues = z.infer<typeof ErrorResponseSchema>;
+export type UserSchemaFormValues = z.infer<typeof UserSchema>;
