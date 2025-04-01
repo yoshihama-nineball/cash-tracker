@@ -1,11 +1,28 @@
 "use client";
 
 import Button from "@/components/ui/Button/Button";
-import { AppBar, Box, Tab, Tabs, Toolbar } from "@mui/material";
+import Link from "@/components/ui/Link/Link";
+import {
+  AppBar,
+  Avatar,
+  Box,
+  Menu,
+  MenuItem,
+  Tab,
+  Tabs,
+  Toolbar,
+} from "@mui/material";
 import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { logout } from "../../../../actions/logout-user-action";
+import { UserSchemaFormValues } from "../../../../libs/schemas/auth";
+
+interface HeaderProps {
+  userData: {
+    user: UserSchemaFormValues;
+    isAuth: boolean;
+  } | null;
+}
 
 function a11yProps(index: number) {
   return {
@@ -14,31 +31,60 @@ function a11yProps(index: number) {
   };
 }
 
-export default function Header() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [value, setValue] = useState(0);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const pathname = usePathname();
+function stringToColor(string: string) {
+  let hash = 0;
+  let i;
 
-  const handleLoginToggle = () => {
-    setIsLoggedIn(!isLoggedIn);
+  for (i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash);
+  }
+
+  let color = "#";
+
+  for (i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff;
+    color += `00${value.toString(16)}`.slice(-2);
+  }
+
+  return color;
+}
+
+function stringAvatar(name: string) {
+  // 名前に空白がない場合の処理を追加
+  if (!name.includes(" ")) {
+    return {
+      sx: {
+        bgcolor: stringToColor(name),
+      },
+      children: name.length > 0 ? name[0] : "",
+    };
+  }
+
+  // 従来の複数単語の名前の処理
+  return {
+    sx: {
+      bgcolor: stringToColor(name),
+    },
+    children: `${name.split(" ")[0][0]}${name.split(" ")[1][0]}`,
+  };
+}
+
+export default function Header({ userData }: HeaderProps) {
+  const [value, setValue] = useState(0);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
-  const toggleDrawer =
-    (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-      if (
-        event.type === "keydown" &&
-        ((event as React.KeyboardEvent).key === "Tab" ||
-          (event as React.KeyboardEvent).key === "Shift")
-      ) {
-        return;
-      }
-      setDrawerOpen(open);
-    };
   return (
     <AppBar position="static" color="inherit">
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -48,14 +94,6 @@ export default function Header() {
             alignItems: "center",
           }}
         >
-          {/* <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            onClick={toggleDrawer(true)}
-          >
-            <MenuIcon />
-          </IconButton> */}
           <Box sx={{ display: "flex", alignItems: "center", mr: 3 }}>
             <Link
               href="/"
@@ -76,7 +114,6 @@ export default function Header() {
               />
             </Link>
           </Box>
-
           <Tabs
             value={value}
             onChange={handleChange}
@@ -106,16 +143,46 @@ export default function Header() {
           </Tabs>
         </Box>
 
-        {isLoggedIn ? (
-          <Button color="primary" onClick={handleLoginToggle}>
-            ログアウト
-          </Button>
+        {userData?.isAuth ? (
+          <div>
+            <Avatar
+              onClick={handleMenu}
+              {...stringAvatar(`${userData.user.name}`)}
+            />
+            <Menu
+              id="menu-appbar"
+              anchorEl={anchorEl}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={Boolean(anchorEl)}
+              onClose={handleClose}
+            >
+              <MenuItem onClick={handleClose}>{userData.user.name}</MenuItem>
+              <MenuItem onClick={handleClose}>
+                <Link href="/admin/profile/setting">プロフィール</Link>
+              </MenuItem>
+              <MenuItem onClick={handleClose}>
+                <Link href="/admin/budgets">予算</Link>
+              </MenuItem>
+              <MenuItem
+                onClick={async () => {
+                  handleClose();
+                  await logout();
+                }}
+              >
+                ログアウト
+              </MenuItem>
+            </Menu>
+          </div>
         ) : (
-          <Button
-            color="primary"
-            href="/auth/login"
-            onClick={handleLoginToggle}
-          >
+          <Button color="primary" href="/auth/login">
             ログイン
           </Button>
         )}
