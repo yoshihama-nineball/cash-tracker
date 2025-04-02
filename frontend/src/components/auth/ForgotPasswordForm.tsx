@@ -105,7 +105,9 @@ export default function ForgotPassword() {
       )}
 
       <FormControl error={!!errors.email}>
-        <FormLabel htmlFor="email">メールアドレス</FormLabel>
+        <FormLabel htmlFor="email" sx={{ textAlign: "left", display: "block" }}>
+          メールアドレス
+        </FormLabel>
         <TextField
           id="email"
           type="email"
