@@ -1,9 +1,9 @@
-"use server"
+"use server";
 
-import { cookies } from "next/headers"
-import { redirect } from "next/navigation"
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export async function logout() {
-    cookies().delete('CASHTRACKR_TOKEN')
-    redirect('/auth/login')
+  cookies().delete("CASHTRACKR_TOKEN");
+  redirect("/auth/login");
 }

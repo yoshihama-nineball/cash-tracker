@@ -5,13 +5,11 @@ import { UserSchema } from "../schemas/auth";
 
 export const verifySession = cache(async () => {
   try {
-
     // セッションチェック
     const cookieStore = cookies();
     const token = cookieStore.get("CASHTRACKR_TOKEN");
 
     if (!token) {
-      // この部分が原因で無限リダイレクトが発生している可能性がある
       // 一時的にコメントアウトして動作確認
       // redirect("/auth/login");
       return { user: null, isAuth: false };

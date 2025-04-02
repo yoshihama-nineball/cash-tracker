@@ -158,7 +158,9 @@ describe("authenticate関数", () => {
     fetch.mockResolvedValue(mockResponse);
 
     // ErrorResponseSchemaのモック
-    ErrorResponseSchema.parse.mockReturnValue({ error: "Authentication failed" });
+    ErrorResponseSchema.parse.mockReturnValue({
+      error: "Authentication failed",
+    });
 
     const result = await authenticate(prevState, formData);
 
@@ -181,4 +183,4 @@ describe("authenticate関数", () => {
 
   // TODO: 現在の実装では例外処理が明示的に行われていないため、
   // テストを更新するか、実装に例外処理を追加する必要がある
-})
+});
