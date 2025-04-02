@@ -1,6 +1,5 @@
 "use client";
 
-// import { registerUser } from "@/app/actions/auth-actions";
 import Alert from "@/components/feedback/Alert/Alert";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -10,60 +9,73 @@ import {
   FormLabel,
   TextField,
 } from "@mui/material";
-import { useRef, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
+import { useFormState } from "react-dom";
 import { useForm } from "react-hook-form";
-import { RegisterFormValues, RegisterSchema } from "../../../libs/schemas/auth";
+import { forget_password } from "../../../actions/forget-password-action";
+import {
+  ForgotPasswordFormValues,
+  ForgotPasswordSchema,
+} from "../../../libs/schemas/auth";
 import Button from "../../components/ui/Button/Button";
 
 export default function ForgotPassword() {
   const ref = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
-  const [formState, setFormState] = useState<{
-    errors: string[];
-    success: string;
-  }>({
+
+  const [state, dispatch] = useFormState(forget_password, {
     errors: [],
     success: "",
   });
 
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  // Alertの表示制御
+  const [showAlerts, setShowAlerts] = useState({
+    errors: true,
+    success: true,
+  });
+
+  // フォーム状態が変わったらアラートをリセット
+  useEffect(() => {
+    setShowAlerts({
+      errors: true,
+      success: true,
+    });
+
+    // 一定時間後にアラートを非表示
+    const timer = setTimeout(() => {
+      setShowAlerts({
+        errors: false,
+        success: false,
+      });
+    }, 5000); // 5秒後に非表示
+
+    return () => clearTimeout(timer);
+  }, [state]);
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<RegisterFormValues>({
-    resolver: zodResolver(RegisterSchema),
+  } = useForm<ForgotPasswordFormValues>({
+    resolver: zodResolver(ForgotPasswordSchema),
     defaultValues: {
       email: "",
-      name: "",
-      password: "",
-      password_confirmation: "",
     },
   });
 
-  const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleClickShowConfirmPassword = () =>
-    setShowConfirmPassword(!showConfirmPassword);
-
-  const onSubmit = async (data: RegisterFormValues) => {
+  const onSubmit = async (data: ForgotPasswordFormValues) => {
     const formData = new FormData();
     formData.append("email", data.email);
-    formData.append("name", data.name);
-    formData.append("password", data.password);
-    formData.append("password_confirmation", data.password_confirmation);
 
-    // Server Actionを呼び出し
-    // startTransition(async () => {
-    //   const result = await registerUser(formData);
-    //   setFormState(result);
+    startTransition(() => {
+      dispatch(formData);
 
-    //   if (result.success) {
-    //     reset(); // フォームリセット
-    //   }
-    // });
+      // 成功したらフォームをリセット
+      if (state.success) {
+        reset();
+      }
+    });
   };
 
   return (
@@ -74,16 +86,22 @@ export default function ForgotPassword() {
       noValidate
       onSubmit={handleSubmit(onSubmit)}
     >
-      {/* カスタムAlertコンポーネントを使用して、エラーメッセージを表示 */}
-      {formState.errors.map((error, index) => (
-        <Alert severity="error" key={index}>
-          {error}
-        </Alert>
-      ))}
+      {/* エラーメッセージの表示 */}
+      {state.errors.length > 0 && showAlerts.errors && (
+        <Box sx={{ mb: 2 }}>
+          {state.errors.map((error, index) => (
+            <Alert severity="error" key={index} sx={{ mb: 1 }}>
+              {error}
+            </Alert>
+          ))}
+        </Box>
+      )}
 
-      {/* 成功メッセージの表示にもカスタムAlertを使用 */}
-      {formState.success && (
-        <Alert severity="success">{formState.success}</Alert>
+      {/* 成功メッセージの表示 */}
+      {state.success && showAlerts.success && (
+        <Alert severity="success" sx={{ mb: 2 }}>
+          {state.success}
+        </Alert>
       )}
 
       <FormControl error={!!errors.email}>
