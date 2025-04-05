@@ -39,33 +39,14 @@ const ValidateTokenForm = ({
   ]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // 初期状態
   const initialState = {
     errors: [],
     success: "",
   };
 
-  // 直接アクションを呼び出す代わりにバインドする
-  const validateWithToken = async (
-    prevState: typeof initialState,
-    formData: FormData,
-  ) => {
-    console.log("サーバーアクション呼び出し前", { token: tokenArray.join("") });
+  const [formState, action] = useActionState(validate_token, initialState);
 
-    // FormDataを新しく作成してトークンを設定（既存のformDataは使わない）
-    const newFormData = new FormData();
-    newFormData.append("token", tokenArray.join(""));
-
-    // サーバーアクションを呼び出す
-    return validate_token(prevState, newFormData);
-  };
-
-  // useActionStateを使用
-  const [formState, action] = useActionState(validateWithToken, initialState);
-
-  // React Hook Form バリデーション
   const {
-    handleSubmit,
     setValue,
     formState: { errors: formErrors },
   } = useForm<ValidateTokenFormValues>({
@@ -75,60 +56,28 @@ const ValidateTokenForm = ({
     },
   });
 
-  // 成功時やエラー時の処理
   useEffect(() => {
-    console.log("ValidateToken formState更新:", formState);
-
     if (formState.success) {
-      console.log("トークン検証成功:", formState.success);
+      //memo: パスワードリセットフォームに切り替え
       setIsValid(true);
     }
 
-    // エラーがある場合はコンソールにログを出力
     if (formState.errors && formState.errors.length > 0) {
-      console.error("Token validation errors:", formState.errors);
-      setIsSubmitting(false); // エラー時に送信状態を解除
+      //memo: 入力エラーの場合、送信状態を解除
+      setIsSubmitting(false);
     }
   }, [formState, setIsValid]);
 
-  // クライアント側のバリデーションとサーバーアクションの実行
-  const onSubmit = async (data: ValidateTokenFormValues) => {
-    console.log("フォーム送信:", data);
+  // フォーム送信処理
+  const submitForm = () => {
+    if (isSubmitting) return; // 送信中なら何もしない
+
+    console.log("フォーム送信処理実行:", tokenArray.join(""));
     setIsSubmitting(true);
 
-    // フォームを送信
-    if (formRef.current) {
-      console.log("フォーム要素を送信");
-      formRef.current.requestSubmit();
-    }
-  };
-
-  // 手動でフォームを送信する関数
-  const submitForm = () => {
-    console.log("手動フォーム送信");
     if (formRef.current) {
       formRef.current.requestSubmit();
     }
-  };
-
-  // tokenArrayが更新されたらトークン文字列を更新
-  useEffect(() => {
-    const newToken = tokenArray.join("");
-    setToken(newToken);
-
-    // React Hook Formの値も更新
-    setValue("token", newToken);
-
-    // 全て入力されたらバリデーションを実行
-    if (newToken.length === 6 && !newToken.includes("") && !isSubmitting) {
-      console.log("トークン入力完了:", newToken);
-      handleSubmit(onSubmit)();
-    }
-  }, [tokenArray, setToken, setValue, handleSubmit, onSubmit, isSubmitting]);
-
-  // input要素への参照を設定
-  const setInputRef = (index: number, ref: HTMLInputElement | null) => {
-    inputRefs.current[index] = ref;
   };
 
   // 入力値の変更を処理
@@ -138,9 +87,29 @@ const ValidateTokenForm = ({
       newTokenArray[index] = value;
       setTokenArray(newTokenArray);
 
+      // React Hook Formの値も更新
+      const newToken = [...tokenArray];
+      newToken[index] = value;
+      setToken(newToken.join(""));
+      setValue("token", newToken.join(""));
+
       // 入力後に次のフィールドにフォーカス
       if (value !== "" && index < 5) {
         inputRefs.current[index + 1]?.focus();
+      }
+
+      // 最後の入力欄まで入力が完了したら自動送信
+      if (index === 5 && value !== "") {
+        const completeToken = [...newToken];
+        completeToken[5] = value;
+
+        // 全ての入力欄が埋まっていることを確認
+        if (!completeToken.includes("")) {
+          // 少し遅延させて送信
+          setTimeout(() => {
+            submitForm();
+          }, 100);
+        }
       }
     }
   };
@@ -166,13 +135,9 @@ const ValidateTokenForm = ({
     }
   };
 
-  // フォームの手動リセット
-  const resetForm = () => {
-    setTokenArray(["", "", "", "", "", ""]);
-    setIsSubmitting(false);
-    if (inputRefs.current[0]) {
-      inputRefs.current[0].focus();
-    }
+  // input要素への参照を設定
+  const setInputRef = (index: number, ref: HTMLInputElement | null) => {
+    inputRefs.current[index] = ref;
   };
 
   return (
@@ -255,27 +220,6 @@ const ValidateTokenForm = ({
           </Stack>
         </Box>
 
-        {/* デバッグ用：手動送信ボタン */}
-        {tokenArray.join("").length === 6 && !isSubmitting && (
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 2, mb: 2 }}>
-            <button
-              onClick={submitForm}
-              style={{
-                cursor: "pointer",
-                backgroundColor: "#1976d2",
-                border: "none",
-                color: "white",
-                fontWeight: 500,
-                borderRadius: "4px",
-                padding: "8px 16px",
-                fontSize: "1rem",
-              }}
-            >
-              コードを検証
-            </button>
-          </Box>
-        )}
-
         <Typography
           variant="body2"
           align="center"
@@ -284,47 +228,6 @@ const ValidateTokenForm = ({
         >
           メールに送信された6桁の認証コードを入力してください
         </Typography>
-
-        {/* エラーがある場合のみリセットボタンを表示 */}
-        {formState.errors && formState.errors.length > 0 && (
-          <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-            <button
-              onClick={resetForm}
-              style={{
-                cursor: "pointer",
-                backgroundColor: "transparent",
-                border: "1px solid #1976d2",
-                color: "#1976d2",
-                fontWeight: 500,
-                borderRadius: "4px",
-                padding: "6px 12px",
-                fontSize: "0.875rem",
-              }}
-            >
-              コードを再入力
-            </button>
-          </Box>
-        )}
-
-        {/* デバッグ情報 */}
-        {process.env.NODE_ENV === "development" && (
-          <Box
-            sx={{
-              mt: 4,
-              p: 2,
-              bgcolor: "#f5f5f5",
-              borderRadius: 1,
-              fontSize: "0.75rem",
-            }}
-          >
-            <Typography variant="caption" component="div">
-              デバッグ情報:
-            </Typography>
-            <div>トークン: {tokenArray.join("")}</div>
-            <div>送信中: {isSubmitting ? "はい" : "いいえ"}</div>
-            <div>エラー数: {formState.errors?.length || 0}</div>
-          </Box>
-        )}
       </Paper>
     </Container>
   );
