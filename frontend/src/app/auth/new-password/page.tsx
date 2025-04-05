@@ -1,6 +1,6 @@
 "use client";
 import { Box, Container, Typography } from "@mui/material";
-import PasswordResetHandler from "../../../components/auth/ResetPasswordForm";
+import PasswordResetHandler from "../../../components/auth/PasswordResetHandler";
 
 export default function NewPasswordPage() {
   return (
