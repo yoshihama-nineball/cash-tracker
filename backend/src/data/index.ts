@@ -4,7 +4,7 @@ import { db } from '../config/db'
 const clearData = async () => {
   try {
     //MEMO: DB内のすべてのテーブルを再作成する
-    await db.sync({ force: true })
+    await db.sync()
     console.log('DBをクリアしました')
     //MEMO: 正常終了
     exit(0)
