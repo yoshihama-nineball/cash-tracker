@@ -1,10 +1,15 @@
 "use server";
 
-import {
-  ErrorResponseSchema,
-  ResetPasswordSchema,
-  SuccessSchema,
-} from "../libs/schemas/auth";
+import { z } from "zod";
+import { ErrorResponseSchema, ResetPasswordSchema } from "../libs/schemas/auth";
+
+// APIレスポンス用のスキーマを修正
+const ApiSuccessSchema = z
+  .object({
+    message: z.string().optional(),
+    success: z.string().optional(),
+  })
+  .or(z.string());
 
 type ActionStateType = {
   errors: string[];
@@ -15,7 +20,6 @@ export async function reset_password(
   prevState: ActionStateType,
   formData: FormData,
 ) {
-  // トークンをformDataから取得
   const token = formData.get("token");
 
   if (!token) {
@@ -40,10 +44,11 @@ export async function reset_password(
     };
   }
 
-  // トークンを変数から使用
   const url = `${process.env.API_URL}/auth/reset-password/${token}`;
 
   try {
+    console.log("APIリクエスト送信:", url);
+
     const req = await fetch(url, {
       method: "POST",
       headers: {
@@ -51,24 +56,55 @@ export async function reset_password(
       },
       body: JSON.stringify({
         password: resetPasswordData.password,
+        password_confirmation: resetPasswordData.password_confirmation,
       }),
     });
 
+    console.log("APIレスポンスステータス:", req.status);
     const json = await req.json();
+    console.log("APIレスポンス:", json);
 
     if (!req.ok) {
-      const { error } = ErrorResponseSchema.parse(json);
-      return {
-        errors: [error],
-        success: "",
-      };
+      try {
+        const { error } = ErrorResponseSchema.parse(json);
+        return {
+          errors: [error],
+          success: "",
+        };
+      } catch (parseError) {
+        return {
+          errors: [
+            typeof json === "string" ? json : "不明なエラーが発生しました",
+          ],
+          success: "",
+        };
+      }
     }
 
-    const success = SuccessSchema.parse(json);
-    return {
-      errors: [],
-      success,
-    };
+    try {
+      const result = ApiSuccessSchema.parse(json);
+
+      let successMessage = "パスワードが正常にリセットされました";
+
+      if (typeof result === "string") {
+        successMessage = result;
+      } else if (result.success) {
+        successMessage = result.success;
+      } else if (result.message) {
+        successMessage = result.message;
+      }
+
+      return {
+        errors: [],
+        success: successMessage,
+      };
+    } catch (parseError) {
+      console.error("成功レスポンスのパースエラー:", parseError);
+      return {
+        errors: [],
+        success: "パスワードが正常にリセットされました",
+      };
+    }
   } catch (error) {
     console.error("パスワードリセットエラー:", error);
     return {
