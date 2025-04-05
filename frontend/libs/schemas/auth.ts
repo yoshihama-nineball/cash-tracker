@@ -47,6 +47,23 @@ export const ForgotPasswordSchema = z.object({
     .email("有効なメールアドレスを入力してください"),
 });
 
+export const ValidateTokenSchema = z.object({
+  token: z
+    .string()
+    .min(1, "認証コードは必須です")
+    .length(6, "トークンが無効です"),
+});
+
+export const ResetPasswordSchema = z
+  .object({
+    password: z.string().min(8, { message: "パスワードは8文字以上です" }),
+    password_confirmation: z.string().min(1, "パスワード(確認)は必須です"),
+  })
+  .refine((data) => data.password === data.password_confirmation, {
+    message: "パスワードが一致しません",
+    path: ["password_confirmation"],
+  });
+
 export const SuccessSchema = z.string();
 export const ErrorResponseSchema = z.object({
   error: z.string(),
@@ -66,3 +83,5 @@ export type ForgotPasswordFormValues = z.infer<typeof ForgotPasswordSchema>;
 export type SuccessSchemaValues = z.infer<typeof SuccessSchema>;
 export type ErrorResponseEchemaValues = z.infer<typeof ErrorResponseSchema>;
 export type UserSchemaFormValues = z.infer<typeof UserSchema>;
+export type ValidateTokenFormValues = z.infer<typeof ValidateTokenSchema>;
+export type ResetPasswordFormValues = z.infer<typeof ResetPasswordSchema>;
