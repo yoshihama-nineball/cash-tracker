@@ -1,9 +1,9 @@
-import { body, param } from 'express-validator'
-import { AuthController } from '../controllers/AuthController'
-import { handleInputErrors } from '../middleware/validation'
 import { Router } from 'express'
+import { body, param } from 'express-validator'
 import { limiter } from '../config/limiter'
+import { AuthController } from '../controllers/AuthController'
 import { authenticate } from '../middleware/auth'
+import { handleInputErrors } from '../middleware/validation'
 
 const router = Router()
 
@@ -108,9 +108,9 @@ router.post(
   authenticate,
   body('current_password')
     .notEmpty()
-    .withMessage('現在のパスワードは必須です')
+    .withMessage('再設定するパスワードは必須です')
     .isLength({ min: 8 })
-    .withMessage('現在のパスワードは8文字以上です'),
+    .withMessage('再設定するパスワードは8文字以上です'),
   body('password')
     .notEmpty()
     .withMessage('再設定するパスワードは必須です')
