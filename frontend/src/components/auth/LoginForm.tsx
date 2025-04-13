@@ -76,7 +76,6 @@ export default function LoginForm() {
     startTransition(() => {
       dispatch(formData);
     });
-
     // 以下のコードは不要なので削除
     // startTransition(async () => {
     //   const result = await authenticate(formData);

@@ -11,10 +11,10 @@ const Link: React.FC<CustomLinkProps> = ({ href, children, ...props }) => {
   const muiLinkProps = { ...props };
 
   return (
-    <NextLink href={href} passHref legacyBehavior>
+    <NextLink href={href}>
       {/* as="a"を追加してDOM要素として明示的にマークする */}
       <MuiLink
-        component="a"
+        component="span"
         {...muiLinkProps}
         sx={{
           textDecoration: "none",

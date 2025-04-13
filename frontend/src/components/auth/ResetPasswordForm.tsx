@@ -1,7 +1,5 @@
 "use client";
 
-// import { registerUser } from "@/app/actions/auth-actions";
-import Alert from "@/components/feedback/Alert/Alert";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
@@ -15,18 +13,38 @@ import {
   Paper,
   TextField,
 } from "@mui/material";
-import { useRef, useState, useTransition } from "react";
+import { useActionState, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { RegisterFormValues, registerSchema } from "../../../libs/schemas/auth";
+import { reset_password as resetPassword } from "../../../actions/reset-password-action";
+import { ResetPasswordSchema } from "../../../libs/schemas/auth";
 import Button from "../../components/ui/Button/Button";
+import Alert from "../feedback/Alert/Alert";
 
-export default function ResetPasswordForm() {
-  const ref = useRef<HTMLFormElement>(null);
+// ResetPasswordSchemaに合わせた型定義
+type ResetPasswordFormValues = {
+  password: string;
+  password_confirmation: string;
+};
+
+type ResetPasswordType = {
+  token: string;
+};
+
+export default function ResetPasswordForm({
+  token,
+}: ResetPasswordType): React.ReactElement {
+  const formRef = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
-  const [formState, setFormState] = useState<{
-    errors: string[];
-    success: string;
-  }>({
+
+  // サーバーアクション用のカスタムハンドラー
+  const resetPasswordWithToken = async (prevState, formData) => {
+    // トークンをフォームデータに追加
+    formData.append("token", token);
+    return resetPassword(prevState, formData);
+  };
+
+  // useActionStateでサーバーアクションの状態管理
+  const [formState, formAction] = useActionState(resetPasswordWithToken, {
     errors: [],
     success: "",
   });
@@ -39,11 +57,9 @@ export default function ResetPasswordForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-  } = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
+  } = useForm<ResetPasswordFormValues>({
+    resolver: zodResolver(ResetPasswordSchema),
     defaultValues: {
-      email: "",
-      name: "",
       password: "",
       password_confirmation: "",
     },
@@ -53,42 +69,54 @@ export default function ResetPasswordForm() {
   const handleClickShowConfirmPassword = () =>
     setShowConfirmPassword(!showConfirmPassword);
 
-  const onSubmit = async (data: RegisterFormValues) => {
-    const formData = new FormData();
-    formData.append("email", data.email);
-    formData.append("name", data.name);
-    formData.append("password", data.password);
-    formData.append("password_confirmation", data.password_confirmation);
+  // 成功時の処理を追加
+  const handleSuccess = () => {
+    if (formState.success) {
+      reset(); // フォームリセット
+    }
+  };
 
-    // Server Actionを呼び出し
-    // startTransition(async () => {
-    //   const result = await registerUser(formData);
-    //   setFormState(result);
+  // フォーム送信処理
+  const onSubmit = async (data: ResetPasswordFormValues) => {
+    console.log("ResetPassword フォーム送信:", {
+      token,
+      password: data.password,
+      password_confirmation: data.password_confirmation,
+    });
 
-    //   if (result.success) {
-    //     reset(); // フォームリセット
-    //   }
-    // });
+    // formRefを使ってフォームを送信
+    if (formRef.current) {
+      formRef.current.requestSubmit();
+    }
   };
 
   return (
     <Container maxWidth="sm">
       <Paper elevation={3} sx={{ p: 4, mt: 8, borderRadius: 2 }}>
+        {/* React Hook Formのフォーム */}
         <Box
           component="form"
-          ref={ref}
-          sx={{ mt: 4, display: "flex", flexDirection: "column", gap: 3 }}
-          noValidate
           onSubmit={handleSubmit(onSubmit)}
+          sx={{ display: "none" }}
         >
-          {/* カスタムAlertコンポーネントを使用して、エラーメッセージを表示 */}
+          {/* クライアント側バリデーション用の隠しフォーム */}
+        </Box>
+
+        {/* サーバーアクション用フォーム */}
+        <Box
+          component="form"
+          ref={formRef}
+          action={formAction}
+          sx={{ mt: 4, display: "flex", flexDirection: "column", gap: 3 }}
+        >
+          {/* エラーメッセージ表示 */}
           {formState.errors.map((error, index) => (
             <Alert severity="error" key={index}>
               {error}
             </Alert>
           ))}
 
-          {/* 成功メッセージの表示にもカスタムAlertを使用 */}
+          {/* 成功メッセージの表示 */}
           {formState.success && (
             <Alert severity="success">{formState.success}</Alert>
           )}
@@ -97,6 +125,7 @@ export default function ResetPasswordForm() {
             <FormLabel htmlFor="password">パスワード</FormLabel>
             <TextField
               id="password"
+              name="password"
               type={showPassword ? "text" : "password"}
               placeholder="パスワード"
               fullWidth
@@ -128,6 +157,7 @@ export default function ResetPasswordForm() {
             </FormLabel>
             <TextField
               id="password_confirmation"
+              name="password_confirmation"
               type={showConfirmPassword ? "text" : "password"}
               placeholder="パスワード（再入力）"
               fullWidth
@@ -154,6 +184,9 @@ export default function ResetPasswordForm() {
               </FormHelperText>
             )}
           </FormControl>
+
+          {/* トークンを隠しフィールドとして追加 */}
+          <input type="hidden" name="token" value={token} />
 
           <Button
             type="submit"

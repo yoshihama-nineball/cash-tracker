@@ -166,14 +166,29 @@ export class AuthController {
   static validateToken = async (req: Request, res: Response): Promise<void> => {
     //TODO: パスワードリセット時に生成したtokenが有効か確認する
     const { token } = req.body
-    const user = await User.findOne({ token })
-    if (!user) {
-      res.status(401).json({ error: 'ユーザが見つかりません' })
+
+    // トークンがない場合
+    if (!token) {
+      res.status(400).json({ error: 'トークンが提供されていません' })
       return
     }
-    res.status(200).json({
-      message: '有効なトークンです。新しいパスワードを設定してください。',
-    })
+
+    try {
+      const user = await User.findOne({ token })
+      if (!user) {
+        // ステータスコードを409に変更（クライアント側のエラーハンドリングに合わせる）
+        res.status(409).json({ error: 'トークンが無効です' })
+        return
+      }
+
+      // 成功レスポンスの形式も一貫性を持たせる
+      res.status(200).json({
+        success: '有効なトークンです。新しいパスワードを設定してください。',
+      })
+    } catch (error) {
+      console.error('トークン検証エラー:', error)
+      res.status(500).json({ error: 'サーバーエラーが発生しました' })
+    }
   }
 
   static resetPasswordWithToken = async (
