@@ -64,6 +64,13 @@ export const ResetPasswordSchema = z
     path: ["password_confirmation"],
   });
 
+export const DraftBudgetSchema = z.object({
+  name: z.string().min(1, { message: "予算タイトルは必須です" }),
+  amount: z.coerce
+    .number({ message: "予算金額の値が無効です" })
+    .min(1, { message: "予算金額が0円未満です" }),
+});
+
 export const SuccessSchema = z.string();
 export const ErrorResponseSchema = z.object({
   error: z.string(),
@@ -76,6 +83,18 @@ export const UserSchema = z.object({
   email: z.string().email(),
 });
 
+// export const BudgetAPIResponseSchema = z.object({
+//         id: z.number(),
+//         name: z.string(),
+//         amount: z.string(),
+//         userId: z.number(),
+//         createdAt: z.string(),
+//         updatedAt: z.string(),
+//         // expenses: z.array(ExpenseAPIResponseSchema)
+// })
+
+// export const BudgetsAPIResponseSchema = z.array(BudgetAPIResponseSchema.omit({ expenses: true }))export const BudgetsAPIResponseSchema = z.array(BudgetAPIResponseSchema.omit({ expenses: true }))
+
 export type RegisterFormValues = z.infer<typeof RegisterSchema>;
 export type ConfirmAccountFormValues = z.infer<typeof ConfirmAccountSchema>;
 export type LoginFormValues = z.infer<typeof LoginSchema>;
@@ -85,3 +104,4 @@ export type ErrorResponseEchemaValues = z.infer<typeof ErrorResponseSchema>;
 export type UserSchemaFormValues = z.infer<typeof UserSchema>;
 export type ValidateTokenFormValues = z.infer<typeof ValidateTokenSchema>;
 export type ResetPasswordFormValues = z.infer<typeof ResetPasswordSchema>;
+export type DraftBudgetFormValues = z.infer<typeof DraftBudgetSchema>;
