@@ -1,11 +1,11 @@
-import CreateBudgetForm from "@/components/budgets/CreateBudgetForm"
+import CreateBudgetForm from "@/components/budgets/CreateBudgetForm";
 
 const page = () => {
   return (
     <>
-     <CreateBudgetForm />
+      <CreateBudgetForm />
     </>
-  )
-}
+  );
+};
 
-export default page
+export default page;
