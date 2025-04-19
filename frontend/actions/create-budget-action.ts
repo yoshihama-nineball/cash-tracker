@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import getToken from "../libs/auth/token";
-import { DraftBudgetSchema, SuccessSchema } from "../libs/schemas/auth";
+import { DraftBudgetSchema } from "../libs/schemas/auth";
 
 type ActionStateType = {
   errors: string[];
@@ -42,9 +42,30 @@ export async function createBudget(
   const json = await req.json();
 
   revalidatePath("/admin");
-  const success = SuccessSchema.parse(json);
+
+  if (typeof json === "string") {
+    return {
+      errors: [],
+      success: json,
+    };
+  } else if (json && typeof json === "object") {
+    if ("success" in json && typeof json.success === "string") {
+      return {
+        errors: [],
+        success: json.success,
+      };
+    } else if ("message" in json && typeof json.message === "string") {
+      return {
+        errors: [],
+        success: json.message,
+      };
+    }
+  }
+
   return {
-    errors: [],
-    success,
+    errors: [
+      "レスポンス形式が予期しないものでした。管理者にお問い合わせください。",
+    ],
+    success: "",
   };
 }
