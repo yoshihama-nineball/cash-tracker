@@ -1,122 +1,106 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import LoginForm from "./LoginForm";
 
-// モックの作成
+// モジュールのモック
+jest.mock("next/navigation", () => ({
+  useRouter: jest.fn(() => ({
+    push: jest.fn(),
+  })),
+}));
+
 jest.mock("@hookform/resolvers/zod", () => ({
   zodResolver: jest.fn(() => ({})),
 }));
 
-jest.mock("react-hook-form", () => ({
-  useForm: () => ({
-    register: jest.fn(),
-    handleSubmit: jest.fn((fn) => (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      return fn({ email: "test@example.com", password: "Password123" });
-    }),
-    formState: {
-      errors: {},
-      isSubmitting: false,
-    },
-    reset: jest.fn(),
-  }),
+jest.mock("../../../actions/authenticate-user-action", () => ({
+  loginAction: jest.fn(),
 }));
+
+jest.mock("react", () => {
+  const originalModule = jest.requireActual("react");
+  return {
+    ...originalModule,
+    useActionState: jest.fn(() => [{ errors: [], success: "" }, jest.fn()]),
+    useTransition: jest.fn(() => [false, jest.fn()]),
+  };
+});
+
+jest.mock("react-hook-form", () => {
+  const originalModule = jest.requireActual("react-hook-form");
+  return {
+    ...originalModule,
+    useForm: () => ({
+      register: jest.fn((name) => ({ name })),
+      handleSubmit: jest.fn((onSubmit) => jest.fn()),
+      formState: {
+        errors: {},
+        isSubmitting: false,
+      },
+      reset: jest.fn(),
+    }),
+  };
+});
 
 describe("LoginFormコンポーネントのテスト", () => {
   beforeEach(() => {
-    // 各テスト前に状態をリセット
     jest.clearAllMocks();
   });
 
   it("ログインフォームが正しくレンダリングされるかのテストケース", () => {
     render(<LoginForm />);
 
-    // 重要な要素が表示されているか確認
+    // フォーム要素の存在確認
     expect(screen.getByLabelText(/メールアドレス/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/パスワード/i)).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /ログイン/i }),
     ).toBeInTheDocument();
+    expect(screen.getByLabelText(/パスワードの表示切替/i)).toBeInTheDocument();
   });
 
-  it("パスワードを表示するボタンが正しく動作するかのテスト", async () => {
+  it("送信中の場合、ボタンが無効化されることを確認", () => {
+    // isSubmittingをtrueにするためのモックを上書き
+    jest
+      .spyOn(require("react-hook-form"), "useForm")
+      .mockImplementation(() => ({
+        register: jest.fn(),
+        handleSubmit: jest.fn(),
+        formState: {
+          errors: {},
+          isSubmitting: true,
+        },
+        reset: jest.fn(),
+      }));
+
     render(<LoginForm />);
 
-    // パスワードフィールドを取得
-    const passwordField = screen.getByLabelText(/パスワード/i);
-
-    // 初期状態では非表示(typeがpasswordになる)
-    expect(passwordField).toHaveAttribute("type", "password");
-
-    // 表示切替ボタンをクリック
-    const visibilityButton = screen.getByRole("button", { name: "" });
-    fireEvent.click(visibilityButton);
-
-    // パスワードが表示される(typeがtextになる)
-    expect(passwordField).toHaveAttribute("type", "text");
-
-    // もう一度クリックすると非表示に戻る
-    fireEvent.click(visibilityButton);
-    expect(passwordField).toHaveAttribute("type", "password");
+    const loginButton = screen.getByRole("button", { name: /送信中/i });
+    expect(loginButton).toBeDisabled();
   });
 
-  it("フォーム送信に成功したとき、成功のAlertコンポーネントとメッセージを表示する", async () => {
-    // フォーム送信の成功状態をシミュレート
-    const { rerender } = render(<LoginForm />);
+  it("パスワード表示切り替えボタンが機能することを確認", () => {
+    render(<LoginForm />);
 
-    // 成功メッセージが初期状態では表示されていない
-    expect(screen.queryByText(/success/i)).not.toBeInTheDocument();
+    // パスワードフィールドが最初は 'password' タイプであることを確認
+    const passwordField = screen.getByLabelText(
+      /パスワード/i,
+    ) as HTMLInputElement;
+    expect(passwordField.type).toBe("password");
 
-    // コンポーネントの状態を変更して再レンダリング
-    rerender(<LoginForm />);
+    // パスワード表示切り替えボタンを取得
+    const passwordToggleButton = screen.getByLabelText(/パスワードの表示切替/i);
 
-    // フォーム送信のシミュレーション
-    const submitButton = screen.getByRole("button", { name: /ログイン/i });
-    fireEvent.click(submitButton);
+    // ボタンが存在することを確認
+    expect(passwordToggleButton).toBeTruthy();
 
-    // useStateのモックを用いて成功状態をシミュレート
-    // 注意: これは実際のコンポーネントの状態を変更しないため、
-    // MEMO:テストでは直接確認できないため、実際のテストでは統合テストが必要
-  });
+    // クリックイベントをシミュレート
+    fireEvent.click(passwordToggleButton);
 
-  it("バリデーションエラーが出るとき、正しいエラーメッセージを表示できるかのテスト", async () => {
-    const mockUseForm = {
-      register: jest.fn(),
-      handleSubmit: jest.fn(),
-      formState: {
-        errors: {
-          email: { message: "メールアドレスは必須です" },
-          password: { message: "パスワードは必須です" },
-        },
-        isSubmitting: false,
-      },
-      reset: jest.fn(),
-    };
+    // パスワードフィールドのタイプが 'text' に変更されたことを確認
+    expect(passwordField.type).toBe("text");
 
-    jest.mock("react-hook-form", () => ({
-      useForm: () => mockUseForm,
-    }));
-
-    // 本当はここでmockUseFormを使ってrenderしたいが、
-    // jestのモックの制限により簡単にはできないため、
-    // 実際のテストでは別のアプローチが必要
-  });
-
-  it("送信中の場合、データが送信できないことを確認するテスト", async () => {
-    // 送信中状態のフォームレンダリングをシミュレート
-    const mockUseForm = {
-      register: jest.fn(),
-      handleSubmit: jest.fn(),
-      formState: {
-        errors: {},
-        isSubmitting: true,
-      },
-      reset: jest.fn(),
-    };
-
-    jest.mock("react-hook-form", () => ({
-      useForm: () => mockUseForm,
-    }));
-
-    // 同様に、モックの制限により実際のテストには統合テストが必要
+    // もう一度クリックして元に戻るか確認
+    fireEvent.click(passwordToggleButton);
+    expect(passwordField.type).toBe("password");
   });
 });
