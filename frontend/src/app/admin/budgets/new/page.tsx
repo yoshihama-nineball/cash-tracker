@@ -1,6 +1,6 @@
 import CreateBudgetForm from "@/components/budgets/CreateBudgetForm";
 
-const page = () => {
+const CreateBudgetPage = () => {
   return (
     <>
       <CreateBudgetForm />
@@ -8,4 +8,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default CreateBudgetPage;
