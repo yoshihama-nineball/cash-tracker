@@ -40,6 +40,8 @@ module.exports = {
   transformIgnorePatterns: [
     "/node_modules/",
     "^.+\\.module\\.(css|sass|scss)$",
+    "/node_modules/(?!(@hookform/resolvers)/)",
   ],
+  testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
 };
