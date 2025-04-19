@@ -107,7 +107,6 @@ const CreateBudgetForm = () => {
           <TextField
             id="name"
             type="name"
-            // プレースホルダーテキストを適切なものに修正
             placeholder="タイトルを入力"
             fullWidth
             variant="outlined"
