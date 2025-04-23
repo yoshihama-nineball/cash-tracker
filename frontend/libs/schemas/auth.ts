@@ -83,17 +83,21 @@ export const UserSchema = z.object({
   email: z.string().email(),
 });
 
-// export const BudgetAPIResponseSchema = z.object({
-//         id: z.number(),
-//         name: z.string(),
-//         amount: z.string(),
-//         userId: z.number(),
-//         createdAt: z.string(),
-//         updatedAt: z.string(),
-//         // expenses: z.array(ExpenseAPIResponseSchema)
-// })
+export const BudgetAPIResponseSchema = z.object({
+  id: z.number(),
+  name: z.string(),
+  amount: z.string(),
+  userId: z.number(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  // expenses: z.array(ExpenseAPIResponseSchema)
+});
 
-// export const BudgetsAPIResponseSchema = z.array(BudgetAPIResponseSchema.omit({ expenses: true }))export const BudgetsAPIResponseSchema = z.array(BudgetAPIResponseSchema.omit({ expenses: true }))
+export const BudgetsAPIResponseSchema = z.object({
+  budgets: z.array(BudgetAPIResponseSchema.omit({ expenses: true })),
+});
+
+export type Budget = z.infer<typeof BudgetAPIResponseSchema>;
 
 export type RegisterFormValues = z.infer<typeof RegisterSchema>;
 export type ConfirmAccountFormValues = z.infer<typeof ConfirmAccountSchema>;
