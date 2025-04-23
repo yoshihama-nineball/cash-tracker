@@ -1,8 +1,26 @@
+import getToken from "libs/auth/token";
+import { BudgetsAPIResponseSchema } from "libs/schemas/auth";
 import Link from "next/link";
-import { verifySession } from "../../../libs/auth/dal";
+
+async function getUserBudgets() {
+  const token = getToken();
+  const url = `${process.env.API_URL}/budgets`;
+  const req = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    next: {
+      tags: ["all-budgets"],
+    },
+  });
+  const json = await req.json();
+  const budgets = BudgetsAPIResponseSchema.parse(json);
+  return budgets;
+}
 
 const page = async () => {
-  await verifySession();
+  // await verifySession();
+  const budgets = await getUserBudgets();
   return (
     <>
       <div className="flex flex-col-reverse md:flex-row md:justify-between items-center">
