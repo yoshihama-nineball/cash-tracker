@@ -1,4 +1,3 @@
-// components/BudgetList.tsx
 "use client";
 
 import EditIcon from "@mui/icons-material/Edit";
@@ -15,6 +14,8 @@ import {
   TableRow,
   TableSortLabel,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import Link from "next/link";
 import { useState } from "react";
@@ -22,14 +23,24 @@ import { Budget } from "../../../types/budget";
 import Button from "../ui/Button/Button";
 
 interface BudgetListProps {
-  budgets: Budget[];
+  budgets: Budget[] | { budgets: Budget[] };
 }
 
 export default function BudgetList({ budgets }: BudgetListProps) {
   const [sortField, setSortField] = useState<"name" | "amount">("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const sortedBudgets = [...budgets].sort((a, b) => {
+  const budgetArray = Array.isArray(budgets)
+    ? budgets
+    : "budgets" in budgets && Array.isArray(budgets.budgets)
+      ? budgets.budgets
+      : [];
+
+  console.log(budgetArray, "処理後の予算データ");
+
+  const sortedBudgets = [...budgetArray].sort((a, b) => {
     if (sortField === "name") {
       return sortDirection === "asc"
         ? a.name.localeCompare(b.name)
@@ -50,13 +61,13 @@ export default function BudgetList({ budgets }: BudgetListProps) {
     }
   };
 
-  if (budgets.length === 0) {
+  if (budgetArray.length === 0) {
     return (
       <Box sx={{ textAlign: "center", py: 4 }}>
         <Typography color="text.secondary" sx={{ mb: 2 }}>
           予算がまだ登録されていません
         </Typography>
-        <Link href="/budgets/new" passHref>
+        <Link href="/admin/budgets/new" passHref>
           <Button variant="primary">最初の予算を作成する</Button>
         </Link>
       </Box>
@@ -66,32 +77,94 @@ export default function BudgetList({ budgets }: BudgetListProps) {
   return (
     <TableContainer
       component={Paper}
-      sx={{ borderRadius: 2, overflow: "hidden" }}
+      sx={{
+        borderRadius: 2,
+        overflow: "hidden",
+        width: "100%",
+        maxWidth: "100%",
+        boxShadow: 2,
+      }}
     >
-      <Table sx={{ minWidth: 650 }}>
-        <TableHead sx={{ bgcolor: "grey.100" }}>
+      <Table>
+        <TableHead sx={{ bgcolor: "primary.light" }}>
           <TableRow>
-            <TableCell>
+            <TableCell
+              sx={{
+                color: "white",
+                fontWeight: "bold",
+                width: "25%",
+              }}
+            >
               <TableSortLabel
                 active={sortField === "name"}
                 direction={sortField === "name" ? sortDirection : "asc"}
                 onClick={() => toggleSort("name")}
+                sx={{
+                  color: "white !important",
+                  "&.MuiTableSortLabel-active": {
+                    color: "white !important",
+                  },
+                  "& .MuiTableSortLabel-icon": {
+                    color: "white !important",
+                  },
+                }}
               >
                 予算名
               </TableSortLabel>
             </TableCell>
-            <TableCell>
+            <TableCell
+              sx={{
+                color: "white",
+                fontWeight: "bold",
+                width: "15%",
+              }}
+            >
               <TableSortLabel
                 active={sortField === "amount"}
                 direction={sortField === "amount" ? sortDirection : "asc"}
                 onClick={() => toggleSort("amount")}
+                sx={{
+                  color: "white !important",
+                  "&.MuiTableSortLabel-active": {
+                    color: "white !important",
+                  },
+                  "& .MuiTableSortLabel-icon": {
+                    color: "white !important",
+                  },
+                }}
               >
                 金額
               </TableSortLabel>
             </TableCell>
-            <TableCell>支出数</TableCell>
-            <TableCell>作成日</TableCell>
-            <TableCell align="right">アクション</TableCell>
+            <TableCell
+              sx={{
+                color: "white",
+                fontWeight: "bold",
+                width: "10%",
+              }}
+            >
+              支出数
+            </TableCell>
+            <TableCell
+              sx={{
+                color: "white",
+                fontWeight: "bold",
+                width: "15%",
+              }}
+            >
+              作成日
+            </TableCell>
+            <TableCell
+              align="center"
+              sx={{
+                color: "white",
+                fontWeight: "bold",
+                width: "15%",
+              }}
+              colSpan={2}
+            >
+              アクション
+            </TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -99,36 +172,52 @@ export default function BudgetList({ budgets }: BudgetListProps) {
             <TableRow
               key={budget._id}
               hover
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              sx={{
+                "&:last-child td, &:last-child th": { border: 0 },
+                "&:nth-of-type(odd)": { backgroundColor: "#f8f8f8" },
+              }}
             >
               <TableCell component="th" scope="row">
                 <Link href={`/budgets/${budget._id}`} passHref>
-                  <MuiLink sx={{ textDecoration: "none" }}>
+                  <MuiLink
+                    sx={{ textDecoration: "none", fontWeight: "medium" }}
+                  >
                     {budget.name}
                   </MuiLink>
                 </Link>
               </TableCell>
-              <TableCell>¥{budget.amount.toLocaleString()}</TableCell>
+              <TableCell sx={{ fontWeight: "medium" }}>
+                ¥{budget.amount.toLocaleString()}
+              </TableCell>
               <TableCell>{budget.expenses?.length || 0}</TableCell>
               <TableCell>
                 {new Date(budget.createdAt).toLocaleDateString("ja-JP")}
               </TableCell>
-              <TableCell align="right">
-                <Link href={`/budgets/${budget._id}/edit`} passHref>
+              <TableCell align="center" sx={{ p: 1 }}>
+                <Link href={`/admin/budgets/${budget._id}/edit`} passHref>
                   <Button
                     startIcon={<EditIcon />}
                     color="primary"
-                    sx={{ mr: 1 }}
                     size="small"
+                    sx={{
+                      minWidth: isMobile ? "40px" : "80px",
+                      whiteSpace: "nowrap",
+                    }}
                   >
                     編集
                   </Button>
                 </Link>
-                <Link href={`/budgets/${budget._id}/expenses`} passHref>
+              </TableCell>
+              <TableCell align="center" sx={{ p: 1 }}>
+                <Link href={`/admin/budgets/${budget._id}/expenses`} passHref>
                   <Button
                     startIcon={<ReceiptIcon />}
-                    color="success"
+                    color="secondary"
                     size="small"
+                    sx={{
+                      minWidth: isMobile ? "40px" : "80px",
+                      whiteSpace: "nowrap",
+                    }}
                   >
                     支出管理
                   </Button>
