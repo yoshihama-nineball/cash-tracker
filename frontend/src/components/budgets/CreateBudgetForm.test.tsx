@@ -76,7 +76,6 @@ describe("CreateBudgetForm コンポーネントのテスト", () => {
   it("フォーム送信時にhandleSubmitが呼ばれること", () => {
     render(<CreateBudgetForm />);
 
-    // 送信ボタンクリック
     const submitButton = screen.getByRole("button", { name: /追加/i });
     fireEvent.click(submitButton);
 
