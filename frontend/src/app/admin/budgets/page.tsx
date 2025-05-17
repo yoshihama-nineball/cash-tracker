@@ -9,9 +9,13 @@ import { getUserBudgets } from "../../../../actions/get-budgets-action";
 
 // サーバーコンポーネントでのデータ取得
 export default async function BudgetsPage() {
-  // データ取得
-  const budgetsData = await getUserBudgets();
-
+  let budgetsData;
+  try {
+    budgetsData = await getUserBudgets();
+  } catch (error) {
+    console.error("予算データの取得中にエラーが発生:", error);
+    budgetsData = { budgets: [] }; // エラー時はデフォルト値を使用
+  }
   return (
     <Container maxWidth="lg" disableGutters sx={{ px: { xs: 2, sm: 3 } }}>
       <Box
