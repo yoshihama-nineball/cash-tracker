@@ -132,7 +132,7 @@ describe("authenticate関数", () => {
 
     // リダイレクトが呼ばれる
     const { redirect } = require("next/navigation");
-    expect(redirect).toHaveBeenCalledWith("/admin");
+    expect(redirect).toHaveBeenCalledWith("/admin/budgets");
   });
 
   it("APIがエラーを返した場合、エラーメッセージを返す", async () => {

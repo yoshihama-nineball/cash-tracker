@@ -51,5 +51,5 @@ export async function authenticate(
     path: "/",
   });
 
-  redirect("/admin");
+  redirect("/admin/budgets");
 }
