@@ -1,18 +1,46 @@
 // lib/api.ts
-import axios from "axios"; // axios をインストール: npm install axios
-import { BudgetsResponse } from "../types/budget";
+import { Budget, CreateBudgetRequest } from "../types/budget";
 
 // const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-const API_URL = "http://localhost:5000/api";
+const API_URL = "http://localhost:4000/api";
 
-export async function getBudgets(): Promise<BudgetsResponse> {
+export async function getBudgets() {
   try {
-    // fetch の代わりに axios を使用
-    const { data } = await axios.get(`${API_URL}/budgets`);
-    return data;
+    const token = await getToken();
+    const url = `${process.env.API_URL}/budgets`;
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      next: {
+        tags: ["all-budgets"],
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("API Response data:", data); // デバッグ用
+
+    // APIからのレスポンスが直接配列の場合
+    if (Array.isArray(data)) {
+      return { budgets: data };
+    }
+
+    // データにbudgetsプロパティがある場合はそのまま返す
+    if (data && data.budgets) {
+      return data;
+    }
+
+    // それ以外の場合は、データ全体をbudgetsとして扱う
+    return { budgets: data };
   } catch (error) {
-    console.error("Error fetching budgets:", error);
-    return { budgets: [], count: 0 };
+    console.error("Failed to fetch budgets:", error);
+    // エラー時は空の予算リストを返す
+    return { budgets: [] };
   }
 }
 

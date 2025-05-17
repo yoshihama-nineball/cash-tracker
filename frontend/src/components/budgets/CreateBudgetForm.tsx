@@ -55,7 +55,7 @@ const CreateBudgetForm = () => {
   useEffect(() => {
     if (formState.success) {
       reset();
-      router.push("/admin");
+      router.push("/admin/budgets");
     }
   }, [formState.success, reset]);
 

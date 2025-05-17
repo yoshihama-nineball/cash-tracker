@@ -43,7 +43,6 @@ export async function authenticate(
     };
   }
 
-  // Setear Cookies
   cookies().set({
     name: "CASHTRACKR_TOKEN",
     value: json,
@@ -51,5 +50,5 @@ export async function authenticate(
     path: "/",
   });
 
-  redirect("/admin");
+  redirect("/admin/budgets");
 }

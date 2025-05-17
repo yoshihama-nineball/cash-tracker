@@ -132,7 +132,7 @@ describe("authenticate関数", () => {
 
     // リダイレクトが呼ばれる
     const { redirect } = require("next/navigation");
-    expect(redirect).toHaveBeenCalledWith("/admin");
+    expect(redirect).toHaveBeenCalledWith("/admin/budgets");
   });
 
   it("APIがエラーを返した場合、エラーメッセージを返す", async () => {
@@ -182,5 +182,5 @@ describe("authenticate関数", () => {
   });
 
   // TODO: 現在の実装では例外処理が明示的に行われていないため、
-  // テストを更新するか、実装に例外処理を追加する必要がある
+  // TODO: テストを更新するか、実装に例外処理を追加する必要がある
 });

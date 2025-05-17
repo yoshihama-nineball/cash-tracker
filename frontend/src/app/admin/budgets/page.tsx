@@ -1,38 +1,62 @@
-// app/budgets/page.tsx
+// app/admin/budgets/page.tsx
+import BudgetList from "@/components/budgets/BudgetList";
+import BudgetSkeleton from "@/components/budgets/BudgetSkeleton";
+import Button from "@/components/ui/Button/Button";
+import { Box, Container, Typography } from "@mui/material";
 import Link from "next/link";
 import { Suspense } from "react";
-import { getBudgets } from "../../../../libs/api";
-import BudgetList from "../../../components/budgets/BudgetList";
-import BudgetSkeleton from "../../../components/budgets/BudgetSkeleton";
+import { getUserBudgets } from "../../../../actions/get-budgets-action";
 
-export const metadata = {
-  title: "予算一覧 | 家計簿アプリ",
-  description: "予算の一覧を確認・管理できます",
-};
-
+// サーバーコンポーネントでのデータ取得
 export default async function BudgetsPage() {
+  let budgetsData;
+  try {
+    budgetsData = await getUserBudgets();
+  } catch (error) {
+    console.error("予算データの取得中にエラーが発生:", error);
+    budgetsData = { budgets: [] }; // エラー時はデフォルト値を使用
+  }
   return (
-    <div className="container mx-auto py-6 px-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">予算一覧</h1>
-        <Link
-          href="/budgets/new"
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+    <Container maxWidth="lg" disableGutters sx={{ px: { xs: 2, sm: 3 } }}>
+      <Box
+        sx={{
+          mt: 4,
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
+          width: "100%",
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            flexWrap: "wrap",
+            gap: 2,
+          }}
         >
-          新規予算作成
-        </Link>
-      </div>
-
-      <Suspense fallback={<BudgetSkeleton />}>
-        <BudgetListContainer />
-      </Suspense>
-    </div>
+          <Typography variant="h4" sx={{ fontWeight: "bold", color: "#333" }}>予算一覧</Typography>
+          <Link href="/admin/budgets/new">
+            <Button 
+              variant="contained" 
+              sx={{ 
+                bgcolor: "#8e8edb", 
+                color: "white",
+                borderRadius: 4,
+                py: 1,
+                px: 3,
+                "&:hover": { bgcolor: "#7070c0" }
+              }}
+            >
+              新規予算作成
+            </Button>
+          </Link>
+        </Box>
+        <Suspense fallback={<BudgetSkeleton />}>
+          <BudgetList budgets={budgetsData} />
+        </Suspense>
+      </Box>
+    </Container>
   );
-}
-
-// 非同期データ取得を含む子コンポーネントに分離
-async function BudgetListContainer() {
-  const budgetsData = await getBudgets();
-
-  return <BudgetList budgets={budgetsData.budgets} />;
 }
