@@ -1,9 +1,11 @@
+import EditBudgetForm from "@/components/budgets/EditBudgetForm"
 
-const page = () => {
+const EditBudgetPage = () => {
   return (
-    <div>編集ページ
-    </div>
+    <>
+      <EditBudgetForm/>
+    </>
   )
 }
 
-export default page
+export default EditBudgetPage
