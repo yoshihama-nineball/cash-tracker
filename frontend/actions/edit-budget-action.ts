@@ -5,7 +5,7 @@ import { Budget, DraftBudgetSchema } from "libs/schemas/auth";
 import { revalidatePath } from "next/cache";
 
 type ActionStateType = {
-  errors: string;
+  errors: string[];
   success: string;
 };
 
@@ -18,6 +18,7 @@ export async function editBudget(
     name: formData.get("name"),
     amount: formData.get("amount"),
   });
+
   if (!budget.success) {
     return {
       errors: budget.error.issues.map((issue) => issue.message),
@@ -28,36 +29,54 @@ export async function editBudget(
   const token = await getToken();
   const url = `${process.env.API_URL}/budgets/${budgetId}`;
 
-  const req = await fetch(url, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  try {
+    const req = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(budget.data),
+    });
 
-  const json = await req.json();
-
-  revalidatePath("/admin");
-
-  if (typeof json === "string") {
-    return {
-      errors: [],
-      success: json,
-    };
-  } else if (json && json === "object") {
-    if ("success" in json && typeof json === "object") {
+    if (!req.ok) {
       return {
-        errors: [],
-        success: json.message,
+        errors: [`APIエラー: ${req.status} ${req.statusText}`],
+        success: "",
       };
     }
-  }
 
-  return {
-    errors: [
-      "レスポンス形式が予期しないものでした。管理者にお問い合わせください。",
-    ],
-    success: "",
-  };
+    const json = await req.json();
+
+    revalidatePath("/admin");
+
+    if (typeof json === "string") {
+      return {
+        errors: [],
+        success: json,
+      };
+    } else if (typeof json === "object" && json !== null) {
+      if ("success" in json || "message" in json) {
+        return {
+          errors: [],
+          success: json.message || json.success || "更新が完了しました",
+        };
+      }
+    }
+
+    return {
+      errors: [
+        "レスポンス形式が予期しないものでした。管理者にお問い合わせください。",
+      ],
+      success: "",
+    };
+  } catch (error) {
+    console.error("Budget update error:", error);
+    return {
+      errors: [
+        "通信エラーが発生しました。インターネット接続を確認してください。",
+      ],
+      success: "",
+    };
+  }
 }

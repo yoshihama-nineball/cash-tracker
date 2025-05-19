@@ -10,12 +10,16 @@ jest.mock("../../../../actions/get-budgets-action", () => ({
 
 // BudgetListをモック
 jest.mock("@/components/budgets/BudgetList", () => {
-  return jest.fn(() => <div data-testid="budget-list">モックされた予算リスト</div>);
+  return jest.fn(() => (
+    <div data-testid="budget-list">モックされた予算リスト</div>
+  ));
 });
 
 // BudgetSkeletonをモック
 jest.mock("@/components/budgets/BudgetSkeleton", () => {
-  return jest.fn(() => <div data-testid="budget-skeleton">ローディング中...</div>);
+  return jest.fn(() => (
+    <div data-testid="budget-skeleton">ローディング中...</div>
+  ));
 });
 
 // Suspenseをモック
@@ -45,17 +49,17 @@ describe("BudgetsPage", () => {
 
     // ページのタイトルが表示されていることを確認
     expect(screen.getByText("予算一覧")).toBeInTheDocument();
-    
+
     // 新規予算作成ボタンが表示されていることを確認
     expect(screen.getByText("新規予算作成")).toBeInTheDocument();
-    
+
     // BudgetListコンポーネントが表示されていることを確認
     expect(screen.getByTestId("budget-list")).toBeInTheDocument();
   });
 
   it("データ取得が正常に行われること", async () => {
     await BudgetsPage();
-    
+
     // getUserBudgetsが呼び出されたことを確認
     expect(getUserBudgets).toHaveBeenCalledTimes(1);
   });
@@ -63,16 +67,16 @@ describe("BudgetsPage", () => {
   it("データ取得でエラーが発生した場合も問題なくレンダリングされること", async () => {
     // エラーをスローするようにモックを設定
     (getUserBudgets as jest.Mock).mockRejectedValue(new Error("API error"));
-    
+
     // エラーをキャッチして空の予算データを返すようにBudgetsPageを修正した場合のテスト
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-    
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+
     let errorThrown = false;
-    
+
     try {
       const page = await BudgetsPage();
       render(page);
-      
+
       // それでもUI要素が表示されていることを確認
       expect(screen.getByText("予算一覧")).toBeInTheDocument();
     } catch (e) {
@@ -81,7 +85,7 @@ describe("BudgetsPage", () => {
     } finally {
       consoleSpy.mockRestore();
     }
-    
+
     // BudgetsPageでエラーハンドリングがされていない場合、このアサーションが失敗する
     expect(errorThrown).toBe(false);
   });

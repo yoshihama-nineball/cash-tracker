@@ -84,15 +84,27 @@ export const UserSchema = z.object({
 });
 
 export const BudgetAPIResponseSchema = z.object({
-  id: z.number(),
+  // id: APIからstring型で送られてくるが、スキーマではnumber型を期待
+  id: z
+    .union([z.string(), z.number()])
+    .transform((val) => (typeof val === "string" ? val : String(val))),
+
   name: z.string(),
-  amount: z.string(),
-  userId: z.number(),
+
+  // amount: APIからnumber型で送られてくるが、スキーマではstring型を期待
+  amount: z
+    .union([z.string(), z.number()])
+    .transform((val) => (typeof val === "string" ? Number(val) : val)),
+
+  // userId: APIからstring型で送られてくるが、スキーマではnumber型を期待
+  userId: z
+    .union([z.string(), z.number()])
+    .transform((val) => (typeof val === "string" ? val : String(val))),
+
   createdAt: z.string(),
   updatedAt: z.string(),
   // expenses: z.array(ExpenseAPIResponseSchema)
 });
-
 export const BudgetsAPIResponseSchema = z.object({
   budgets: z.array(BudgetAPIResponseSchema.omit({ expenses: true })),
 });

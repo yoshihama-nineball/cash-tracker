@@ -36,17 +36,19 @@ export default async function BudgetsPage() {
             gap: 2,
           }}
         >
-          <Typography variant="h4" sx={{ fontWeight: "bold", color: "#333" }}>予算一覧</Typography>
+          <Typography variant="h4" sx={{ fontWeight: "bold", color: "#333" }}>
+            予算一覧
+          </Typography>
           <Link href="/admin/budgets/new">
-            <Button 
-              variant="contained" 
-              sx={{ 
-                bgcolor: "#8e8edb", 
+            <Button
+              variant="contained"
+              sx={{
+                bgcolor: "#8e8edb",
                 color: "white",
                 borderRadius: 4,
                 py: 1,
                 px: 3,
-                "&:hover": { bgcolor: "#7070c0" }
+                "&:hover": { bgcolor: "#7070c0" },
               }}
             >
               新規予算作成
