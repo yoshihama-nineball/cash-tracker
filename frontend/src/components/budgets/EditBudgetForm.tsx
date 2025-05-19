@@ -8,16 +8,16 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { editBudget } from "actions/edit-budget-action";
-import {
-  Budget,
-  DraftBudgetFormValues,
-  DraftBudgetSchema,
-} from "libs/schemas/auth";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { useFormState } from "react-dom";
 import { useForm } from "react-hook-form";
+import { editBudget } from "../../../actions/edit-budget-action";
+import {
+  Budget,
+  DraftBudgetFormValues,
+  DraftBudgetSchema,
+} from "../../../libs/schemas/auth";
 import Alert from "../feedback/Alert/Alert";
 import Loading from "../feedback/Loading";
 import Button from "../ui/Button/Button";
