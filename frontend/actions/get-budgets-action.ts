@@ -22,7 +22,6 @@ export async function getUserBudgets() {
     }
 
     const json = await req.json();
-    console.log("API原始データ:", json);
 
     if (Array.isArray(json)) {
       return { budgets: json };

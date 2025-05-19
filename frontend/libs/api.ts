@@ -1,5 +1,9 @@
 // lib/api.ts
+import { notFound } from "next/navigation";
+import { cache } from "react";
 import { Budget, CreateBudgetRequest } from "../types/budget";
+import getToken from "./auth/token";
+import { BudgetAPIResponseSchema } from "./schemas/auth";
 
 // const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 const API_URL = "http://localhost:4000/api";
@@ -66,3 +70,23 @@ export async function createBudget(
   const data = await res.json();
   return data.budget;
 }
+
+export const getBudget = cache(async (budgetId: string) => {
+  // getToken()を await
+  const token = await getToken();
+
+  const url = `${process.env.API_URL}/budgets/${budgetId}`;
+  const req = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!req.ok) {
+    notFound();
+  }
+
+  const json = await req.json();
+  const budget = BudgetAPIResponseSchema.parse(json);
+  return budget;
+});

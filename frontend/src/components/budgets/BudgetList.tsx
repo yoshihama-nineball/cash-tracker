@@ -38,8 +38,6 @@ export default function BudgetList({ budgets }: BudgetListProps) {
       ? budgets.budgets
       : [];
 
-  console.log(budgetArray, "処理後の予算データ");
-
   const sortedBudgets = [...budgetArray].sort((a, b) => {
     if (sortField === "name") {
       return sortDirection === "asc"

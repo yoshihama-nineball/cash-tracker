@@ -2,7 +2,6 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  Alert,
   Box,
   FormControl,
   FormHelperText,
@@ -10,6 +9,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { useMessage } from "context/MessageContext";
 import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useTransition } from "react";
 import { useForm } from "react-hook-form";
@@ -29,6 +29,8 @@ const CreateBudgetForm = () => {
   const router = useRouter();
   const ref = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
+
+  const { showMessage } = useMessage();
 
   const [formState, dispatch] = useActionState<AuthResponse, FormData>(
     createBudget,
@@ -52,12 +54,28 @@ const CreateBudgetForm = () => {
     },
   });
 
+  // useEffect(() => {
+  //   if (formState.success) {
+  //     reset();
+  //     router.push("/admin/budgets");
+  //   }
+  // }, [formState.success, reset]);
+
   useEffect(() => {
     if (formState.success) {
+      // 成功メッセージをグローバルメッセージとして設定
+      showMessage(formState.success, "success");
       reset();
       router.push("/admin/budgets");
     }
-  }, [formState.success, reset]);
+  }, [formState.success, reset, router, showMessage]);
+
+  // エラーがある場合もグローバルメッセージとして設定
+  useEffect(() => {
+    if (formState.errors.length > 0) {
+      showMessage(formState.errors[0], "error");
+    }
+  }, [formState.errors, showMessage]);
 
   const onSubmit = async (data: DraftBudgetFormValues) => {
     const formData = new FormData();
@@ -85,19 +103,6 @@ const CreateBudgetForm = () => {
         noValidate
         onSubmit={handleSubmit(onSubmit)}
       >
-        {formState.errors.map((error, index) => (
-          <Alert severity="error" key={index} aria-label="予算追加エラー">
-            {error}
-          </Alert>
-        ))}
-
-        {formState.success && (
-          <Alert severity="success" aria-label="">
-            予算追加成功
-            {formState.success}
-          </Alert>
-        )}
-
         <Typography variant="h4" sx={{ mx: "auto" }}>
           予算作成
         </Typography>
