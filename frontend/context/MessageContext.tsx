@@ -1,8 +1,12 @@
-// context/MessageContext.tsx
 "use client";
-import { createContext, ReactNode, useContext, useState } from "react";
+import {
+  createContext,
+  ReactNode,
+  useCallback,
+  useContext,
+  useState,
+} from "react";
 
-// Alert コンポーネントの型と合わせる
 type AlertSeverity = "error" | "warning" | "success" | "info";
 
 type MessageType = {
@@ -10,28 +14,54 @@ type MessageType = {
   severity: AlertSeverity;
 };
 
-type MessageContextType = {
+interface MessageContextType {
   message: MessageType | null;
-  setMessage: (message: MessageType | null) => void;
+  showMessage: (text: string, severity: AlertSeverity) => void;
   clearMessage: () => void;
+}
+const defaultShowMessage = (text: string, severity: AlertSeverity) => {
+  console.log("Default showMessage called", { text, severity });
+};
+
+const defaultClearMessage = () => {
+  console.log("Default clearMessage called");
 };
 
 const MessageContext = createContext<MessageContextType>({
   message: null,
-  setMessage: () => {},
-  clearMessage: () => {},
+  showMessage: defaultShowMessage,
+  clearMessage: defaultClearMessage,
 });
 
 export const MessageProvider = ({ children }: { children: ReactNode }) => {
   const [message, setMessage] = useState<MessageType | null>(null);
 
-  const clearMessage = () => setMessage(null);
+  const clearMessage = useCallback(() => {
+    setMessage(null);
+  }, []);
+
+  const showMessage = useCallback((text: string, severity: AlertSeverity) => {
+    if (text) {
+      setMessage({ text, severity });
+    }
+  }, []);
+
+  const value = {
+    message,
+    showMessage,
+    clearMessage,
+  };
 
   return (
-    <MessageContext.Provider value={{ message, setMessage, clearMessage }}>
-      {children}
-    </MessageContext.Provider>
+    <MessageContext.Provider value={value}>{children}</MessageContext.Provider>
   );
 };
+export const useMessage = () => {
+  const context = useContext(MessageContext);
 
-export const useMessage = () => useContext(MessageContext);
+  if (context === undefined) {
+    throw new Error("useMessage must be used within a MessageProvider");
+  }
+
+  return context;
+};

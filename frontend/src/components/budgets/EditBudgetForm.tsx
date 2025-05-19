@@ -13,12 +13,12 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useFormState } from "react-dom";
 import { useForm } from "react-hook-form";
 import { editBudget } from "../../../actions/edit-budget-action";
+import { useMessage } from "../../../context/MessageContext";
 import {
   Budget,
   DraftBudgetFormValues,
   DraftBudgetSchema,
 } from "../../../libs/schemas/auth";
-import Alert from "../feedback/Alert/Alert";
 import Loading from "../feedback/Loading";
 import Button from "../ui/Button/Button";
 
@@ -32,8 +32,8 @@ const EditBudgetForm = ({ budget }: { budget: Budget }) => {
   const ref = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
   const [isFormReady, setIsFormReady] = useState(false);
+  const { showMessage } = useMessage();
 
-  // フォームが表示される前に予算データが確実に存在することを確認
   useEffect(() => {
     if (budget && budget.id) {
       setIsFormReady(true);
@@ -50,7 +50,6 @@ const EditBudgetForm = ({ budget }: { budget: Budget }) => {
     success: "",
   });
 
-  // フォームの初期値を予算データで設定
   const {
     register,
     handleSubmit,
@@ -59,14 +58,12 @@ const EditBudgetForm = ({ budget }: { budget: Budget }) => {
     setValue,
   } = useForm<DraftBudgetFormValues>({
     resolver: zodResolver(DraftBudgetSchema),
-    // 初期値は空
     defaultValues: {
       name: "",
       amount: 0,
     },
   });
 
-  // 予算データが変更されたときにフォームの値を更新
   useEffect(() => {
     if (budget) {
       console.log("Setting form values:", budget);
@@ -82,10 +79,19 @@ const EditBudgetForm = ({ budget }: { budget: Budget }) => {
 
   useEffect(() => {
     if (formState.success) {
+      // 成功メッセージをグローバルメッセージとして設定
+      showMessage(formState.success, "success");
       reset();
       router.push("/admin/budgets");
     }
-  }, [formState.success, reset, router]);
+  }, [formState.success, reset, router, showMessage]);
+
+  // エラーがある場合もグローバルメッセージとして設定
+  useEffect(() => {
+    if (formState.errors.length > 0) {
+      showMessage(formState.errors[0], "error");
+    }
+  }, [formState.errors, showMessage]);
 
   const onSubmit = async (data: DraftBudgetFormValues) => {
     const formData = new FormData();
@@ -120,7 +126,7 @@ const EditBudgetForm = ({ budget }: { budget: Budget }) => {
       }}
       onSubmit={handleSubmit(onSubmit)}
     >
-      {formState.errors.map((error, index) => (
+      {/* {formState.errors.map((error, index) => (
         <Alert severity="error" key={index}>
           {error}
         </Alert>
@@ -128,7 +134,7 @@ const EditBudgetForm = ({ budget }: { budget: Budget }) => {
 
       {formState.success && (
         <Alert severity="success">{formState.success}</Alert>
-      )}
+      )} */}
 
       <Typography variant="h4">予算の編集</Typography>
 
