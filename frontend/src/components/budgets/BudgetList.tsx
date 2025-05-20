@@ -21,6 +21,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Budget } from "../../../types/budget";
 import Button from "../ui/Button/Button";
+import DeleteDialog from "./DeleteDialog";
 
 interface BudgetListProps {
   budgets: Budget[] | { budgets: Budget[] };
@@ -159,7 +160,7 @@ export default function BudgetList({ budgets }: BudgetListProps) {
                 fontWeight: "bold",
                 width: "15%",
               }}
-              colSpan={2}
+              colSpan={3}
             >
               アクション
             </TableCell>
@@ -220,6 +221,9 @@ export default function BudgetList({ budgets }: BudgetListProps) {
                     支出管理
                   </Button>
                 </Link>
+              </TableCell>
+              <TableCell align="center" sx={{ p: 1 }}>
+                <DeleteDialog isMobile={isMobile} />
               </TableCell>
             </TableRow>
           ))}
