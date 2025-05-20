@@ -223,7 +223,11 @@ export default function BudgetList({ budgets }: BudgetListProps) {
                 </Link>
               </TableCell>
               <TableCell align="center" sx={{ p: 1 }}>
-                <DeleteDialog isMobile={isMobile} />
+                <DeleteDialog
+                  isMobile={isMobile}
+                  budgetId={budget._id}
+                  budgetName={budget.name}
+                />
               </TableCell>
             </TableRow>
           ))}
