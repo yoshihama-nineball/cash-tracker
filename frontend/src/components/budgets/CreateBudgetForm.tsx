@@ -54,23 +54,14 @@ const CreateBudgetForm = () => {
     },
   });
 
-  // useEffect(() => {
-  //   if (formState.success) {
-  //     reset();
-  //     router.push("/admin/budgets");
-  //   }
-  // }, [formState.success, reset]);
-
   useEffect(() => {
     if (formState.success) {
-      // 成功メッセージをグローバルメッセージとして設定
       showMessage(formState.success, "success");
       reset();
       router.push("/admin/budgets");
     }
   }, [formState.success, reset, router, showMessage]);
 
-  // エラーがある場合もグローバルメッセージとして設定
   useEffect(() => {
     if (formState.errors.length > 0) {
       showMessage(formState.errors[0], "error");

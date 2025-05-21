@@ -36,6 +36,12 @@ jest.mock("react", () => {
   };
 });
 
+// DeleteBudgetをモック
+jest.mock("@/components/budgets/DeleteDialog", () => {
+  return jest.fn(() => (
+    <div data-testid="delete-budget-dialog">モックされた予算</div>
+  ));
+});
 describe("BudgetListコンポーネントのテスト", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -77,6 +83,32 @@ describe("BudgetListコンポーネントのテスト", () => {
 
     expect(editButtons.length).toBe(2); // 各予算項目に対して1つのボタン
     expect(expenseButtons.length).toBe(2); // 各予算項目に対して1つのボタン
+  });
+
+  it("DeleteDialogコンポーネントが各予算項目に表示されること", () => {
+    const mockBudgets = {
+      budgets: [
+        {
+          id: 1,
+          name: "食費",
+          amount: 30000,
+          createdAt: "2023-04-22T00:00:00.000Z",
+          expenseCount: 0,
+        },
+        {
+          id: 2,
+          name: "家賃",
+          amount: 80000,
+          createdAt: "2023-04-23T00:00:00.000Z",
+          expenseCount: 0,
+        },
+      ],
+    };
+
+    render(<BudgetList budgets={mockBudgets} />);
+
+    const deleteDialogs = screen.getAllByTestId("delete-budget-dialog");
+    expect(deleteDialogs.length).toBe(2);
   });
 
   it("予算がない場合は適切なメッセージとボタンが表示されること", () => {

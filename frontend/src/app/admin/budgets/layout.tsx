@@ -1,7 +1,6 @@
 // app/layout.tsx
 // server component
 import FlashMessage from "@/components/feedback/Alert/FlashMessage";
-import Loading from "@/components/feedback/Loading";
 import { ClientThemeProvider } from "@/components/layouts/ClientThemeProvider";
 import { Metadata } from "next";
 import React from "react";
@@ -25,7 +24,7 @@ export default async function RootLayout({
         <ClientThemeProvider>
           <main>
             <FlashMessage />
-            <React.Suspense fallback={<Loading />}>{children}</React.Suspense>
+            <React.Suspense>{children}</React.Suspense>
           </main>
         </ClientThemeProvider>
       </body>
