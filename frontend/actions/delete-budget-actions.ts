@@ -12,68 +12,37 @@ type ActionStateType = {
 export async function deleteBudget(
   budgetId: Budget["id"],
   prevState: ActionStateType,
-  formData: FormData, // これは使用しない
+  formData: FormData,
 ) {
-  const token = await getToken();
-  const url = `${process.env.API_URL}/budgets/${budgetId}`;
-
   try {
+    const token = await getToken();
+    const url = `${process.env.API_URL}/budgets/${budgetId}`;
+
     const req = await fetch(url, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      // ボディは不要
     });
 
     if (!req.ok) {
+      console.error("API error:", req.status, req.statusText);
       return {
         errors: [`APIエラー: ${req.status} ${req.statusText}`],
         success: "",
       };
     }
 
-    let json;
-    try {
-      // レスポンスボディがあれば解析
-      json = await req.json();
-    } catch (error) {
-      // レスポンスボディがない場合（204 No Contentなど）
-      if (req.ok) {
-        revalidatePath("/admin");
-        return {
-          errors: [],
-          success: "予算を削除しました",
-        };
-      }
-    }
-
     revalidatePath("/admin");
-
-    if (typeof json === "string") {
-      return {
-        errors: [],
-        success: json,
-      };
-    } else if (typeof json === "object" && json !== null) {
-      if ("success" in json || "message" in json) {
-        return {
-          errors: [],
-          success: json.message || json.success || "予算を削除しました",
-        };
-      }
-    }
 
     return {
       errors: [],
       success: "予算を削除しました",
     };
   } catch (error) {
-    console.error("Budget delete error:", error);
+    console.error("削除エラー:", error);
     return {
-      errors: [
-        "通信エラーが発生しました。インターネット接続を確認してください。",
-      ],
+      errors: ["削除中にエラーが発生しました"],
       success: "",
     };
   }
