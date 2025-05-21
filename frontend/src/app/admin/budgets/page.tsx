@@ -7,15 +7,15 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { getUserBudgets } from "../../../../actions/get-budgets-action";
 
-// サーバーコンポーネントでのデータ取得
 export default async function BudgetsPage() {
   let budgetsData;
   try {
     budgetsData = await getUserBudgets();
   } catch (error) {
     console.error("予算データの取得中にエラーが発生:", error);
-    budgetsData = { budgets: [] }; // エラー時はデフォルト値を使用
+    budgetsData = { budgets: [] };
   }
+
   return (
     <Container maxWidth="lg" disableGutters sx={{ px: { xs: 2, sm: 3 } }}>
       <Box
