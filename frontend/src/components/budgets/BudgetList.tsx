@@ -4,7 +4,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import {
   Box,
-  Link as MuiLink,
   Paper,
   Table,
   TableBody,
@@ -17,10 +16,10 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import Link from "next/link";
 import { useState } from "react";
 import { Budget } from "../../../types/budget";
 import Button from "../ui/Button/Button";
+import Link from "../ui/Link/Link";
 import DeleteDialog from "./DeleteDialog";
 
 interface BudgetListProps {
@@ -66,7 +65,7 @@ export default function BudgetList({ budgets }: BudgetListProps) {
         <Typography color="text.secondary" sx={{ mb: 2 }}>
           予算がまだ登録されていません
         </Typography>
-        <Link href="/admin/budgets/new" passHref>
+        <Link href="/admin/budgets/new">
           <Button variant="primary">最初の予算を作成する</Button>
         </Link>
       </Box>
@@ -177,12 +176,19 @@ export default function BudgetList({ budgets }: BudgetListProps) {
               }}
             >
               <TableCell component="th" scope="row">
-                <Link href={`/budgets/${budget._id}`} passHref>
-                  <MuiLink
-                    sx={{ textDecoration: "none", fontWeight: "medium" }}
+                <Link href={`/budgets/${budget._id}`}>
+                  <Typography
+                    sx={{
+                      color: "primary.main",
+                      fontWeight: "medium",
+                      textDecoration: "none",
+                      "&:hover": {
+                        textDecoration: "underline",
+                      },
+                    }}
                   >
                     {budget.name}
-                  </MuiLink>
+                  </Typography>
                 </Link>
               </TableCell>
               <TableCell sx={{ fontWeight: "medium" }}>
@@ -193,7 +199,7 @@ export default function BudgetList({ budgets }: BudgetListProps) {
                 {new Date(budget.createdAt).toLocaleDateString("ja-JP")}
               </TableCell>
               <TableCell align="center" sx={{ p: 1 }}>
-                <Link href={`/admin/budgets/${budget._id}/edit`} passHref>
+                <Link href={`/admin/budgets/${budget._id}/edit`}>
                   <Button
                     startIcon={<EditIcon />}
                     color="primary"
