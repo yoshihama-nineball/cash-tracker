@@ -5,13 +5,10 @@ import { UserSchema } from "../schemas/auth";
 
 export const verifySession = cache(async () => {
   try {
-    // セッションチェック
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const token = cookieStore.get("CASHTRACKR_TOKEN");
 
     if (!token) {
-      // 一時的にコメントアウトして動作確認
-      // redirect("/auth/login");
       return { user: null, isAuth: false };
     }
 
