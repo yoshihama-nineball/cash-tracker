@@ -176,7 +176,7 @@ export default function BudgetList({ budgets }: BudgetListProps) {
               }}
             >
               <TableCell component="th" scope="row">
-                <Link href={`/budgets/${budget._id}`}>
+                <Link href={`/admin/budgets/${budget._id}`}>
                   <Typography
                     sx={{
                       color: "primary.main",
