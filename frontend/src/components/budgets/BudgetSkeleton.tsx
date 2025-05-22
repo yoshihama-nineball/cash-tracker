@@ -19,7 +19,7 @@ const BudgetSkeleton = () => {
       sx={{
         borderRadius: 4,
         overflow: "hidden",
-        bgcolor: "#f0f0ff", // 薄い紫色の背景
+        bgcolor: "#f0f0ff",
         boxShadow: "none",
       }}
     >
