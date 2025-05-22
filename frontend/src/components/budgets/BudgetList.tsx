@@ -214,7 +214,7 @@ export default function BudgetList({ budgets }: BudgetListProps) {
                 </Link>
               </TableCell>
               <TableCell align="center" sx={{ p: 1 }}>
-                <Link href={`/admin/budgets/${budget._id}/expenses`} passHref>
+                <Link href={`/admin/budgets/${budget._id}`}>
                   <Button
                     startIcon={<ReceiptIcon />}
                     color="secondary"
