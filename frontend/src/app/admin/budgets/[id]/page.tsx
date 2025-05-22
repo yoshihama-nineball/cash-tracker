@@ -1,7 +1,7 @@
-// app/budgets/[id]/page.tsx
 import CreateExpenseForm from "@/components/expense/CreateExpenseForm";
+import ExpenseList from "@/components/expense/ExpenseList";
+import { getBudget } from "@/services/budget";
 import { Box, Container, Typography } from "@mui/material";
-import { getBudget } from "libs/api";
 
 export default async function BudgetDetailsPage({
   params,
@@ -11,7 +11,8 @@ export default async function BudgetDetailsPage({
   const resolvedParams = await Promise.resolve(params);
   const { id } = resolvedParams;
 
-  const budget = await getBudget(id);
+  const budget = await getBudget(params.id);
+  console.log(budget.expenses, "IDによる支出取得");
 
   return (
     <>
@@ -24,6 +25,7 @@ export default async function BudgetDetailsPage({
             alignItems: "center",
             flexWrap: "wrap",
             gap: 2,
+            mb: 4,
           }}
         >
           <Typography variant="h4" sx={{ fontWeight: "bold", color: "#333" }}>
@@ -32,13 +34,7 @@ export default async function BudgetDetailsPage({
           <CreateExpenseForm />
         </Box>
         {/* <BudgetDetails budget={budget} /> */}
-        <Typography>予算の使用率グラフ表示コンポーネント</Typography>
-        <Box sx={{ mt: 4 }}>
-          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
-            支出一覧コンポーネント
-          </Typography>
-          {/* MEMO: ↑isMobileを渡す */}
-        </Box>
+        <ExpenseList budget={budget} />
       </Container>
     </>
   );
