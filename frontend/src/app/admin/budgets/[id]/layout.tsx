@@ -1,4 +1,3 @@
-import FlashMessage from "@/components/feedback/Alert/FlashMessage";
 import { ClientThemeProvider } from "@/components/layouts/ClientThemeProvider";
 import { Metadata } from "next";
 import React from "react";
@@ -16,12 +15,10 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return (
     <html lang="ja">
       <body>
         <ClientThemeProvider>
           <main>
-            <FlashMessage />
             <React.Suspense>{children}</React.Suspense>
           </main>
         </ClientThemeProvider>
