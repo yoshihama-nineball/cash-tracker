@@ -176,7 +176,7 @@ export default function BudgetList({ budgets }: BudgetListProps) {
               }}
             >
               <TableCell component="th" scope="row">
-                <Link href={`/budgets/${budget._id}`}>
+                <Link href={`/admin/budgets/${budget._id}`}>
                   <Typography
                     sx={{
                       color: "primary.main",
@@ -214,7 +214,7 @@ export default function BudgetList({ budgets }: BudgetListProps) {
                 </Link>
               </TableCell>
               <TableCell align="center" sx={{ p: 1 }}>
-                <Link href={`/admin/budgets/${budget._id}/expenses`} passHref>
+                <Link href={`/admin/budgets/${budget._id}`}>
                   <Button
                     startIcon={<ReceiptIcon />}
                     color="secondary"
