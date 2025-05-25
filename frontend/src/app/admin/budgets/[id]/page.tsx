@@ -31,7 +31,7 @@ export default async function BudgetDetailsPage({
           <Typography variant="h4" sx={{ fontWeight: "bold", color: "#333" }}>
             {budget.name}
           </Typography>
-          <CreateExpenseForm />
+          <CreateExpenseForm budgetId={budget.id} />
         </Box>
         {/* <BudgetDetails budget={budget} /> */}
         <ExpenseList budget={budget} />
