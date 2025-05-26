@@ -15,7 +15,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return(
+  return (
     <html lang="ja">
       <body>
         <ClientThemeProvider>

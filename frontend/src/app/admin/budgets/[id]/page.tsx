@@ -12,7 +12,6 @@ export default async function BudgetDetailsPage({
   const { id } = resolvedParams;
 
   const budget = await getBudget(params.id);
-  console.log(budget.expenses, "IDによる支出取得");
 
   return (
     <>
