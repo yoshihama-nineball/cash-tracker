@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { Budget } from "types/budget";
+import BudgetChart from "../budgets/BudgetChart";
 import Button from "../ui/Button/Button";
 import DeleteExpenseForm from "./DeleteExpenseForm";
 import EditExpenseForm from "./EditExpenseForm";
@@ -88,6 +89,7 @@ const ExpenseList = ({
   return (
     <>
       <Typography>予算の使用率グラフ表示コンポーネント</Typography>
+      <BudgetChart budget={budget} />
       <Box sx={{ mt: 4 }}>
         <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
           支出一覧 ({expenses.length}件)
