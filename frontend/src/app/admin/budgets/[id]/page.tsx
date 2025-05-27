@@ -1,7 +1,6 @@
-import CreateExpenseForm from "@/components/expense/CreateExpenseForm";
-import ExpenseList from "@/components/expense/ExpenseList";
+// page.tsx (Server Component として残す)
 import { getBudget } from "@/services/budget";
-import { Box, Container, Typography } from "@mui/material";
+import BudgetDetailsClient from "../../../../components/budgets/BudgetDetailsClient";
 
 export default async function BudgetDetailsPage({
   params,
@@ -13,28 +12,5 @@ export default async function BudgetDetailsPage({
 
   const budget = await getBudget(params.id);
 
-  return (
-    <>
-      <Container maxWidth="lg" disableGutters sx={{ px: { xs: 2, sm: 3 } }}>
-        <Box
-          sx={{
-            mt: 4,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: 2,
-            mb: 4,
-          }}
-        >
-          <Typography variant="h4" sx={{ fontWeight: "bold", color: "#333" }}>
-            {budget.name}
-          </Typography>
-          <CreateExpenseForm budgetId={budget.id} />
-        </Box>
-        {/* <BudgetDetails budget={budget} /> */}
-        <ExpenseList budget={budget} />
-      </Container>
-    </>
-  );
+  return <BudgetDetailsClient budget={budget} />;
 }
