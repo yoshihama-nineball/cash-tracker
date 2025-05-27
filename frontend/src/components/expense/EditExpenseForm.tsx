@@ -13,12 +13,15 @@ import {
   useTheme,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
+import { editExpense } from "actions/edit-expense-action";
+import { useMessage } from "context/MessageContext";
 import {
   DraftExpenseFormValues,
   DraftExpenseSchema,
   Expense,
 } from "libs/schemas/auth";
-import React, { useEffect, useRef, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import React, { useActionState, useEffect, useRef, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import Button from "../ui/Button/Button";
 
@@ -28,7 +31,7 @@ type ActionStateType = {
 };
 
 interface EditExpenseFormProps {
-  expense: Expense | string;
+  expense: Expense | undefined;
   budgetId: number;
   open: "none" | "create" | "edit" | "delete";
   setOpen: (open: "none" | "create" | "edit" | "delete") => void;
@@ -53,16 +56,21 @@ const EditExpenseForm = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const ref = useRef<HTMLFormElement>(null);
   const [isPending, startTransition] = useTransition();
+  const { showMessage } = useMessage();
+  const router = useRouter();
 
-  // const editExpenseWithBudgetId = editExpense.bind(null, budgetId) as (
-  //   state: ActionStateType,
-  //   payload: FormData,
-  // ) => Promise<ActionStateType>;
+  const editExpenseWithIds = expense?.id
+    ? (state: ActionStateType, payload: FormData) =>
+        editExpense(budgetId.toString(), expense.id, state, payload)
+    : undefined;
 
-  // const [formState, dispatch] = useActionState(editExpenseWithBudgetId, {
-  //   errors: [],
-  //   success: "",
-  // });
+  const [formState, dispatch] = useActionState(
+    editExpenseWithIds || (() => Promise.resolve({ errors: [], success: "" })),
+    {
+      errors: [],
+      success: "",
+    },
+  );
 
   const {
     register,
@@ -90,13 +98,32 @@ const EditExpenseForm = ({
     }
   }, [expense, setValue]);
 
+  useEffect(() => {
+    if (formState.success && formState.success.trim() !== "") {
+      setOpen("none");
+      reset();
+      showMessage(formState.success, "success");
+    }
+  }, [formState, reset, router, showMessage, setOpen]);
+
+  useEffect(() => {
+    if (formState.errors.length > 0) {
+      showMessage(formState.errors[0], "error");
+    }
+  }, [formState.errors.length, formState.errors, showMessage]);
+
   const onSubmit = async (data: DraftExpenseFormValues) => {
+    if (!expense?.id || !editExpenseWithIds) {
+      console.error("expense or expenseId is missing");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("amount", data.amount.toString());
 
     startTransition(() => {
-      // dispatch(formData);
+      dispatch(formData);
     });
   };
 
@@ -174,7 +201,7 @@ const EditExpenseForm = ({
               }}
               disabled={isSubmitting || isPending}
             >
-              {isSubmitting || isPending ? "送信中..." : "追加"}
+              {isSubmitting || isPending ? "送信中..." : "更新"}
             </Button>
           </Box>
         </DialogContent>
