@@ -2,16 +2,7 @@
 
 import Button from "@/components/ui/Button/Button";
 import Link from "@/components/ui/Link/Link";
-import {
-  AppBar,
-  Avatar,
-  Box,
-  Menu,
-  MenuItem,
-  Tab,
-  Tabs,
-  Toolbar,
-} from "@mui/material";
+import { AppBar, Avatar, Box, Menu, MenuItem, Toolbar } from "@mui/material";
 import Image from "next/image";
 import { useState } from "react";
 import { logout } from "../../../../actions/logout-user-action";
@@ -96,8 +87,7 @@ export default function Header({ userData }: HeaderProps) {
         >
           <Box sx={{ display: "flex", alignItems: "center", mr: 3 }}>
             <Link
-              href="/"
-              passHref
+              href="/admin/budgets"
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -114,33 +104,6 @@ export default function Header({ userData }: HeaderProps) {
               />
             </Link>
           </Box>
-          <Tabs
-            value={value}
-            onChange={handleChange}
-            aria-label="basic tabs example"
-            sx={{
-              "& .MuiTab-root": {
-                color: "neutral.main",
-                "&.Mui-selected": {
-                  color: "primary.main",
-                },
-              },
-            }}
-          >
-            <Tab component={Link} href="/" label="Home" {...a11yProps(0)} />
-            <Tab
-              component={Link}
-              href="/budgets"
-              label="予算管理"
-              {...a11yProps(1)}
-            />
-            <Tab
-              component={Link}
-              href="/expenses"
-              label="支出監理"
-              {...a11yProps(2)}
-            />
-          </Tabs>
         </Box>
 
         {userData?.isAuth ? (
