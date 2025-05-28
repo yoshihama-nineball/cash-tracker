@@ -14,14 +14,6 @@ interface HeaderProps {
     isAuth: boolean;
   } | null;
 }
-
-function a11yProps(index: number) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
-
 function stringToColor(string: string) {
   let hash = 0;
   let i;
@@ -51,7 +43,6 @@ function stringAvatar(name: string) {
     };
   }
 
-  // 従来の複数単語の名前の処理
   return {
     sx: {
       bgcolor: stringToColor(name),
@@ -61,7 +52,6 @@ function stringAvatar(name: string) {
 }
 
 export default function Header({ userData }: HeaderProps) {
-  const [value, setValue] = useState(0);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -70,10 +60,6 @@ export default function Header({ userData }: HeaderProps) {
 
   const handleClose = () => {
     setAnchorEl(null);
-  };
-
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
   };
 
   return (
