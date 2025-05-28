@@ -71,7 +71,8 @@ describe("EditBudgetFormコンポーネントのテスト", () => {
 
     const nameInput = screen.getByLabelText(/タイトル/i) as HTMLInputElement;
     const amountInput = screen.getByLabelText(/金額/i) as HTMLInputElement;
-    expect(nameInput).toBeInTheDocument();
+    expect(nameInput).toBeInTheDocument
+    ();
     expect(amountInput).toBeInTheDocument();
 
     // 編集前の値がフォームに入力されるかテスト

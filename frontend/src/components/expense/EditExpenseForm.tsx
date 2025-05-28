@@ -13,16 +13,16 @@ import {
   useTheme,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
-import { editExpense } from "actions/edit-expense-action";
-import { useMessage } from "context/MessageContext";
+import { useRouter } from "next/navigation";
+import React, { useActionState, useEffect, useRef, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { editExpense } from "../../../actions/edit-expense-action";
+import { useMessage } from "../../../context/MessageContext";
 import {
   DraftExpenseFormValues,
   DraftExpenseSchema,
   Expense,
-} from "libs/schemas/auth";
-import { useRouter } from "next/navigation";
-import React, { useActionState, useEffect, useRef, useTransition } from "react";
-import { useForm } from "react-hook-form";
+} from "../../../libs/schemas/auth";
 import Button from "../ui/Button/Button";
 
 type ActionStateType = {
@@ -145,7 +145,7 @@ const EditExpenseForm = ({
         }}
       >
         <DialogTitle sx={{ fontSize: "1.4rem", fontWeight: "bold" }}>
-          支出の追加
+          支出の編集
         </DialogTitle>
         <DialogContent>
           <Box
