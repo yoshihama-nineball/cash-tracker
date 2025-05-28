@@ -88,12 +88,13 @@ describe("BudgetDetailsPage", () => {
     try {
       const page = await BudgetDetailsPage({ params: mockParams });
       render(page);
-    } catch (e) {
+    } catch {
       errorThrown = true;
     } finally {
       consoleSpy.mockRestore();
     }
 
     expect(getBudget).toHaveBeenCalledWith("invalid-id");
+    expect(errorThrown).toBe(false);
   });
 });

@@ -79,7 +79,7 @@ describe("BudgetsPage", () => {
 
       // それでもUI要素が表示されていることを確認
       expect(screen.getByText("予算一覧")).toBeInTheDocument();
-    } catch (e) {
+    } catch {
       // エラーが発生した場合はフラグを立てる
       errorThrown = true;
     } finally {

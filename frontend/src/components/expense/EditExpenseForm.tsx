@@ -1,4 +1,3 @@
-"use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Box,
@@ -8,71 +7,66 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
-  Slide,
   TextField,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { TransitionProps } from "@mui/material/transitions";
 import { useRouter } from "next/navigation";
-import React, {
-  useActionState,
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
-} from "react";
+import { useActionState, useEffect, useRef, useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { createExpense } from "../../../actions/create-expense-action";
+import { editExpense } from "../../../actions/edit-expense-action";
 import { useMessage } from "../../../context/MessageContext";
 import {
   DraftExpenseFormValues,
   DraftExpenseSchema,
+  Expense,
 } from "../../../libs/schemas/auth";
 import Button from "../ui/Button/Button";
-
-interface CreateExpenseFormProps {
-  budgetId: string;
-}
 
 type ActionStateType = {
   errors: string[];
   success: string;
 };
 
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement;
-  },
-  ref: React.Ref<unknown>,
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
+interface EditExpenseFormProps {
+  expense: Expense | undefined;
+  budgetId: number;
+  open: "none" | "create" | "edit" | "delete";
+  setOpen: (open: "none" | "create" | "edit" | "delete") => void;
+}
 
-const CreateExpenseForm = ({ budgetId }: CreateExpenseFormProps) => {
-  const [open, setOpen] = useState(false);
-  const [isPending, startTransition] = useTransition();
-  const { showMessage } = useMessage();
+const EditExpenseForm = ({
+  expense,
+  budgetId,
+  open,
+  setOpen,
+}: EditExpenseFormProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const router = useRouter();
   const ref = useRef<HTMLFormElement>(null);
+  const [isPending, startTransition] = useTransition();
+  const { showMessage } = useMessage();
+  const router = useRouter();
 
-  const createExpenseWithBudgetId = createExpense.bind(null, budgetId) as (
-    state: ActionStateType,
-    payload: FormData,
-  ) => Promise<ActionStateType>;
+  const editExpenseWithIds = expense?.id
+    ? (state: ActionStateType, payload: FormData) =>
+        editExpense(budgetId.toString(), expense.id, state, payload)
+    : undefined;
 
-  const [formState, dispatch] = useActionState(createExpenseWithBudgetId, {
-    errors: [],
-    success: "",
-  });
+  const [formState, dispatch] = useActionState(
+    editExpenseWithIds || (() => Promise.resolve({ errors: [], success: "" })),
+    {
+      errors: [],
+      success: "",
+    },
+  );
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
+    setValue,
   } = useForm<DraftExpenseFormValues>({
     resolver: zodResolver(DraftExpenseSchema),
     defaultValues: {
@@ -82,31 +76,37 @@ const CreateExpenseForm = ({ budgetId }: CreateExpenseFormProps) => {
   });
 
   useEffect(() => {
-    if (formState.success) {
-      setOpen(false);
+    if (expense) {
+      setValue("name", expense.name);
+      setValue(
+        "amount",
+        typeof expense.amount === "string"
+          ? parseInt(expense.amount, 10)
+          : expense.amount,
+      );
+    }
+  }, [expense, setValue]);
+
+  useEffect(() => {
+    if (formState.success && formState.success.trim() !== "") {
+      setOpen("none");
       reset();
       showMessage(formState.success, "success");
     }
-  }, [formState.success, reset, router, showMessage]);
+  }, [formState, reset, router, showMessage, setOpen]);
 
   useEffect(() => {
     if (formState.errors.length > 0) {
       showMessage(formState.errors[0], "error");
     }
-  }, [formState.errors, showMessage]);
-
-  const handleClickOpen = () => {
-    reset();
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    reset();
-    setOpen(false);
-  };
+  }, [formState.errors.length, formState.errors, showMessage]);
 
   const onSubmit = async (data: DraftExpenseFormValues) => {
-    // setOpen(false);
+    if (!expense?.id || !editExpenseWithIds) {
+      console.error("expense or expenseId is missing");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("amount", data.amount.toString());
@@ -115,40 +115,27 @@ const CreateExpenseForm = ({ budgetId }: CreateExpenseFormProps) => {
       dispatch(formData);
     });
   };
+
+  const handleClose = () => {
+    setOpen("none");
+  };
+
   return (
     <>
-      <Button
-        sx={{
-          bgcolor: "#8e8edb",
-          color: "white",
-          borderRadius: 4,
-          py: 1,
-          px: 3,
-          "&:hover": { bgcolor: "#7070c0" },
-        }}
-        onClick={handleClickOpen}
-      >
-        新規支出作成
-      </Button>
-      　
       <Dialog
-        open={open}
-        TransitionComponent={Transition}
-        keepMounted
+        open={open === "edit"}
         onClose={handleClose}
-        aria-describedby="alert-dialog-slide-description"
         PaperProps={{
           sx: {
             width: "100%",
-            maxWidth: isMobile ? "90%" : "400px", // maxwidth → maxWidth (大文字小文字の修正)
+            maxWidth: isMobile ? "90%" : "400px",
             minWidth: isMobile ? "300px" : "400px",
           },
         }}
       >
         <DialogTitle sx={{ fontSize: "1.4rem", fontWeight: "bold" }}>
-          支出の追加
+          支出の編集
         </DialogTitle>
-
         <DialogContent>
           <Box
             component="form"
@@ -178,7 +165,6 @@ const CreateExpenseForm = ({ budgetId }: CreateExpenseFormProps) => {
                 <FormHelperText>{errors.name.message}</FormHelperText>
               )}
             </FormControl>
-
             <FormControl error={!!errors.amount}>
               <FormLabel htmlFor="amount">金額</FormLabel>
               <TextField
@@ -195,7 +181,6 @@ const CreateExpenseForm = ({ budgetId }: CreateExpenseFormProps) => {
                 <FormHelperText>{errors.amount.message}</FormHelperText>
               )}
             </FormControl>
-
             <Button
               type="submit"
               sx={{
@@ -205,7 +190,7 @@ const CreateExpenseForm = ({ budgetId }: CreateExpenseFormProps) => {
               }}
               disabled={isSubmitting || isPending}
             >
-              {isSubmitting || isPending ? "送信中..." : "追加"}
+              {isSubmitting || isPending ? "送信中..." : "更新"}
             </Button>
           </Box>
         </DialogContent>
@@ -214,4 +199,4 @@ const CreateExpenseForm = ({ budgetId }: CreateExpenseFormProps) => {
   );
 };
 
-export default CreateExpenseForm;
+export default EditExpenseForm;

@@ -90,6 +90,28 @@ export const UserSchema = z.object({
   email: z.string().email(),
 });
 
+export const ExpenseAPIResponseSchema = z.object({
+  // id: APIからstring型で送られてくるが、スキーマではnumber型を期待
+  id: z
+    .union([z.string(), z.number()])
+    .transform((val) => (typeof val === "string" ? val : String(val))),
+
+  name: z.string(),
+
+  // amount: APIからnumber型で送られてくるが、スキーマではstring型を期待
+  amount: z
+    .union([z.string(), z.number()])
+    .transform((val) => (typeof val === "string" ? Number(val) : val)),
+
+  // userId: APIからstring型で送られてくるが、スキーマではnumber型を期待
+  budgetId: z
+    .union([z.string(), z.number()])
+    .transform((val) => (typeof val === "string" ? val : String(val))),
+
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
 export const BudgetAPIResponseSchema = z.object({
   // id: APIからstring型で送られてくるが、スキーマではnumber型を期待
   id: z
@@ -110,13 +132,15 @@ export const BudgetAPIResponseSchema = z.object({
 
   createdAt: z.string(),
   updatedAt: z.string(),
-  // expenses: z.array(ExpenseAPIResponseSchema)
+  expenses: z.array(ExpenseAPIResponseSchema),
 });
+
 export const BudgetsAPIResponseSchema = z.object({
   budgets: z.array(BudgetAPIResponseSchema.omit({ expenses: true })),
 });
 
 export type Budget = z.infer<typeof BudgetAPIResponseSchema>;
+export type Expense = z.infer<typeof ExpenseAPIResponseSchema>;
 
 export type RegisterFormValues = z.infer<typeof RegisterSchema>;
 export type ConfirmAccountFormValues = z.infer<typeof ConfirmAccountSchema>;

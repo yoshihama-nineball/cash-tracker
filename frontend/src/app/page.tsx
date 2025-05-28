@@ -12,20 +12,11 @@ import { useState } from "react";
 
 export default function HomePage() {
   const theme = useTheme();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  // ダミーの予算データ
-  const budgets = [
-    { id: 1, name: "生活費", amount: 150000, spent: 120000 },
-    { id: 2, name: "貯金", amount: 50000, spent: 50000 },
-    { id: 3, name: "趣味・娯楽", amount: 30000, spent: 15000 },
-  ];
+  const [isLoggedIn] = useState(false);
 
   return (
     <>
-      {/* メインコンテンツ */}
       <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-        {/* ウェルカムセクション */}
         <Paper
           elevation={3}
           sx={{

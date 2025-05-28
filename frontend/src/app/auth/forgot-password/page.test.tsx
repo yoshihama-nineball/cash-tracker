@@ -1,6 +1,12 @@
 import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
+import { ReactNode } from "react";
 import ForgotPasswordPage from "./page";
+
+interface MockPageProps {
+  children: ReactNode;
+  href: string;
+}
 
 // Mock the ConfirmAccountForm component
 jest.mock("@/components/auth/ForgotPasswordForm", () => {
@@ -30,7 +36,7 @@ jest.mock("next/navigation", () => ({
 
 // LinkButtonのモック
 jest.mock("@/components/ui/LinkButton/LinkButton", () => {
-  return function MockLinkButton({ children, href }: any) {
+  return function MockLinkButton({ children, href }: MockPageProps) {
     return (
       <a href={href} data-testid="link-button">
         {children}

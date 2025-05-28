@@ -22,11 +22,7 @@ type ValidateTokenFormType = {
   setIsValid: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const ValidateTokenForm = ({
-  token,
-  setToken,
-  setIsValid,
-}: ValidateTokenFormType) => {
+const ValidateTokenForm = ({ setToken, setIsValid }: ValidateTokenFormType) => {
   const inputRefs = useRef<Array<HTMLInputElement | null>>([]);
   const formRef = useRef<HTMLFormElement | null>(null);
   const [tokenArray, setTokenArray] = useState<string[]>([

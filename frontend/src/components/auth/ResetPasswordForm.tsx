@@ -34,7 +34,7 @@ export default function ResetPasswordForm({
   token,
 }: ResetPasswordType): React.ReactElement {
   const formRef = useRef<HTMLFormElement>(null);
-  const [isPending, startTransition] = useTransition();
+  const [isPending] = useTransition();
 
   // サーバーアクション用のカスタムハンドラー
   const resetPasswordWithToken = async (prevState, formData) => {
@@ -56,7 +56,6 @@ export default function ResetPasswordForm({
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
   } = useForm<ResetPasswordFormValues>({
     resolver: zodResolver(ResetPasswordSchema),
     defaultValues: {
@@ -68,13 +67,6 @@ export default function ResetPasswordForm({
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleClickShowConfirmPassword = () =>
     setShowConfirmPassword(!showConfirmPassword);
-
-  // 成功時の処理を追加
-  const handleSuccess = () => {
-    if (formState.success) {
-      reset(); // フォームリセット
-    }
-  };
 
   // フォーム送信処理
   const onSubmit = async (data: ResetPasswordFormValues) => {
@@ -98,25 +90,18 @@ export default function ResetPasswordForm({
           component="form"
           onSubmit={handleSubmit(onSubmit)}
           sx={{ display: "none" }}
-        >
-          {/* クライアント側バリデーション用の隠しフォーム */}
-        </Box>
-
-        {/* サーバーアクション用フォーム */}
+        ></Box>
         <Box
           component="form"
           ref={formRef}
           action={formAction}
           sx={{ mt: 4, display: "flex", flexDirection: "column", gap: 3 }}
         >
-          {/* エラーメッセージ表示 */}
           {formState.errors.map((error, index) => (
             <Alert severity="error" key={index}>
               {error}
             </Alert>
           ))}
-
-          {/* 成功メッセージの表示 */}
           {formState.success && (
             <Alert severity="success">{formState.success}</Alert>
           )}
@@ -184,8 +169,6 @@ export default function ResetPasswordForm({
               </FormHelperText>
             )}
           </FormControl>
-
-          {/* トークンを隠しフィールドとして追加 */}
           <input type="hidden" name="token" value={token} />
 
           <Button

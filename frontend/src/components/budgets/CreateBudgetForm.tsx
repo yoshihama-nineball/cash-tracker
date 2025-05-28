@@ -45,7 +45,6 @@ const CreateBudgetForm = () => {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-    setValue,
   } = useForm<DraftBudgetFormValues>({
     resolver: zodResolver(DraftBudgetSchema),
     defaultValues: {

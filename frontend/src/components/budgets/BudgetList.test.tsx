@@ -15,12 +15,6 @@ jest.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
-const mockHandleSubmit = jest.fn((cb) => (e) => {
-  e?.preventDefault?.();
-  cb({ name: "Test Budget", amount: 1000 });
-  return true;
-});
-
 jest.mock("../../../actions/get-budgets-action.ts", () => ({
   getUserBudgets: jest.fn(() =>
     Promise.resolve({ errors: [], success: "Success" }),

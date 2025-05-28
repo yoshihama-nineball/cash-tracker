@@ -9,8 +9,13 @@ import {
   Typography,
 } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState, useTransition } from "react";
-import { useFormState } from "react-dom";
+import {
+  useActionState,
+  useEffect,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { useForm } from "react-hook-form";
 import { editBudget } from "../../../actions/edit-budget-action";
 import { useMessage } from "../../../context/MessageContext";
@@ -45,7 +50,7 @@ const EditBudgetForm = ({ budget }: { budget: Budget }) => {
     payload: FormData,
   ) => Promise<ActionStateType>;
 
-  const [formState, dispatch] = useFormState(editBudgetWithId, {
+  const [formState, dispatch] = useActionState(editBudgetWithId, {
     errors: [],
     success: "",
   });

@@ -57,13 +57,12 @@ export default function LoginForm() {
     },
   });
 
-  // 成功時にフォームをリセットするためのuseEffect追加
   useEffect(() => {
     if (formState.success) {
       reset();
       router.push("/budgets");
     }
-  }, [formState.success, reset]);
+  }, [formState.success, reset, router]);
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const onSubmit = async (data: LoginFormValues) => {
@@ -71,8 +70,6 @@ export default function LoginForm() {
     formData.append("email", data.email);
     formData.append("password", data.password);
 
-    // 直接dispatchを使用するように修正
-    // Server Actionを直接呼び出さず、useActionStateのdispatchメソッドを使用
     startTransition(() => {
       dispatch(formData);
     });

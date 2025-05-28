@@ -1,4 +1,6 @@
 "use client";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   Box,
   Paper,
@@ -10,17 +12,38 @@ import {
   TableRow,
   TableSortLabel,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useState } from "react";
 import { Budget } from "types/budget";
+import BudgetChart from "../budgets/BudgetChart";
+import Button from "../ui/Button/Button";
+import DeleteExpenseForm from "./DeleteExpenseForm";
+import EditExpenseForm from "./EditExpenseForm";
 
 interface ExpenseListProps {
   budget?: Budget;
+  activeModal: "none" | "create" | "edit" | "delete";
+  setActiveModal: (activeModal: "none" | "create" | "edit" | "delete") => void;
 }
 
-const ExpenseList = ({ budget }: ExpenseListProps) => {
+const ExpenseList = ({
+  budget,
+  activeModal,
+  setActiveModal,
+}: ExpenseListProps) => {
   const [sortField, setSortField] = useState<"name" | "amount">("name");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [selectedExpenseId, setSelectedExpenseId] = useState<string | null>(
+    null,
+  );
+
+  const selectedExpense = budget?.expenses?.find(
+    (expense) => expense.id === selectedExpenseId,
+  );
 
   const toggleSort = (field: "name" | "amount") => {
     if (field === sortField) {
@@ -31,7 +54,6 @@ const ExpenseList = ({ budget }: ExpenseListProps) => {
     }
   };
 
-  // 早期リターン: budgetが存在しない場合
   if (!budget) {
     return (
       <Box sx={{ mt: 4 }}>
@@ -40,10 +62,8 @@ const ExpenseList = ({ budget }: ExpenseListProps) => {
     );
   }
 
-  // expensesの安全な取得
   const expenses = budget.expenses || [];
 
-  // ソート処理
   const sortedExpenses = [...expenses].sort((a, b) => {
     if (sortField === "name") {
       return sortDirection === "asc"
@@ -56,9 +76,20 @@ const ExpenseList = ({ budget }: ExpenseListProps) => {
     }
   });
 
+  const handleClickOpenEditForm = (expenseId: string) => {
+    setActiveModal("edit");
+    setSelectedExpenseId(expenseId);
+  };
+
+  const handleClickOpenDeleteForm = (expenseId: string) => {
+    setSelectedExpenseId(expenseId);
+    setActiveModal("delete");
+  };
+
   return (
     <>
       <Typography>予算の使用率グラフ表示コンポーネント</Typography>
+      <BudgetChart budget={budget} />
       <Box sx={{ mt: 4 }}>
         <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
           支出一覧 ({expenses.length}件)
@@ -147,6 +178,7 @@ const ExpenseList = ({ budget }: ExpenseListProps) => {
                       fontWeight: "bold",
                       width: "15%",
                     }}
+                    colSpan={2}
                   >
                     アクション
                   </TableCell>
@@ -174,7 +206,39 @@ const ExpenseList = ({ budget }: ExpenseListProps) => {
                       {new Date(expense.createdAt).toLocaleDateString("ja-JP")}
                     </TableCell>
                     <TableCell align="center">
-                      <Typography>🔧</Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: 1,
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Button
+                          onClick={() => handleClickOpenEditForm(expense.id)}
+                          startIcon={<EditIcon />}
+                          color="primary"
+                          size="small"
+                          sx={{
+                            minWidth: isMobile ? "40px" : "80px",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          編集
+                        </Button>
+
+                        <Button
+                          onClick={() => handleClickOpenDeleteForm(expense.id)}
+                          startIcon={<DeleteIcon />}
+                          color="error"
+                          size="small"
+                          sx={{
+                            minWidth: isMobile ? "40px" : "80px",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          削除
+                        </Button>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -183,6 +247,18 @@ const ExpenseList = ({ budget }: ExpenseListProps) => {
           </TableContainer>
         )}
       </Box>
+      <EditExpenseForm
+        open={activeModal}
+        setOpen={setActiveModal}
+        expense={selectedExpense || ""}
+        budgetId={budget.id}
+      />
+      <DeleteExpenseForm
+        open={activeModal}
+        setOpen={setActiveModal}
+        budgetId={budget.id}
+        expenseName={selectedExpense?.name || ""}
+      />
     </>
   );
 };

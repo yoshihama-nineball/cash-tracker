@@ -33,11 +33,6 @@ describe("NewPasswordPage", () => {
     );
   });
 
-  test("認証コードの部分が強調表示されている", () => {
-    const highlightedText = screen.getByText("認証コード");
-    // expect(highlightedText).toHaveStyle("color: var(--mui-palette-secondary-main)");
-  });
-
   test("PasswordResetHandlerコンポーネントがレンダリングされている", () => {
     const formComponent = screen.getByTestId("password-reset-handler");
     expect(formComponent).toBeInTheDocument();
