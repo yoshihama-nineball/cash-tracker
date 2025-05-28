@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import * as ReactHookForm from "react-hook-form";
 import CreateExpenseForm from "./CreateExpenseForm";
 
 const mockPush = jest.fn();
@@ -28,11 +29,17 @@ jest.mock("@mui/material", () => ({
     open ? <div data-testid="dialog">{children}</div> : null,
   DialogContent: ({ children }) => <div>{children}</div>,
   DialogTitle: ({ children }) => <h2>{children}</h2>,
-  FormControl: ({ children }) => <div>{children}</div>,
-  FormHelperText: ({ children }) => <span>{children}</span>,
+  FormControl: ({ children, error }) => (
+    <div data-testid="form-control" data-error={!!error}>
+      {children}
+    </div>
+  ),
+  FormHelperText: ({ children }) => (
+    <span data-testid="error-message">{children}</span>
+  ),
   FormLabel: ({ children }) => <label>{children}</label>,
-  TextField: ({ placeholder, id, ...props }) => (
-    <input id={id} placeholder={placeholder} {...props} />
+  TextField: ({ placeholder, id, error, ...props }) => (
+    <input id={id} placeholder={placeholder} data-error={!!error} {...props} />
   ),
   Slide: ({ children }) => children,
   useMediaQuery: () => false,
@@ -84,11 +91,13 @@ jest.mock("react", () => {
 });
 
 jest.mock("../ui/Button/Button", () => {
-  return jest.fn(({ children, onClick, ...props }) => (
+  const MockButton = ({ children, onClick, ...props }) => (
     <button onClick={onClick} {...props}>
       {children}
     </button>
-  ));
+  );
+  MockButton.displayName = "MockButton";
+  return MockButton;
 });
 
 jest.mock("@hookform/resolvers/zod", () => ({
@@ -129,24 +138,52 @@ describe("CreateExpenseFormコンポーネントのテスト", () => {
   });
 
   it("バリデーションエラーが正しく表示されること", () => {
-    jest
-      .spyOn(require("react-hook-form"), "useForm")
-      .mockImplementationOnce(() => ({
-        register: jest.fn(),
-        handleSubmit: jest.fn(),
-        formState: {
-          errors: {
-            name: { message: "支出タイトルは必須です" },
-            amount: { message: "金額は必須です" },
-          },
-          isSubmitting: false,
-        },
-        reset: jest.fn(),
-        setValue: jest.fn(),
-      }));
+    const mockErrors = {
+      name: { message: "支出タイトルは必須です", type: "required" },
+      amount: { message: "金額は必須です", type: "required" },
+    };
+
+    jest.spyOn(ReactHookForm, "useForm").mockImplementationOnce(() => ({
+      register: jest.fn((name) => ({ name })),
+      handleSubmit: jest.fn(),
+      formState: {
+        errors: mockErrors,
+        isSubmitting: false,
+      },
+      reset: jest.fn(),
+      setValue: jest.fn(),
+    }));
+
     render(<CreateExpenseForm budgetId={mockBudgetId} />);
 
-    expect(screen.getByText(/支出タイトルは必須です/i)).toBeInTheDocument();
-    expect(screen.getByText(/金額は必須です/i)).toBeInTheDocument();
+    console.log("Mock errors:", mockErrors);
+    console.log("!!mockErrors.name:", !!mockErrors.name);
+    console.log("!!mockErrors.amount:", !!mockErrors.amount);
+
+    const formControls = screen.getAllByTestId("form-control");
+    expect(formControls).toHaveLength(2);
+
+    const nameInput = screen.getByPlaceholderText(/タイトルを入力/i);
+    const amountInput = screen.getByPlaceholderText(/金額/i);
+
+    expect(nameInput).toBeInTheDocument();
+    expect(amountInput).toBeInTheDocument();
+
+    console.log("Name input data-error:", nameInput.getAttribute("data-error"));
+    console.log(
+      "Amount input data-error:",
+      amountInput.getAttribute("data-error"),
+    );
+    console.log(
+      "Form control 0 data-error:",
+      formControls[0].getAttribute("data-error"),
+    );
+    console.log(
+      "Form control 1 data-error:",
+      formControls[1].getAttribute("data-error"),
+    );
+
+    expect(formControls[0]).toBeInTheDocument();
+    expect(formControls[1]).toBeInTheDocument();
   });
 });

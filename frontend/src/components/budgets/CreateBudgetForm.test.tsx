@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import * as ReactHookForm from "react-hook-form";
 import CreateBudgetForm from "./CreateBudgetForm";
 
 // App Router環境をモック
@@ -84,22 +85,19 @@ describe("CreateBudgetForm コンポーネントのテスト", () => {
   });
 
   it("バリデーションエラーが正しく表示されること", () => {
-    // エラー状態でuseFormをモック
-    jest
-      .spyOn(require("react-hook-form"), "useForm")
-      .mockImplementationOnce(() => ({
-        register: jest.fn(),
-        handleSubmit: jest.fn(),
-        formState: {
-          errors: {
-            name: { message: "予算タイトルは必須です" },
-            amount: { message: "金額は必須です" },
-          },
-          isSubmitting: false,
+    jest.spyOn(ReactHookForm, "useForm").mockImplementationOnce(() => ({
+      register: jest.fn(),
+      handleSubmit: jest.fn(),
+      formState: {
+        errors: {
+          name: { message: "予算タイトルは必須です" },
+          amount: { message: "金額は必須です" },
         },
-        reset: jest.fn(),
-        setValue: jest.fn(),
-      }));
+        isSubmitting: false,
+      },
+      reset: jest.fn(),
+      setValue: jest.fn(),
+    }));
 
     render(<CreateBudgetForm />);
 

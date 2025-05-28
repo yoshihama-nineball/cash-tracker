@@ -1,21 +1,29 @@
 import { ClientThemeProvider } from "@/components/layouts/ClientThemeProvider";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ReactNode } from "react";
 import LinkButton from "./LinkButton";
 
-// MEMO:モックの設定
+interface MockLinkProps {
+  children: ReactNode;
+  href: string;
+  passHref?: boolean;
+}
+
 jest.mock("next/link", () => {
-  return ({ children, href, passHref }: any) => {
+  const MockLink = ({ children, href, passHref }: MockLinkProps) => {
     return (
       <a
         href={href}
         data-testid="next-link"
-        data-passhref={passHref.toString()}
+        data-passhref={passHref?.toString()}
       >
         {children}
       </a>
     );
   };
+  MockLink.displayName = "MockLink";
+  return MockLink;
 });
 
 describe("LinkButton", () => {

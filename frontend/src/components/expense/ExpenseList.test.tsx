@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import * as React from "react";
 import ExpenseList from "./ExpenseList";
 
 const mockPush = jest.fn();
@@ -22,14 +23,15 @@ jest.mock("react", () => {
   };
 });
 
-const { useState } = require("react");
-
 describe("ExpenseListコンポーネントのテスト", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
     let callCount = 0;
-    useState.mockImplementation((initialValue) => {
+    const mockUseState = React.useState as jest.MockedFunction<
+      typeof React.useState
+    >;
+    mockUseState.mockImplementation((initialValue) => {
       callCount++;
       if (callCount === 1) {
         return ["name", jest.fn()];

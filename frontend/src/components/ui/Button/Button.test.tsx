@@ -1,21 +1,29 @@
 import { ClientThemeProvider } from "@/components/layouts/ClientThemeProvider";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { ReactNode } from "react";
 import Button from "./Button";
 
-// MEMO:モックの設定
+interface MockButtonProps {
+  children: ReactNode;
+  href: string;
+  passHref?: boolean;
+}
+
 jest.mock("next/link", () => {
-  return ({ children, href, passHref }: any) => {
+  const MockLink = ({ children, href, passHref }: MockButtonProps) => {
     return (
       <a
         href={href}
         data-testid="next-link"
-        data-passhref={passHref.toString()}
+        data-passhref={passHref?.toString()}
       >
         {children}
       </a>
     );
   };
+  MockLink.displayName = "MockLink";
+  return MockLink;
 });
 
 describe("ボタンコンポーネントのテストケース", () => {
@@ -29,6 +37,7 @@ describe("ボタンコンポーネントのテストケース", () => {
     const linkElement = screen.getByTestId("next-link");
     expect(linkElement).toHaveAttribute("href", "/test-url");
   });
+
   it("子要素を正しく取得できるかのテストケース", () => {
     render(
       <ClientThemeProvider>

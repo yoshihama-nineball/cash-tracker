@@ -2,8 +2,9 @@
 import ForgotPassword from "@/components/auth/ForgotPasswordForm";
 import LinkButton from "@/components/ui/LinkButton/LinkButton";
 import { Box, Container, Paper, Stack, Typography } from "@mui/material";
+import { FC } from "react";
 
-export default function ForgotPasswordPage() {
+const ForgotPasswordPage: FC = () => {
   return (
     <Container maxWidth="sm">
       <Paper elevation={3} sx={{ p: 4, mt: 8, borderRadius: 2 }}>
@@ -41,4 +42,6 @@ export default function ForgotPasswordPage() {
       </Paper>
     </Container>
   );
-}
+};
+
+export default ForgotPasswordPage;

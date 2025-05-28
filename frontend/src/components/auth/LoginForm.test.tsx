@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import * as ReactHookForm from "react-hook-form";
 import LoginForm from "./LoginForm";
 
 // モジュールのモック
@@ -31,7 +32,7 @@ jest.mock("react-hook-form", () => {
     ...originalModule,
     useForm: () => ({
       register: jest.fn((name) => ({ name })),
-      handleSubmit: jest.fn((onSubmit) => jest.fn()),
+      handleSubmit: jest.fn(() => jest.fn()),
       formState: {
         errors: {},
         isSubmitting: false,
@@ -60,17 +61,15 @@ describe("LoginFormコンポーネントのテスト", () => {
 
   it("送信中の場合、ボタンが無効化されることを確認", () => {
     // isSubmittingをtrueにするためのモックを上書き
-    jest
-      .spyOn(require("react-hook-form"), "useForm")
-      .mockImplementation(() => ({
-        register: jest.fn(),
-        handleSubmit: jest.fn(),
-        formState: {
-          errors: {},
-          isSubmitting: true,
-        },
-        reset: jest.fn(),
-      }));
+    jest.spyOn(ReactHookForm, "useForm").mockImplementation(() => ({
+      register: jest.fn(),
+      handleSubmit: jest.fn(),
+      formState: {
+        errors: {},
+        isSubmitting: true,
+      },
+      reset: jest.fn(),
+    }));
 
     render(<LoginForm />);
 

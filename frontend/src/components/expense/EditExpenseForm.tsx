@@ -7,14 +7,12 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
-  Slide,
   TextField,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { TransitionProps } from "@mui/material/transitions";
 import { useRouter } from "next/navigation";
-import React, { useActionState, useEffect, useRef, useTransition } from "react";
+import { useActionState, useEffect, useRef, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { editExpense } from "../../../actions/edit-expense-action";
 import { useMessage } from "../../../context/MessageContext";
@@ -36,15 +34,6 @@ interface EditExpenseFormProps {
   open: "none" | "create" | "edit" | "delete";
   setOpen: (open: "none" | "create" | "edit" | "delete") => void;
 }
-
-const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & {
-    children: React.ReactElement<any, any>;
-  },
-  ref: React.Ref<unknown>,
-) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
 
 const EditExpenseForm = ({
   expense,

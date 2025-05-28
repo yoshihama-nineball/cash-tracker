@@ -7,7 +7,6 @@ export default async function EditBudgetPage({
 }: {
   params: { id: string };
 }) {
-  // paramsを使用する前に await する
   const resolvedParams = await Promise.resolve(params);
   const { id } = resolvedParams;
 

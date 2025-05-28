@@ -22,7 +22,6 @@ export const getBudget = cache(async (budgetId: string) => {
     });
 
     if (!req.ok) {
-      const errorText = await req.text();
       notFound();
     }
 

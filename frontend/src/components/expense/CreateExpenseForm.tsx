@@ -14,7 +14,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, {
   useActionState,
   useEffect,
@@ -42,7 +42,7 @@ type ActionStateType = {
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
-    children: React.ReactElement<any, any>;
+    children: React.ReactElement;
   },
   ref: React.Ref<unknown>,
 ) {
@@ -58,7 +58,6 @@ const CreateExpenseForm = ({ budgetId }: CreateExpenseFormProps) => {
   const router = useRouter();
   const ref = useRef<HTMLFormElement>(null);
 
-  const { id } = useParams();
   const createExpenseWithBudgetId = createExpense.bind(null, budgetId) as (
     state: ActionStateType,
     payload: FormData,
@@ -74,7 +73,6 @@ const CreateExpenseForm = ({ budgetId }: CreateExpenseFormProps) => {
     handleSubmit,
     formState: { errors, isSubmitting },
     reset,
-    setValue,
   } = useForm<DraftExpenseFormValues>({
     resolver: zodResolver(DraftExpenseSchema),
     defaultValues: {

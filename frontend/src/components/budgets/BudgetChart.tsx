@@ -1,9 +1,10 @@
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
+import { Budget, Expense } from "../../../libs/schemas/auth";
 
-const BudgetChart = ({ budget }: { budget: any }) => {
+const BudgetChart = ({ budget }: { budget: Budget }) => {
   const totalSpent =
     budget.expenses?.reduce(
-      (sum: number, expense: any) => sum + expense.amount,
+      (sum: number, expense: Expense) => sum + expense.amount,
       0,
     ) || 0;
   const remaining = Math.max(0, budget.amount - totalSpent);

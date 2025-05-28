@@ -3,10 +3,11 @@
 import ExpenseList from "@/components/expense/ExpenseList";
 import { Box, Container, Typography } from "@mui/material";
 import { useState } from "react";
+import { Budget } from "../../../libs/schemas/auth";
 import CreateExpenseForm from "../expense/CreateExpenseForm";
 
 interface BudgetDetailsClientProps {
-  budget: any; // 適切な型を設定
+  budget: Budget;
 }
 
 export default function BudgetDetailsClient({
