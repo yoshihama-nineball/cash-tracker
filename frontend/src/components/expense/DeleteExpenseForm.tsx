@@ -1,106 +1,83 @@
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Slide,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-// import { useMessage } from "context/MessageContext";
-import { DraftExpenseFormValues, DraftExpenseSchema } from "libs/schemas/auth";
-import { useTransition } from "react";
-import { useForm } from "react-hook-form";
+import { TransitionProps } from "@mui/material/transitions";
+import { useMessage } from "context/MessageContext";
+import { forwardRef, useActionState, useEffect, useTransition } from "react";
+import { deleteExpense } from "../../../actions/delete-expense-action";
 import Button from "../ui/Button/Button";
 
-// type ActionStateType = {
-//   errors: string[];
-//   success: string;
-// };
+type ActionStateType = {
+  errors: string[];
+  success: string;
+};
 
 interface DeleteExpenseFormProps {
   budgetId: number;
+  expenseId: string;
   expenseName: string;
   open: "none" | "create" | "edit" | "delete";
   setOpen: (open: "none" | "create" | "edit" | "delete") => void;
 }
 
-// const Transition = React.forwardRef(function Transition(
-//   props: TransitionProps & {
-//     children: React.ReactElement;
-//   },
-//   ref: React.Ref<unknown>,
-// ) {
-//   return <Slide direction="up" ref={ref} {...props} />;
-// });
+const Transition = forwardRef(function Transition(
+  props: TransitionProps & {
+    children: React.ReactElement;
+  },
+  ref: React.Ref<unknown>,
+) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
 const DeleteExpenseForm = ({
-  // budgetId,
+  budgetId,
+  expenseId,
   expenseName,
   open,
   setOpen,
 }: DeleteExpenseFormProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  // const ref = useRef<HTMLFormElement>(null);
-  const [isPending] = useTransition();
-  // const { showMessage } = useMessage();
+  const [isPending, startTransition] = useTransition();
+  const { showMessage } = useMessage();
 
-  // const deleteExpenseWithBudgetId = deleteExpense.bind(null, budgetId) as (
-  //   state: ActionStateType,
-  //   payload: FormData,
-  // ) => Promise<ActionStateType>;
+  const deleteExpenseWithId = deleteExpense.bind(
+    null,
+    budgetId.toString(),
+    expenseId,
+  ) as (state: ActionStateType, payload: FormData) => Promise<ActionStateType>;
 
-  // const [formState, dispatch] = useActionState(deleteExpenseWithBudgetId, {
-  //   errors: [],
-  //   success: "",
-  // });
-
-  const {
-    // register,
-    // handleSubmit,
-    // formState: { errors, isSubmitting },
-    // reset,
-    // setValue,
-  } = useForm<DraftExpenseFormValues>({
-    resolver: zodResolver(DraftExpenseSchema),
-    defaultValues: {
-      name: "",
-      amount: 0,
-    },
+  const [formState, dispatch] = useActionState(deleteExpenseWithId, {
+    errors: [],
+    success: "",
   });
 
   const handleDelete = () => {
     setOpen("none");
-    // const successMessage = `${expenseName}を削除しました`;
-
-    // const messageId = showMessage(successMessage, "success");
-
-    // startTransition(() => {
-    //   const formData = new FormData();
-    //   // dispatch(formData);
-
-    //   setTimeout(() => {
-    //     if(useFormState.errors.length > 0) {
-    //       clearMessage(messageId);
-    //       showMessage(useFormState.errors[0], "error")
-    //     }
-    //   }, 2000);
-    // });
+    startTransition(() => {
+      const formData = new FormData();
+      dispatch(formData);
+    });
   };
 
-  // useEffect(() => {
-  //   if (useFormState.success) {
-  //     setOpen("none");
-  //     showMessage(useFormState.success, "success")
-  //   }
-  // }, [useFormState.success, showMessage]);
+  useEffect(() => {
+    if (formState.success) {
+      setOpen("none");
+      showMessage(formState.success, "success");
+    }
+  }, [formState.success, showMessage, setOpen]);
 
-  // useEffect(() => {
-  //   if (formState.errors.length > 0) {
-  //     showMessage(formState.errors[0], "error");
-  //   }
-  // }, [formState.errors, showMessage]);
+  useEffect(() => {
+    if (formState.errors.length > 0) {
+      showMessage(formState.errors[0], "error");
+    }
+  }, [formState.errors, showMessage]);
 
   const handleClose = () => {
     setOpen("none");
@@ -111,6 +88,8 @@ const DeleteExpenseForm = ({
       <Dialog
         open={open === "delete"}
         onClose={handleClose}
+        TransitionComponent={Transition}
+        keepMounted
         PaperProps={{
           sx: {
             width: "100%",
