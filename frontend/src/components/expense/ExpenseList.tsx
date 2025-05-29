@@ -257,6 +257,7 @@ const ExpenseList = ({
         open={activeModal}
         setOpen={setActiveModal}
         budgetId={budget.id}
+        expenseId={selectedExpense?.id || ""}
         expenseName={selectedExpense?.name || ""}
       />
     </>
