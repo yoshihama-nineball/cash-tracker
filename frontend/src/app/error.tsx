@@ -48,7 +48,12 @@ export default function Error({
           >
             再試行する
           </Button>
-          <Button component={Link} href="/" variant="contained" color="primary">
+          <Button
+            component={Link}
+            href="/admin/budgets"
+            variant="contained"
+            color="primary"
+          >
             トップページへ戻る
           </Button>
         </Box>

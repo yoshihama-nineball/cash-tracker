@@ -17,7 +17,7 @@ export default function NotFound() {
           <Button
             sx={{ mt: 2 }}
             component={Link}
-            href="/"
+            href="/admin/budgets"
             variant="contained"
             color="primary"
           >
