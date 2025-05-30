@@ -88,7 +88,6 @@ const ExpenseList = ({
 
   return (
     <>
-      <Typography>予算の使用率グラフ表示コンポーネント</Typography>
       <BudgetChart budget={budget} />
       <Box sx={{ mt: 4 }}>
         <Typography variant="h5" sx={{ fontWeight: "bold", color: "#333" }}>
