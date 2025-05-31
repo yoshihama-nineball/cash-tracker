@@ -78,6 +78,33 @@ export const DraftExpenseSchema = z.object({
     .min(1, { message: "支出金額が0円未満です" }),
 });
 
+export const UpdateProfileSchema = z.object({
+  name: z.string().min(1, { message: "ユーザ名は必須です" }),
+  email: z
+    .string()
+    .min(1, { message: "メールアドレスは必須です" })
+    .email({ message: "有効なメールアドレスを入力してください" }),
+});
+
+export const UpdatePasswordSchema = z
+  .object({
+    current_password: z
+      .string()
+      .min(1, { message: "現在のパスワードは必須です" })
+      .min(8, { message: "現在のパスワードは8文字以上です" }),
+    password: z
+      .string()
+      .min(1, { message: "再設定するパスワードは必須です" })
+      .min(8, { message: "再設定するパスワードは8文字以上です" }),
+    password_confirmation: z
+      .string()
+      .min(1, { message: "パスワード確認は必須です" }),
+  })
+  .refine((data) => data.password === data.password_confirmation, {
+    message: "パスワードが一致しません",
+    path: ["password_confirmation"],
+  });
+
 export const SuccessSchema = z.string();
 export const ErrorResponseSchema = z.object({
   error: z.string(),
@@ -141,6 +168,7 @@ export const BudgetsAPIResponseSchema = z.object({
 
 export type Budget = z.infer<typeof BudgetAPIResponseSchema>;
 export type Expense = z.infer<typeof ExpenseAPIResponseSchema>;
+export type User = z.infer<typeof UserSchema>;
 
 export type RegisterFormValues = z.infer<typeof RegisterSchema>;
 export type ConfirmAccountFormValues = z.infer<typeof ConfirmAccountSchema>;
@@ -153,3 +181,5 @@ export type ValidateTokenFormValues = z.infer<typeof ValidateTokenSchema>;
 export type ResetPasswordFormValues = z.infer<typeof ResetPasswordSchema>;
 export type DraftBudgetFormValues = z.infer<typeof DraftBudgetSchema>;
 export type DraftExpenseFormValues = z.infer<typeof DraftExpenseSchema>;
+export type UpdateProfileFormValues = z.infer<typeof UpdateProfileSchema>;
+export type UpdatePasswordFormValues = z.infer<typeof UpdatePasswordSchema>;
