@@ -58,7 +58,7 @@ export async function updateProfile(
       if ("success" in json || "message" in json) {
         return {
           errors: [],
-          success: json.message || json.success || "更新が完了しました",
+          success: json.message || json.success || "ユーザ情報が更新されました",
         };
       }
     }
