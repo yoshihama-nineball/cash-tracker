@@ -6,10 +6,10 @@ import {
   FormLabel,
   TextField,
 } from "@mui/material";
-import { useMessage } from "context/MessageContext";
 import { useActionState, useEffect, useRef, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { updateProfile } from "../../../actions/update-profile-action";
+import { useMessage } from "../../../context/MessageContext";
 import {
   UpdateProfileFormValues,
   UpdateProfileSchema,
@@ -115,7 +115,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
           )}
         </FormControl>
         <FormControl error={!!errors.email}>
-          <FormLabel htmlFor="amount">メールアドレス</FormLabel>
+          <FormLabel htmlFor="email">メールアドレス</FormLabel>
           <TextField
             id="email"
             type="email"
