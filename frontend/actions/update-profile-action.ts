@@ -1,8 +1,8 @@
 "use server";
 
-import { UpdateProfileSchema } from "libs/schemas/auth";
 import { revalidatePath } from "next/cache";
 import getToken from "../libs/auth/token";
+import { UpdateProfileSchema } from "../libs/schemas/auth";
 
 type ActionStateType = {
   errors: string[];
