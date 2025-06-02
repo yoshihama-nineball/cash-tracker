@@ -226,7 +226,8 @@ export class AuthController {
   }
 
   static updateUser = async (req: Request, res: Response): Promise<void> => {
-    res.json('認証されたユーザの更新APIテスト')
+    await User.findByIdAndUpdate(req.user._id, req.body)
+    res.json('プロフィールが更新されました')
   }
 
   static updateCurrentUserPassword = async (

@@ -44,7 +44,6 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
     setValue,
   } = useForm<UpdateProfileFormValues>({
     resolver: zodResolver(UpdateProfileSchema),
@@ -63,10 +62,9 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
 
   useEffect(() => {
     if (formState.success && formState.success.trim() !== "") {
-      reset();
       showMessage(formState.success, "success");
     }
-  }, [formState, reset, showMessage]);
+  }, [formState.success, showMessage]);
 
   useEffect(() => {
     if (formState.errors.length > 0) {
@@ -80,9 +78,7 @@ const ProfileForm = ({ profile }: ProfileFormProps) => {
     formData.append("email", data.email);
 
     startTransition(() => {
-      startTransition(() => {
-        dispatch(formData);
-      });
+      dispatch(formData);
     });
   };
   return (

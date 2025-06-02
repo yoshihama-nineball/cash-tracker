@@ -1,4 +1,5 @@
 "use client";
+import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
@@ -52,27 +53,27 @@ export default function ProfileTabs({ profile }: ProfileTabsProps) {
         sx={{
           maxWidth: "500px",
           width: "100%",
+          mt: 4,
         }}
       >
-        <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Typography variant="h4" sx={{ textAlign: "center" }}>
+          ユーザ情報
+        </Typography>
+        <Box sx={{ borderBottom: 1, borderColor: "divider", mt: 4 }}>
           <Tabs
             value={value}
             onChange={handleChange}
             aria-label="basic tabs example"
           >
-            <Tab label="Item One" {...a11yProps(0)} />
-            <Tab label="Item Two" {...a11yProps(1)} />
-            <Tab label="Item Three" {...a11yProps(2)} />
+            <Tab label="ユーザ設定" {...a11yProps(0)} />
+            <Tab label="パスワード設定" {...a11yProps(1)} />
           </Tabs>
         </Box>
         <CustomTabPanel value={value} index={0}>
           <ProfileForm profile={profile} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-          Item Two
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={2}>
-          Item Three
+          ここにパスワード設定のフォームを追加する
         </CustomTabPanel>
       </Box>
     </Box>
