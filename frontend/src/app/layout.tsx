@@ -22,7 +22,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const userData = await verifySession();
-  console.log(userData, "ユーザデータ");
 
   return (
     <html lang="ja">
