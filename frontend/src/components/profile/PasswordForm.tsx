@@ -9,8 +9,6 @@ import {
   InputAdornment,
   TextField,
 } from "@mui/material";
-import { updatePassword } from "actions/update-password-action";
-import { useMessage } from "context/MessageContext";
 import {
   useActionState,
   useEffect,
@@ -19,6 +17,8 @@ import {
   useTransition,
 } from "react";
 import { useForm } from "react-hook-form";
+import { updatePassword } from "../../../actions/update-password-action";
+import { useMessage } from "../../../context/MessageContext";
 import {
   UpdatePasswordFormValues,
   UpdatePasswordSchema,
