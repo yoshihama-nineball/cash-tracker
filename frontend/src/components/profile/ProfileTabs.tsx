@@ -5,6 +5,7 @@ import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import * as React from "react";
 import { User } from "../../../libs/schemas/auth";
+import PasswordForm from "./PasswordForm";
 import ProfileForm from "./ProfileForm";
 
 interface ProfileTabsProps {
@@ -73,7 +74,7 @@ export default function ProfileTabs({ profile }: ProfileTabsProps) {
           <ProfileForm profile={profile} />
         </CustomTabPanel>
         <CustomTabPanel value={value} index={1}>
-          ここにパスワード設定のフォームを追加する
+          <PasswordForm />
         </CustomTabPanel>
       </Box>
     </Box>
