@@ -226,31 +226,58 @@ export class AuthController {
   }
 
   static updateUser = async (req: Request, res: Response): Promise<void> => {
-    res.json('認証されたユーザの更新APIテスト')
+    try {
+      const updatedUser = await User.findByIdAndUpdate(req.user._id, req.body, {
+        new: true,
+        runValidators: true,
+      })
+
+      if (!updatedUser) {
+        res.status(404).json({ message: 'ユーザーが見つかりません' })
+        return
+      }
+
+      res.status(200).json({
+        message: 'プロフィールが更新されました',
+        user: updatedUser,
+      })
+    } catch (error) {
+      res.status(500).json({ error: 'サーバーエラーが発生しました' })
+    }
   }
 
   static updateCurrentUserPassword = async (
     req: Request,
     res: Response,
   ): Promise<void> => {
-    const { current_password, password } = req.body
-    const { id } = req.user
-    const user = await User.findById(id)
+    try {
+      const { current_password, password } = req.body
+      const { id } = req.user
+      const user = await User.findById(id)
 
-    //MEMO: IDから取得したユーザのパスワードと、current_passwordが一致するか確認
-    const isCheckPasswordCorrect = await checkPassword(
-      current_password,
-      user.password,
-    )
-    if (!isCheckPasswordCorrect) {
-      res.status(401).json({ error: '現在のパスワードが間違っています' })
-      return
+      if (!user) {
+        res.status(404).json({ error: 'ユーザーが見つかりません' })
+        return
+      }
+
+      //MEMO: IDから取得したユーザのパスワードと、current_passwordが一致するか確認
+      const isCheckPasswordCorrect = await checkPassword(
+        current_password,
+        user.password,
+      )
+      if (!isCheckPasswordCorrect) {
+        res.status(401).json({ error: '現在のパスワードが間違っています' })
+        return
+      }
+      //MEMO: 現在のパスワードの入力が正しい場合、再設定したパスワードを保存
+      const hashedPassword = await hashPassword(password)
+      await User.findByIdAndUpdate(id, { password: hashedPassword })
+
+      res.status(200).json({ message: 'パスワードが更新されました' })
+    } catch (error) {
+      console.error('Password update error:', error)
+      res.status(500).json({ error: 'サーバーエラーが発生しました' })
     }
-    //MEMO: 現在のパスワードの入力が正しい場合、再設定したパスワードを保存
-    const hashedPassword = await hashPassword(password)
-    await User.findByIdAndUpdate(id, { password: hashedPassword })
-
-    res.status(200).json({ message: 'パスワードが更新されました' })
   }
 
   static checkPassword = async (req: Request, res: Response): Promise<void> => {

@@ -97,20 +97,24 @@ router.get(
 )
 
 router.put(
-  '/user',
+  '/update-profile',
+  body('name').notEmpty().withMessage('ユーザ名は必須です'),
+  body('email')
+    .isEmail()
+    .withMessage('メールアドレスは有効な形式ではありません'),
   authenticate,
-  // handleInputErrors,
+  handleInputErrors,
   AuthController.updateUser,
 )
 
-router.post(
+router.put(
   '/update-password',
   authenticate,
   body('current_password')
     .notEmpty()
-    .withMessage('再設定するパスワードは必須です')
+    .withMessage('現在のパスワードは必須です')
     .isLength({ min: 8 })
-    .withMessage('再設定するパスワードは8文字以上です'),
+    .withMessage('現在のパスワードは8文字以上です'),
   body('password')
     .notEmpty()
     .withMessage('再設定するパスワードは必須です')

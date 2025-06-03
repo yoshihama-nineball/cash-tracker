@@ -115,7 +115,7 @@ export default function Header({ userData }: HeaderProps) {
             >
               <MenuItem onClick={handleClose}>{userData.user.name}</MenuItem>
               <MenuItem onClick={handleClose}>
-                <Link href="/admin/profile/setting">プロフィール</Link>
+                <Link href="/admin/profile/settings">プロフィール</Link>
               </MenuItem>
               <MenuItem onClick={handleClose}>
                 <Link href="/admin/budgets">予算</Link>
