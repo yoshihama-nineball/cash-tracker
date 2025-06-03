@@ -107,7 +107,7 @@ router.put(
   AuthController.updateUser,
 )
 
-router.post(
+router.put(
   '/update-password',
   authenticate,
   body('current_password')
