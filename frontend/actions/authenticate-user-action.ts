@@ -43,7 +43,8 @@ export async function authenticate(
     };
   }
 
-  cookies().set({
+  const cookieStore = await cookies();
+  cookieStore.set({
     name: "CASHTRACKR_TOKEN",
     value: json,
     httpOnly: true,
