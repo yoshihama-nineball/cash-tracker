@@ -5,6 +5,7 @@ import { ErrorResponseSchema, LoginSchema } from "../libs/schemas/auth";
 
 type ActionStateType = {
   errors: string[];
+  success: string;
 };
 
 export async function authenticate(
@@ -20,6 +21,7 @@ export async function authenticate(
   if (!auth.success) {
     return {
       errors: auth.error.errors.map((issue) => issue.message),
+      success: "",
     };
   }
 
@@ -40,6 +42,7 @@ export async function authenticate(
     const { error } = ErrorResponseSchema.parse(json);
     return {
       errors: [error],
+      success: "",
     };
   }
 
