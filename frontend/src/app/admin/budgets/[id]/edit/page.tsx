@@ -5,11 +5,9 @@ import { getBudget } from "libs/api";
 export default async function EditBudgetPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const resolvedParams = await Promise.resolve(params);
-  const { id } = resolvedParams;
-
+  const { id } = await params;
   const budget = await getBudget(id);
   console.log(budget, "IDの予算");
 
