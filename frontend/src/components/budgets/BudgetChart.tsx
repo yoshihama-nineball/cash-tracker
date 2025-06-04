@@ -63,7 +63,7 @@ const BudgetChart = ({ budget }: { budget: Budget }) => {
               justifyContent: "space-between",
             }}
           >
-            <Box sx={{ height: 180 }}>
+            <Box sx={{ height: 230 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
