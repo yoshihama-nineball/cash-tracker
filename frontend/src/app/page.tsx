@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  Box,
-  Button,
-  Container,
-  Paper,
-  Typography,
-  useTheme,
-} from "@mui/material";
+import Button from "@/components/ui/Button/Button";
+import { Box, Container, Paper, Typography, useTheme } from "@mui/material";
 import { useState } from "react";
 
 export default function HomePage() {
@@ -35,18 +29,10 @@ export default function HomePage() {
           </Typography>
           {!isLoggedIn && (
             <Box sx={{ mt: 2 }}>
-              <Button
-                variant="contained"
-                color="secondary"
-                size="large"
-                sx={{ mr: 2 }}
-              >
+              <Button color="secondary" size="large" sx={{ mr: 2 }}>
                 今すぐ始める
               </Button>
-              <Button
-                variant="outlined"
-                sx={{ color: "white", borderColor: "white" }}
-              >
+              <Button sx={{ color: "white", borderColor: "white" }}>
                 詳細を見る
               </Button>
             </Box>

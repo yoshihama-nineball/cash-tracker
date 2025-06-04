@@ -1,8 +1,8 @@
 "use client";
 
+import Button from "@/components/ui/Button/Button";
 import {
   Box,
-  Button,
   Container,
   Link,
   Paper,
@@ -39,21 +39,10 @@ export default function Error({
           ページの表示中に問題が発生しました。ご迷惑をおかけしております。
         </Typography>
         <Box sx={{ mt: 2 }}>
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={reset}
-            size="large"
-            sx={{ mr: 2 }}
-          >
+          <Button color="secondary" onClick={reset} size="large" sx={{ mr: 2 }}>
             再試行する
           </Button>
-          <Button
-            component={Link}
-            href="/admin/budgets"
-            variant="contained"
-            color="primary"
-          >
+          <Button component={Link} href="/admin/budgets" color="primary">
             トップページへ戻る
           </Button>
         </Box>

@@ -1,4 +1,5 @@
-import { Box, Button, Container, Typography } from "@mui/material";
+import Button from "@/components/ui/Button/Button";
+import { Box, Container, Typography } from "@mui/material";
 import Link from "next/link";
 
 export default function NotFound() {
@@ -18,7 +19,6 @@ export default function NotFound() {
             sx={{ mt: 2 }}
             component={Link}
             href="/admin/budgets"
-            variant="contained"
             color="primary"
           >
             トップページへ戻る

@@ -1,4 +1,5 @@
-import { Box, Button, Container, Typography } from "@mui/material";
+import Button from "@/components/ui/Button/Button";
+import { Box, Container, Typography } from "@mui/material";
 import Link from "next/link";
 
 export default function Forbidden() {
@@ -18,12 +19,7 @@ export default function Forbidden() {
         <Typography variant="body1" sx={{ mb: 2 }}>
           このページにアクセスするためには適切な権限が必要です。
         </Typography>
-        <Button
-          component={Link}
-          href="/admin/budgets"
-          variant="contained"
-          color="primary"
-        >
+        <Button component={Link} href="/admin/budgets" color="primary">
           トップページへ戻る
         </Button>
       </Box>

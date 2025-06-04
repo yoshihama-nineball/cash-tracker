@@ -1,6 +1,5 @@
 "use client";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -12,6 +11,7 @@ import * as React from "react";
 import { useEffect, useTransition } from "react";
 import { deleteBudget } from "../../../actions/delete-budget-actions";
 import { useMessage } from "../../../context/MessageContext";
+import Button from "../ui/Button/Button";
 
 interface DeleteDialogProps {
   isMobile: boolean;
@@ -106,7 +106,6 @@ const DeleteDialog = ({
           minWidth: isMobile ? "40px" : "80px",
           whiteSpace: "nowrap",
         }}
-        variant="contained"
         onClick={handleClickOpen}
       >
         削除
@@ -144,12 +143,7 @@ const DeleteDialog = ({
             キャンセル
           </Button>
 
-          <Button
-            onClick={handleDelete}
-            variant="contained"
-            color="error"
-            disabled={isPending}
-          >
+          <Button onClick={handleDelete} color="error" disabled={isPending}>
             {isPending ? "削除中..." : "削除"}
           </Button>
         </DialogActions>

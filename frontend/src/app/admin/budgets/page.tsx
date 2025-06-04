@@ -41,7 +41,6 @@ export default async function BudgetsPage() {
           </Typography>
           <Link href="/admin/budgets/new">
             <Button
-              variant="contained"
               sx={{
                 bgcolor: "#8e8edb",
                 color: "white",
