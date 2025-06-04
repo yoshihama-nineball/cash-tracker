@@ -8,12 +8,14 @@ import { useState } from "react";
 import { logout } from "../../../../actions/logout-user-action";
 import { UserSchemaFormValues } from "../../../../libs/schemas/auth";
 
+// 型定義を修正
 interface HeaderProps {
   userData: {
-    user: UserSchemaFormValues;
+    user: UserSchemaFormValues | null;
     isAuth: boolean;
-  } | null;
+  };
 }
+
 function stringToColor(string: string) {
   let hash = 0;
   let i;
@@ -33,7 +35,6 @@ function stringToColor(string: string) {
 }
 
 function stringAvatar(name: string) {
-  // 名前に空白がない場合の処理を追加
   if (!name.includes(" ")) {
     return {
       sx: {
@@ -91,12 +92,11 @@ export default function Header({ userData }: HeaderProps) {
             </Link>
           </Box>
         </Box>
-
-        {userData?.isAuth ? (
+        {userData?.user && userData.isAuth ? (
           <div>
             <Avatar
               onClick={handleMenu}
-              {...stringAvatar(`${userData.user.name}`)}
+              {...stringAvatar(userData.user.name)}
             />
             <Menu
               id="menu-appbar"
