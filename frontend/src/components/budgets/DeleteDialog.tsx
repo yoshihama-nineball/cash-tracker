@@ -63,9 +63,6 @@ const DeleteDialog = ({
 
   const handleDelete = () => {
     setOpen(false);
-    const successMessage = `「${budgetName}」を削除しました`;
-
-    const messageId = showMessage(successMessage, "success");
 
     startTransition(() => {
       const formData = new FormData();
@@ -73,8 +70,6 @@ const DeleteDialog = ({
 
       setTimeout(() => {
         if (formState.errors.length > 0) {
-          // 成功メッセージを取り消して、エラーメッセージを表示
-          clearMessage(messageId);
           showMessage(formState.errors[0], "error");
         }
       }, 2000);

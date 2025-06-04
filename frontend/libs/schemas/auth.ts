@@ -118,19 +118,17 @@ export const UserSchema = z.object({
 });
 
 export const ExpenseAPIResponseSchema = z.object({
-  // id: APIからstring型で送られてくるが、スキーマではnumber型を期待
+  _id: z.string(),
   id: z
     .union([z.string(), z.number()])
     .transform((val) => (typeof val === "string" ? val : String(val))),
 
   name: z.string(),
 
-  // amount: APIからnumber型で送られてくるが、スキーマではstring型を期待
   amount: z
     .union([z.string(), z.number()])
     .transform((val) => (typeof val === "string" ? Number(val) : val)),
 
-  // userId: APIからstring型で送られてくるが、スキーマではnumber型を期待
   budgetId: z
     .union([z.string(), z.number()])
     .transform((val) => (typeof val === "string" ? val : String(val))),
@@ -140,26 +138,34 @@ export const ExpenseAPIResponseSchema = z.object({
 });
 
 export const BudgetAPIResponseSchema = z.object({
-  // id: APIからstring型で送られてくるが、スキーマではnumber型を期待
+  _id: z.string(),
   id: z
     .union([z.string(), z.number()])
     .transform((val) => (typeof val === "string" ? val : String(val))),
 
   name: z.string(),
 
-  // amount: APIからnumber型で送られてくるが、スキーマではstring型を期待
   amount: z
     .union([z.string(), z.number()])
     .transform((val) => (typeof val === "string" ? Number(val) : val)),
 
-  // userId: APIからstring型で送られてくるが、スキーマではnumber型を期待
   userId: z
     .union([z.string(), z.number()])
     .transform((val) => (typeof val === "string" ? val : String(val))),
 
   createdAt: z.string(),
   updatedAt: z.string(),
-  expenses: z.array(ExpenseAPIResponseSchema),
+
+  expenses: z.array(ExpenseAPIResponseSchema).optional(),
+
+  user: z
+    .object({
+      id: z.string(),
+      name: z.string(),
+      email: z.string(),
+      _id: z.string(),
+    })
+    .optional(),
 });
 
 export const BudgetsAPIResponseSchema = z.object({

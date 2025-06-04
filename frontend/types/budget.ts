@@ -1,9 +1,10 @@
 // frontend/types/budget.tsをbackend/src/models/budget.tsをもとに実装
+// import { Expense } from "./expense";
 import { Expense } from "./expense";
 import { User } from "./user";
 
 export interface Budget {
-  id: number;
+  id: string;
   name: string;
   amount: number;
   expenses?: Expense[];

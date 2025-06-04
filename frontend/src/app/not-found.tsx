@@ -28,3 +28,5 @@ export default function NotFound() {
     </Container>
   );
 }
+
+export const dynamic = "force-dynamic";

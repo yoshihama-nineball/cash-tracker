@@ -30,7 +30,7 @@ type ActionStateType = {
 
 interface EditExpenseFormProps {
   expense: Expense | undefined;
-  budgetId: number;
+  budgetId: string;
   open: "none" | "create" | "edit" | "delete";
   setOpen: (open: "none" | "create" | "edit" | "delete") => void;
 }
@@ -50,7 +50,7 @@ const EditExpenseForm = ({
 
   const editExpenseWithIds = expense?.id
     ? (state: ActionStateType, payload: FormData) =>
-        editExpense(budgetId.toString(), expense.id, state, payload)
+        editExpense(budgetId, expense.id, state, payload)
     : undefined;
 
   const [formState, dispatch] = useActionState(

@@ -20,6 +20,11 @@ import { ResetPasswordSchema } from "../../../libs/schemas/auth";
 import Button from "../../components/ui/Button/Button";
 import Alert from "../feedback/Alert/Alert";
 
+interface ResetPasswordState {
+  errors: string[];
+  success: string;
+}
+
 // ResetPasswordSchemaに合わせた型定義
 type ResetPasswordFormValues = {
   password: string;
@@ -37,7 +42,10 @@ export default function ResetPasswordForm({
   const [isPending] = useTransition();
 
   // サーバーアクション用のカスタムハンドラー
-  const resetPasswordWithToken = async (prevState, formData) => {
+  const resetPasswordWithToken = async (
+    prevState: ResetPasswordState,
+    formData: FormData,
+  ) => {
     // トークンをフォームデータに追加
     formData.append("token", token);
     return resetPassword(prevState, formData);
@@ -110,7 +118,6 @@ export default function ResetPasswordForm({
             <FormLabel htmlFor="password">パスワード</FormLabel>
             <TextField
               id="password"
-              name="password"
               type={showPassword ? "text" : "password"}
               placeholder="パスワード"
               fullWidth
@@ -142,7 +149,6 @@ export default function ResetPasswordForm({
             </FormLabel>
             <TextField
               id="password_confirmation"
-              name="password_confirmation"
               type={showConfirmPassword ? "text" : "password"}
               placeholder="パスワード（再入力）"
               fullWidth

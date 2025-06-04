@@ -20,7 +20,7 @@ type ActionStateType = {
 };
 
 interface DeleteExpenseFormProps {
-  budgetId: number;
+  budgetId: string;
   expenseId: string;
   expenseName: string;
   open: "none" | "create" | "edit" | "delete";
@@ -47,11 +47,10 @@ const DeleteExpenseForm = ({
   const [isPending, startTransition] = useTransition();
   const { showMessage } = useMessage();
 
-  const deleteExpenseWithId = deleteExpense.bind(
-    null,
-    budgetId.toString(),
-    expenseId,
-  ) as (state: ActionStateType, payload: FormData) => Promise<ActionStateType>;
+  const deleteExpenseWithId = deleteExpense.bind(null, budgetId, expenseId) as (
+    state: ActionStateType,
+    payload: FormData,
+  ) => Promise<ActionStateType>;
 
   const [formState, dispatch] = useActionState(deleteExpenseWithId, {
     errors: [],

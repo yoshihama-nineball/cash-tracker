@@ -16,7 +16,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useState } from "react";
-import { Budget } from "types/budget";
+import { Budget } from "../../../libs/schemas/auth";
 import BudgetChart from "../budgets/BudgetChart";
 import Button from "../ui/Button/Button";
 import DeleteExpenseForm from "./DeleteExpenseForm";
@@ -249,7 +249,7 @@ const ExpenseList = ({
       <EditExpenseForm
         open={activeModal}
         setOpen={setActiveModal}
-        expense={selectedExpense || ""}
+        expense={selectedExpense}
         budgetId={budget.id}
       />
       <DeleteExpenseForm

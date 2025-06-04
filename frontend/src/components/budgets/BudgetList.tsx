@@ -17,7 +17,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useState } from "react";
-import { Budget } from "../../../types/budget";
+import { Budget } from "../../../libs/schemas/auth";
 import Button from "../ui/Button/Button";
 import Link from "../ui/Link/Link";
 import DeleteDialog from "./DeleteDialog";

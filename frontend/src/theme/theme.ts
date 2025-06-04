@@ -133,10 +133,12 @@ declare module "@mui/material/styles" {
   }
 }
 
-// 黒色ボタンのための型拡張
 declare module "@mui/material/Button" {
-  interface ButtonPropsColorOverrides {
+  interface ButtonPropsVariantOverrides {
     black: true;
+  }
+
+  interface ButtonPropsColorOverrides {
     neutral: true;
   }
 }

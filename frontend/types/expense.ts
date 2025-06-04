@@ -1,14 +1,18 @@
 // frontend/types/budget.ts
-import { Expense } from "./expense";
+// import { Expense } from "./expense";
 
-export interface Budget {
-  _id: string;
+import { Budget } from "./budget";
+import { User } from "./user";
+
+export interface Expense {
+  id: string;
   name: string;
   amount: number;
+  budgetId: string;
+  userId: number;
+  user?: User;
   createdAt: Date;
   updatedAt: Date;
-  userId: string;
-  expenses?: Expense[]; // 関連するExpenseの配列
 }
 
 // 予算作成リクエスト用の型
