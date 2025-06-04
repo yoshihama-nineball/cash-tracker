@@ -12,6 +12,7 @@ import {
   InputAdornment,
   TextField,
 } from "@mui/material";
+import { useRouter } from "next/navigation";
 import { useActionState, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { register as registerUser } from "../../../actions/create-account-action";
@@ -19,6 +20,7 @@ import { RegisterFormValues, RegisterSchema } from "../../../libs/schemas/auth";
 import Button from "../ui/Button/Button";
 
 export default function RegisterForm() {
+  const router = useRouter();
   const ref = useRef<HTMLFormElement>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -64,8 +66,9 @@ export default function RegisterForm() {
   useEffect(() => {
     if (formState.success) {
       reset();
+      router.push("/auth/confirm-account");
     }
-  }, [formState.success, reset]);
+  }, [formState.success, reset, router]);
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleClickShowConfirmPassword = () =>
