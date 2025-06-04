@@ -1,13 +1,13 @@
-// page.tsx (Server Component として残す)
 import { getBudget } from "@/services/budget";
 import BudgetDetailsClient from "../../../../components/budgets/BudgetDetailsClient";
 
 export default async function BudgetDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const budget = await getBudget(params.id);
+  const { id } = await params;
+  const budget = await getBudget(id);
 
   return <BudgetDetailsClient budget={budget} />;
 }
