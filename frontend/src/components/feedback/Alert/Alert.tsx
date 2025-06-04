@@ -3,13 +3,14 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import InfoIcon from "@mui/icons-material/Info";
 import WarningIcon from "@mui/icons-material/Warning";
-import { Box, Alert as MuiAlert } from "@mui/material";
+import { Box, Alert as MuiAlert, SxProps, Theme } from "@mui/material";
 
 type AlertSeverity = "error" | "warning" | "success" | "info";
 
 interface AlertProps {
   children: React.ReactNode;
   severity: AlertSeverity;
+  sx?: SxProps<Theme>;
 }
 
 export default function Alert({ children, severity = "info" }: AlertProps) {
@@ -28,7 +29,7 @@ export default function Alert({ children, severity = "info" }: AlertProps) {
   };
 
   return (
-    <Box sx={{ my: 2 }}>
+    <Box sx={{ my: 2, ...sx }}>
       <MuiAlert icon={getIcon()} severity={severity}>
         {children}
       </MuiAlert>
