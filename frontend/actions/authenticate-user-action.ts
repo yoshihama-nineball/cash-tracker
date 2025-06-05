@@ -77,8 +77,10 @@ export async function authenticate(
     
   } catch (error) {
     console.error("🚨 予期しないエラー:", error);
+    // TypeScriptエラーを修正
+    const errorMessage = error instanceof Error ? error.message : "不明なエラー";
     return {
-      errors: ["ネットワークエラーが発生しました: " + error.message],
+      errors: ["ネットワークエラーが発生しました: " + errorMessage],
       success: "",
     };
   }
