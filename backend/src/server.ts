@@ -24,8 +24,7 @@ app.use(
   cors({
     origin: [
       'http://localhost:3000',
-      'https://cash-tracker-six.vercel.app',
-      'https://cash-tracker-pkakxcr31-yoshihamas-projects.vercel.app',
+      'https://cash-tracker-six.vercel.app', // カスタムドメインのみ
     ],
     credentials: true,
   }),
