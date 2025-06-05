@@ -12,19 +12,13 @@ export async function authenticate(
   prevState: ActionStateType,
   formData: FormData,
 ) {
-  console.log("🔍 認証開始");
-  
   const loginCredentials = {
     email: formData.get("email"),
     password: formData.get("password"),
   };
 
-  console.log("📧 Email:", loginCredentials.email);
-  console.log("🔑 Password exists:", !!loginCredentials.password);
-
   const auth = LoginSchema.safeParse(loginCredentials);
   if (!auth.success) {
-    console.log("❌ バリデーションエラー:", auth.error.errors);
     return {
       errors: auth.error.errors.map((issue) => issue.message),
       success: "",
@@ -32,7 +26,6 @@ export async function authenticate(
   }
 
   const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
-  console.log("🌐 リクエストURL:", url);
 
   try {
     const req = await fetch(url, {
@@ -46,23 +39,15 @@ export async function authenticate(
       }),
     });
 
-    console.log("📡 レスポンスステータス:", req.status);
-    console.log("📡 レスポンスOK:", req.ok);
-
     const json = await req.json();
-    console.log("📄 レスポンス内容:", json);
 
     if (!req.ok) {
-      console.log("❌ APIエラー");
       const { error } = ErrorResponseSchema.parse(json);
       return {
         errors: [error],
         success: "",
       };
     }
-
-    console.log("✅ ログイン成功、Cookieを設定中");
-    console.log("🍪 JWTトークン長さ:", typeof json === 'string' ? json.length : 'Not a string');
 
     const cookieStore = await cookies();
     cookieStore.set({
@@ -72,10 +57,12 @@ export async function authenticate(
       path: "/",
     });
 
-    console.log("🍪 Cookie設定完了、リダイレクト開始");
-    
   } catch (error) {
-    console.error("🚨 ネットワークエラー:", error);
+    // NEXT_REDIRECT以外のエラーのみ処理
+    if (error instanceof Error && error.message.includes('NEXT_REDIRECT')) {
+      throw error; // リダイレクトエラーは再スロー
+    }
+    
     const errorMessage = error instanceof Error ? error.message : "不明なエラー";
     return {
       errors: ["ネットワークエラーが発生しました: " + errorMessage],
@@ -83,6 +70,6 @@ export async function authenticate(
     };
   }
 
-  // try-catchの外でリダイレクトを実行
+  // ここでリダイレクト
   redirect("/admin/budgets");
 }
