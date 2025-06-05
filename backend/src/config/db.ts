@@ -11,18 +11,22 @@ interface IMongoDBConnection {
 
 class MongoDB implements IMongoDBConnection {
   private connection: mongoose.Connection | null = null
+  private isConnected: boolean = false
 
   async authenticate(): Promise<void> {
+    if (this.isConnected) {
+      return Promise.resolve()
+    }
+
     try {
-      // bufferCommands を削除
       await mongoose.connect(MONGODB_URI, {
         connectTimeoutMS: 30000,
         socketTimeoutMS: 30000,
         maxPoolSize: 5,
         serverSelectionTimeoutMS: 30000,
-        // bufferCommands: false を削除
       })
       this.connection = mongoose.connection
+      this.isConnected = true
       console.log('✅ MongoDB接続成功')
       return Promise.resolve()
     } catch (error) {

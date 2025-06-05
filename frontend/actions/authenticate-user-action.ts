@@ -73,15 +73,16 @@ export async function authenticate(
     });
 
     console.log("🍪 Cookie設定完了、リダイレクト開始");
-    redirect("/admin/budgets");
     
   } catch (error) {
-    console.error("🚨 予期しないエラー:", error);
-    // TypeScriptエラーを修正
+    console.error("🚨 ネットワークエラー:", error);
     const errorMessage = error instanceof Error ? error.message : "不明なエラー";
     return {
       errors: ["ネットワークエラーが発生しました: " + errorMessage],
       success: "",
     };
   }
+
+  // try-catchの外でリダイレクトを実行
+  redirect("/admin/budgets");
 }
