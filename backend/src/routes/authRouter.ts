@@ -1,13 +1,12 @@
 import { Router } from 'express'
 import { body, param } from 'express-validator'
-import { limiter } from '../config/limiter'
 import { AuthController } from '../controllers/AuthController'
 import { authenticate } from '../middleware/auth'
 import { handleInputErrors } from '../middleware/validation'
 
 const router = Router()
 
-router.use(limiter) // ルーターにlimiterを適用
+// router.use(limiter) // ルーターにlimiterを適用
 
 router.post(
   '/create-account',

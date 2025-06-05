@@ -4,7 +4,6 @@ import express from 'express'
 import morgan from 'morgan'
 import 'reflect-metadata'
 import { db } from './config/db'
-import { limiter } from './config/limiter'
 import authRouter from './routes/authRouter'
 import budgetRouter from './routes/budgetRouter'
 
@@ -30,7 +29,7 @@ app.use(
 
 app.use(morgan('dev'))
 app.use(express.json())
-app.use(limiter)
+// app.use(limiter)
 
 app.get('/api/hello', (req, res) => {
   res.status(200).json({ message: 'Hello, world!' })
