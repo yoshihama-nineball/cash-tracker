@@ -1,61 +1,67 @@
-import {
-  Table,
-  Column,
-  Model,
-  DataType,
-  HasMany,
-  BelongsTo,
-  ForeignKey,
-  AllowNull,
-} from 'sequelize-typescript'
-import Expense from './Expense'
-import User from './User'
-// import Expense from './Expense'
-// import User from './User'
+import mongoose, { Document, Schema } from 'mongoose'
+import { IExpense } from './Expense'
+import { IUser } from './User'
 
-@Table({
-  tableName: 'budgets',
-  timestamps: true,
-})
-class Budget extends Model {
-  //MEMO: nameがnull非許容でstring型であることを定義
-  @AllowNull(false)
-  @Column({
-    type: DataType.STRING(100),
-  })
-  declare name: string
-
-  @AllowNull(false)
-  @Column({
-    type: DataType.DECIMAL,
-  })
-  declare amount: number
-
-  @AllowNull(false)
-  @Column({
-    type: DataType.DATE,
-    defaultValue: DataType.NOW,
-  })
-  declare createdAt: Date
-
-  @AllowNull(false)
-  @Column({
-    type: DataType.DATE,
-    defaultValue: DataType.NOW,
-  })
-  declare updatedAt: Date
-
-  @HasMany(() => Expense, {
-    onUpdate: 'CASCADE',
-    onDelete: 'CASCADE',
-  })
-  declare expenses: Expense[]
-
-  @ForeignKey(() => User)
-  declare userId: number
-
-  @BelongsTo(() => User)
-  declare user: User
+// Budgetインターフェースの定義
+export interface IBudget extends Document {
+  name: string
+  amount: number
+  createdAt: Date
+  updatedAt: Date
+  expenses: IExpense['_id'][]
+  userId: IUser['_id']
+  user: IUser['_id']
 }
+
+// Budgetスキーマの定義
+const budgetSchema = new Schema<IBudget>(
+  {
+    name: {
+      type: String,
+      required: [true, '予算名は必須です'],
+      maxlength: [100, '予算名は100文字以内である必要があります'],
+    },
+    amount: {
+      type: Number,
+      required: [true, '金額は必須です'],
+    },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+    // 仮想フィールドとしてuser参照を保持
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
+  },
+  {
+    timestamps: true, // createdAtとupdatedAtを自動生成
+  },
+)
+
+// Expenseとの関連を処理する仮想フィールド
+budgetSchema.virtual('expenses', {
+  ref: 'Expense',
+  localField: '_id',
+  foreignField: 'budgetId',
+})
+
+// toJSONオプションを設定して仮想フィールドも出力されるようにする
+budgetSchema.set('toJSON', { virtuals: true })
+budgetSchema.set('toObject', { virtuals: true })
+
+// Mongooseの保存前処理: userIdをuserにコピー
+budgetSchema.pre('save', function (next) {
+  if (this.userId) {
+    this.user = this.userId
+  }
+  next()
+})
+
+// Budgetモデルの作成とエクスポート
+const Budget = mongoose.model<IBudget>('Budget', budgetSchema)
 
 export default Budget

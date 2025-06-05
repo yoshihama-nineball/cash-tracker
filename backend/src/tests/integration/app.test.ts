@@ -1,4 +1,4 @@
-import { Accessor } from './../../../node_modules/@babel/types/lib/index-legacy.d';
+import { Accessor } from './../../../node_modules/@babel/types/lib/index-legacy.d'
 import request from 'supertest'
 import server, { connectDB } from '../../server'
 import { AuthController } from '../../controllers/AuthController'
@@ -6,7 +6,6 @@ import User from '../../models/User'
 import * as jwtUtils from '../../utils/jwt'
 import * as authUtils from '../../utils/token'
 import { generateToken } from '../../utils/token'
-
 
 describe('Authentication: create account', () => {
   it('入力フォームが空だった時のバリデーションエラーのテストケース', async () => {
@@ -103,7 +102,6 @@ describe('Authentication: create account', () => {
 })
 
 describe('Authentication: confirm account', () => {
-
   it('tokenが空で送信された場合のユーザ確認時のバリデーションエラーのテストケース', async () => {
     // console.log('tokenが空で送信された場合のユーザ確認時のバリデーションエラー');
     // const userData = {
@@ -117,7 +115,7 @@ describe('Authentication: confirm account', () => {
     const confirmAccountMock = jest.spyOn(AuthController, 'confirmAccount')
 
     expect(response.statusCode).toBe(400)
-    expect(response.body.errors[0].msg).toEqual('認証コードは必須です');
+    expect(response.body.errors[0].msg).toEqual('認証コードは必須です')
     expect(confirmAccountMock).not.toHaveBeenCalled()
     expect(response.body.errors[0]).toHaveProperty('msg')
   })
@@ -125,18 +123,17 @@ describe('Authentication: confirm account', () => {
   it('tokenが6文字でない場合のユーザ確認時のバリデーションエラーのテストケース', async () => {
     // console.log('tokenが無効な場合のユーザ確認時のバリデーションエラー');
     const userData = {
-      token: '3493'
+      token: '3493',
     }
     const response = await request(server)
       .post('/api/auth/confirm-account')
       .send(userData)
 
-
     // console.log(response.body.errors[0].msg, 'tokenが無効の場合')
     const confirmAccountMock = jest.spyOn(AuthController, 'confirmAccount')
 
     expect(response.statusCode).toBe(400)
-    expect(response.body.errors[0].msg).toEqual('トークンが無効です');
+    expect(response.body.errors[0].msg).toEqual('トークンが無効です')
     expect(confirmAccountMock).not.toHaveBeenCalled()
     expect(response.body.errors[0]).toHaveProperty('msg')
   })
@@ -145,10 +142,9 @@ describe('Authentication: confirm account', () => {
     const response = await request(server)
       .post('/api/auth/confirm-account')
       .send({
-        token: "123456"
+        token: '123456',
       })
     // console.log(response.body, 'tokenが無効な場合の結果');
-
 
     expect(response.status).toBe(401)
     // expect(response).toHaveProperty('body')
@@ -178,9 +174,7 @@ describe('Authentication: user authentication', () => {
   })
   it('空のフォームが入力された場合のバリデーションエラーのテストケース', async () => {
     // console.log('空のフォームが送信されました');
-    const response = await request(server)
-      .post('/api/auth/login')
-      .send({})
+    const response = await request(server).post('/api/auth/login').send({})
     const loginMock = jest.spyOn(AuthController, 'login')
 
     expect(response.statusCode).toBe(400)
@@ -194,13 +188,15 @@ describe('Authentication: user authentication', () => {
     }
     const response = await request(server)
       .post('/api/auth/login')
-      .send(userData);
+      .send(userData)
 
-    const loginMock = jest.spyOn(AuthController, 'login');
+    const loginMock = jest.spyOn(AuthController, 'login')
 
-    expect(response.statusCode).toBe(400);
-    expect(response.body.errors[0].msg).toEqual('メールアドレスは有効な形式ではありません')
-    expect(loginMock).not.toHaveBeenCalled();
+    expect(response.statusCode).toBe(400)
+    expect(response.body.errors[0].msg).toEqual(
+      'メールアドレスは有効な形式ではありません',
+    )
+    expect(loginMock).not.toHaveBeenCalled()
   })
   it('ユーザが存在しない場合のテストケース', async () => {
     // console.log('ユーザが存在しません');
@@ -212,25 +208,22 @@ describe('Authentication: user authentication', () => {
       .post('/api/auth/login')
       .send(userData)
 
-    const loginMock = jest.spyOn(AuthController, 'login');
+    const loginMock = jest.spyOn(AuthController, 'login')
 
     // (User.findOne as jest.Mock).mockResolvedValue(undefined);
 
     // console.log(response.body, 'ユーザが存在しない場合のレスポンスデータ');
 
-    expect(response.status).toBe(401);
+    expect(response.status).toBe(401)
     expect(loginMock).not.toHaveBeenCalled()
-
-
   })
   it('アカウントがまだ有効化されていない場合のテストケース', async () => {
     // console.log('アカウントがまだ有効化されていません');
-    (jest.spyOn(User, 'findOne') as jest.Mock)
-      .mockResolvedValue({
-        id: 500,
-        confirmed: false,
-        password: "hashed_password"
-      })
+    ;(jest.spyOn(User, 'findOne') as jest.Mock).mockResolvedValue({
+      id: 500,
+      confirmed: false,
+      password: 'hashed_password',
+    })
     const userData = {
       email: 'yamada@example.com',
       password: 'password',
@@ -239,21 +232,26 @@ describe('Authentication: user authentication', () => {
       .post('/api/auth/login')
       .send(userData)
 
-    const loginMock = jest.spyOn(AuthController, 'login');
+    const loginMock = jest.spyOn(AuthController, 'login')
 
     expect(response.statusCode).toBe(401)
-    expect(response.body.error).toStrictEqual('アカウントがまだ有効化されていません。メールに送信された認証コードを使用してアカウントを有効化してください')
+    expect(response.body.error).toStrictEqual(
+      'アカウントがまだ有効化されていません。メールに送信された認証コードを使用してアカウントを有効化してください',
+    )
     expect(loginMock).not.toHaveBeenCalled()
   })
   it('パスワードが間違えている場合のテストケース', async () => {
     // console.log('パスワードは8文字以上で入力してください');
-    const findOne = (jest.spyOn(User, 'findOne') as jest.Mock)
-      .mockResolvedValue({
-        id: 500,
-        confirmed: true,
-        password: "hashed_password"
-      })
-    const checkPassword = jest.spyOn(authUtils, 'checkPassword').mockResolvedValue(undefined);
+    const findOne = (
+      jest.spyOn(User, 'findOne') as jest.Mock
+    ).mockResolvedValue({
+      id: 500,
+      confirmed: true,
+      password: 'hashed_password',
+    })
+    const checkPassword = jest
+      .spyOn(authUtils, 'checkPassword')
+      .mockResolvedValue(undefined)
     const userData = {
       email: 'yamada@example.com',
       password: 'wrong_password',
@@ -263,41 +261,49 @@ describe('Authentication: user authentication', () => {
       .post('/api/auth/login')
       .send(userData)
 
-    const loginMock = jest.spyOn(AuthController, 'login');
+    const loginMock = jest.spyOn(AuthController, 'login')
     // console.log(response.body, 'パスワードが間違えている場合のレスポンスデータ');
 
-    expect(response.statusCode).toBe(401);
-    expect(loginMock).not.toHaveBeenCalled();
+    expect(response.statusCode).toBe(401)
+    expect(loginMock).not.toHaveBeenCalled()
     expect(response.body.error).toStrictEqual('パスワードが間違っています')
-    expect(findOne).toHaveBeenCalledTimes(1);
+    expect(findOne).toHaveBeenCalledTimes(1)
     expect(checkPassword).toHaveBeenCalledTimes(1)
   })
   it('ログインの成功と、JWTの検証テスト', async () => {
     // console.log('ログインに成功しました/JWTが発行されました');
-    const findOne = (jest.spyOn(User, 'findOne') as jest.Mock)
-      .mockResolvedValue({
-        id: 500,
-        confirmed: true,
-        password: "hashed_password"
-      })
-    const checkPassword = jest.spyOn(authUtils, 'checkPassword').mockResolvedValue(true)
-    const generateJWT = jest.spyOn(jwtUtils, 'generateJWT').mockReturnValue('test_jwt')
+    const findOne = (
+      jest.spyOn(User, 'findOne') as jest.Mock
+    ).mockResolvedValue({
+      id: 500,
+      confirmed: true,
+      password: 'hashed_password',
+    })
+    const checkPassword = jest
+      .spyOn(authUtils, 'checkPassword')
+      .mockResolvedValue(true)
+    const generateJWT = jest
+      .spyOn(jwtUtils, 'generateJWT')
+      .mockReturnValue('test_jwt')
     const userData = {
       email: 'yamada@example.com',
       password: 'pure_password',
     }
-    const response = request(server)
-      .post('/api/auth/login')
-      .send(userData);
+    const response = request(server).post('/api/auth/login').send(userData)
 
     // console.log((await response).body, 'ログイン成功時のレスポンスデータ');
 
-    expect((await response).body.message).toEqual('アカウントのログインに成功しました！')
+    expect((await response).body.message).toEqual(
+      'アカウントのログインに成功しました！',
+    )
     expect((await response).body.token).toEqual('test_jwt')
 
     expect(checkPassword).toHaveBeenCalled()
     expect(checkPassword).toHaveBeenCalledTimes(1)
-    expect(checkPassword).toHaveBeenCalledWith('pure_password', 'hashed_password')
+    expect(checkPassword).toHaveBeenCalledWith(
+      'pure_password',
+      'hashed_password',
+    )
 
     expect(generateJWT).toHaveBeenCalled()
     expect(generateJWT).toHaveBeenCalledTimes(1)
@@ -309,38 +315,25 @@ describe('Authentication: user authentication', () => {
 let jwt: string
 
 async function authenticateUser() {
-  const response = await request(server)
-    .post('/api/auth/login')
-    .send({
-      email: 'test@example.com',
-      password: 'password'
-    })
-  // jwt = response.body;
-  console.log(response.body.token, 'JWT');
+  const response = await request(server).post('/api/auth/login').send({
+    email: 'test@example.com',
+    password: 'password',
+  })
+  jwt = response.body.token
 
-  // expect(response.status).toBe(200);
+  expect(response.status).toBe(200)
+  expect(response.body.message).toEqual('アカウントのログインに成功しました！')
 }
 
 describe('GET /api/budgets', () => {
-  let jwt: string
   beforeAll(() => {
-    jest.restoreAllMocks();
+    jest.restoreAllMocks()
   })
   beforeAll(async () => {
-    const response = await request(server)
-      .post('/api/auth/login')
-      .send({
-        email: 'test@example.com',
-        password: 'password'
-      })
-    jwt = response.body.token;
-
-    expect(response.status).toBe(200);
-    expect(response.body.message).toEqual('アカウントのログインに成功しました！')
+    await authenticateUser()
   })
   it('JWT認証されていないユーザが予算データにアクセスしようとしたときのテスト', async () => {
-    const response = await request(server)
-      .get('/api/budgets')
+    const response = await request(server).get('/api/budgets')
 
     expect(response.status).toBe(401)
     expect(response.body.error).toBe('認証が必要です')
@@ -359,11 +352,195 @@ describe('GET /api/budgets', () => {
       .get('/api/budgets')
       .auth(jwt, { type: 'bearer' })
 
-    console.log(response.body, 'JWTが正しい場合の予算アクセス時の結果');
-
     expect(response.body).toHaveLength(0)
     expect(response.status).not.toBe(401)
     expect(response.body.error).not.toBe('認証が必要です')
     expect(response.status).toBe(200)
+  })
+})
+
+describe('POST /api/budgets', () => {
+  beforeAll(async () => {
+    await authenticateUser()
+  })
+  it('JWT認証されていないユーザが、予算作成をしようとしたときの結合テストケース', async () => {
+    const response = await request(server).post('/api/budgets')
+
+    expect(response.status).toBe(401)
+    expect(response.body.error).toBe('認証が必要です')
+  })
+
+  it('JWTが無効だった時、予算作成しようとした場合の結合テストケース', async () => {
+    const response = await request(server)
+      .post('/api/budgets')
+      .auth('invalid_token', { type: 'bearer' })
+      .send({})
+
+    expect(response.status).toBe(500)
+    expect(response.body.error).toBe('トークンが無効です')
+  })
+  it('未入力の場合の予算作成の結合テストケース', async () => {
+    const response = await request(server)
+      .post('/api/budgets')
+      .auth(jwt, { type: 'bearer' })
+      .send({})
+
+    expect(response.status).not.toBe(401)
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ msg: '予算タイトルは必須です' }),
+        expect.objectContaining({ msg: '予算金額は必須です' }),
+        expect.objectContaining({ msg: '予算金額の値が無効です' }),
+      ]),
+    )
+
+    expect(response.status).toBe(400)
+  })
+
+  it('予算作成の結合が成功する場合のテストケース', async () => {
+    const response = await request(server)
+      .post('/api/budgets')
+      .auth(jwt, { type: 'bearer' })
+      .send({
+        name: '食費',
+        amount: 30000,
+      })
+
+    expect(response.status).not.toBe(401)
+    expect(response.body.error).not.toBe('認証が必要です')
+    expect(response.status).toBe(201)
+    expect(response.body).toEqual('予算が正しく作成されました')
+  })
+})
+
+describe('GET /api/budgets/:id', () => {
+  beforeAll(async () => {
+    await authenticateUser()
+  })
+  it('JWT認証されていないユーザが、予算データの取得をしようとしたときの結合テストケース', async () => {
+    const response = await request(server).get('/api/budgets/1')
+
+    expect(response.status).toBe(401)
+    expect(response.body.error).toBe('認証が必要です')
+  })
+  it('JWTが無効だった時、予算データの取得をしようとした場合の結合テストケース', async () => {
+    const response = await request(server)
+      .get('/api/budgets/1')
+      .auth('invalid_token', { type: 'bearer' })
+
+    expect(response.status).toBe(500)
+    expect(response.body.error).toBe('トークンが無効です')
+  })
+  it('存在しないIDの場合の予算データの取得の結合テストケース', async () => {
+    const response = await request(server)
+      .get('/api/budgets/99999')
+      .auth(jwt, { type: 'bearer' })
+
+    expect(response.status).toBe(404)
+    expect(response.body.error).toBe('予算が見つかりません')
+  })
+
+  it('存在するIDの場合の予算データの取得の結合テストケース', async () => {
+    const response = await request(server)
+      .get('/api/budgets/1')
+      .auth(jwt, { type: 'bearer' })
+
+    expect(response.status).not.toBe(401)
+    expect(response.body.error).not.toBe('認証が必要です')
+    expect(response.status).toBe(200)
+    // expect(response.body).toEqual('予算が正しく作成されました')
+  })
+})
+
+describe('PUT /api/budgets/:id', () => {
+  it('JWT認証されていないユーザが、予算データの更新をしようとしたときの結合テストケース', async () => {
+    const response = await request(server).put('/api/budgets/1')
+
+    expect(response.status).toBe(401)
+    expect(response.body.error).toBe('認証が必要です')
+  })
+  it('JWTが無効だった時、予算データの更新をしようとした場合の結合テストケース', async () => {
+    const response = await request(server)
+      .put('/api/budgets/1')
+      .auth('invalid_token', { type: 'bearer' })
+      .send({})
+
+    expect(response.status).toBe(500)
+    expect(response.body.error).toBe('トークンが無効です')
+  })
+  it('存在しないIDの場合の予算データの更新の結合テストケース', async () => {
+    const response = await request(server)
+      .put('/api/budgets/99999')
+      .auth(jwt, { type: 'bearer' })
+      .send({})
+
+    expect(response.status).toBe(404)
+    expect(response.body.error).toBe('予算が見つかりません')
+  })
+  it('未入力の場合の予算データの更新の結合テストケース', async () => {
+    const response = await request(server)
+      .put('/api/budgets/1')
+      .auth(jwt, { type: 'bearer' })
+      .send({})
+
+    expect(response.status).not.toBe(401)
+    expect(response.body.errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ msg: '予算タイトルは必須です' }),
+        expect.objectContaining({ msg: '予算金額は必須です' }),
+        expect.objectContaining({ msg: '予算金額の値が無効です' }),
+      ]),
+    )
+
+    expect(response.status).toBe(400)
+  })
+  it('存在するIDの場合の予算データの更新の結合が成功する場合のテストケース', async () => {
+    const response = await request(server)
+      .put('/api/budgets/1')
+      .auth(jwt, { type: 'bearer' })
+      .send({
+        name: '光熱費',
+        amount: 15000,
+      })
+
+    expect(response.status).not.toBe(401)
+    expect(response.body.error).not.toBe('認証が必要です')
+    expect(response.status).toBe(200)
+    expect(response.body).toEqual('予算の編集に成功しました')
+  })
+})
+
+describe('DELETE /api/budgets/:id', () => {
+  it('JWT認証されていないユーザが、予算データの削除をしようとしたときの結合テストケース', async () => {
+    const response = await request(server).delete('/api/budgets/1')
+
+    expect(response.status).toBe(401)
+    expect(response.body.error).toBe('認証が必要です')
+  })
+  it('JWTが無効だった時、予算データの削除をしようとした場合の結合テストケース', async () => {
+    const response = await request(server)
+      .delete('/api/budgets/1')
+      .auth('invalid_token', { type: 'bearer' })
+
+    expect(response.status).toBe(500)
+    expect(response.body.error).toBe('トークンが無効です')
+  })
+  it('存在しないIDの場合の予算データの削除の結合テストケース', async () => {
+    const response = await request(server)
+      .delete('/api/budgets/99999')
+      .auth(jwt, { type: 'bearer' })
+
+    expect(response.status).toBe(404)
+    expect(response.body.error).toBe('予算が見つかりません')
+  })
+  it('存在するIDの場合の予算データの削除の結合が成功する場合のテストケース', async () => {
+    const response = await request(server)
+      .delete('/api/budgets/1')
+      .auth(jwt, { type: 'bearer' })
+
+    expect(response.status).not.toBe(401)
+    expect(response.body.error).not.toBe('認証が必要です')
+    expect(response.status).toBe(200)
+    expect(response.body).toEqual('予算の削除に成功しました')
   })
 })

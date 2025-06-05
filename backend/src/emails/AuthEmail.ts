@@ -14,10 +14,12 @@ export class AuthEmail {
         to: user.email,
         subject: 'CashTracker - アカウントの確認',
         html: `<p>こんにちは: ${user.name}さん！</p>
-        　　　　<p>CashTrackerにアカウントを作成しました。もう少しで完了です。</p>
-                <p>次のリンクをクリックしてください:</p>
-                <a href="${process.env.FRONTEND_URL}/auth/confirm-account">アカウントを確認する</a>
-                <p>この認証コードを入力してください: <b>${user.token}</b></p>`,
+              <p>CashTrackerにアカウントを作成しました。もう少しで完了です。</p>
+              <p>次のリンクをクリックしてください:</p>
+              <p><a href="${process.env.FRONTEND_URL}/auth/confirm-account" target="_blank" rel="noopener noreferrer">アカウントを確認する</a></p>
+              <p>リンクが機能しない場合は、以下のURLをブラウザに直接コピー＆ペーストしてください：</p>
+              <p>${process.env.FRONTEND_URL}/auth/confirm-account</p>
+              <p>この認証コードを入力してください: <b>${user.token}</b></p>`,
       })
 
       // メール送信の結果をログに出力
@@ -42,7 +44,7 @@ export class AuthEmail {
         html: `<p>こんにちは: ${user.name}さん！パスワードのリセットを受け付けました</p>
         　　　　<p>パスワードの再設定用の認証コードを共有します。もう少しで設定完了です。</p>
                 <p>次のリンクをクリックしてパスワードの再設定を行ってください:</p>
-                <a href="${process.env.FRONTEND_URL}/auth/forgot-password">パスワードの再設定を行う</a>
+                <a href="${process.env.FRONTEND_URL}/auth/forgot-password" target="_blank" rel="noopener noreferrer">パスワードの再設定を行う</a>
                 <p>この認証コードを入力してください: <b>${user.token}</b></p>`,
       })
       // メール送信の結果をログに出力

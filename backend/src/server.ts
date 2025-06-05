@@ -1,20 +1,18 @@
-import 'reflect-metadata'
-import express from 'express'
 import colors from 'colors'
+import cors from 'cors'
+import express from 'express'
 import morgan from 'morgan'
+import 'reflect-metadata'
 import { db } from './config/db'
-import budgetRouter from './routes/budgetRouter'
 import authRouter from './routes/authRouter'
-import { limiter } from './config/limiter'
-// import authRouter from './routes/authRouter'
+import budgetRouter from './routes/budgetRouter'
 
 export async function connectDB() {
   try {
     await db.authenticate()
     db.sync()
-    console.log(colors.blue.bold('Sequelizeに接続しました'))
-  } catch (error) {
-    // console.log(error)
+    console.log(colors.blue.bold('MongoDBに接続しました'))
+  } catch (error: any) {
     console.log(colors.red.bold(error.message))
   }
 }
@@ -22,12 +20,19 @@ connectDB()
 
 const app = express()
 
-//morganミドルウェアを使ったHTTPリスエスト結果の表示
+app.use(
+  cors({
+    origin: [
+      'http://localhost:3000',
+      'https://cash-tracker-six.vercel.app', // カスタムドメインのみ
+    ],
+    credentials: true,
+  }),
+)
+
 app.use(morgan('dev'))
-
 app.use(express.json())
-
-app.use(limiter)
+// app.use(limiter)
 
 app.get('/api/hello', (req, res) => {
   res.status(200).json({ message: 'Hello, world!' })
@@ -36,7 +41,7 @@ app.get('/api/hello', (req, res) => {
 app.use('/api/budgets', budgetRouter)
 app.use('/api/auth', authRouter)
 
-app.use('/', (req, res) => {
+app.get('/', (req, res) => {
   res.send('ユニットテストの動作確認')
 })
 

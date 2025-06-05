@@ -1,11 +1,13 @@
-import { Request, Response, NextFunction } from 'express'
-import { param, validationResult, body } from 'express-validator'
+import { NextFunction, Request, Response } from 'express'
+import { body, param, validationResult } from 'express-validator'
+import mongoose from 'mongoose'
 import Expense from '../models/Expense'
 
+// Requestインターフェースを拡張
 declare global {
   namespace Express {
     interface Request {
-      expense?: Expense
+      expense?: any // Expense型をanyに変更
     }
   }
 }
@@ -16,12 +18,9 @@ export const validateExpenseId = async (
   next: NextFunction,
 ) => {
   await param('expenseId')
-    //MEMO: bail()を使うことで、不要なエラーメッセージをスキップする
-    .isInt()
-    .withMessage('IDの値が数字以外で無効です')
-    .bail()
-    .custom((value) => value > 0)
-    .withMessage('IDがマイナスの値です')
+    // MongoDBのIDはObjectIDなので、数値ではなく正しい形式かチェック
+    .custom((value) => mongoose.Types.ObjectId.isValid(value))
+    .withMessage('無効なID形式です')
     .run(req)
 
   let errors = validationResult(req)
@@ -65,7 +64,15 @@ export const validateExpenseExists = async (
     const { expenseId } = req.params
     console.log(`Validating existence of expense with ID: ${expenseId}`) // デバッグログ
 
-    const expense = await Expense.findByPk(expenseId)
+    // ObjectIDの形式チェック
+    if (!mongoose.Types.ObjectId.isValid(expenseId)) {
+      res.status(400).json({ error: '無効なID形式です' })
+      return
+    }
+
+    // findByPkをfindByIdに変更
+    const expense = await Expense.findById(expenseId)
+
     if (!expense) {
       const error = new Error('支出が見つかりません')
       // console.log(`Expense with ID: ${expenseId} not found`) // デバッグログ
@@ -86,7 +93,8 @@ export const belongsToBudget = async (
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
-  if (req.budget.id !== req.expense.budgetId) {
+  // MongoDBのIDはオブジェクトなので、文字列に変換して比較
+  if (req.budget._id.toString() !== req.expense.budgetId.toString()) {
     const error = new Error('支出が見つかりません')
     res.status(404).json({ error: error.message })
     return

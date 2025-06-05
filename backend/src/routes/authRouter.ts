@@ -1,13 +1,12 @@
+import { Router } from 'express'
 import { body, param } from 'express-validator'
 import { AuthController } from '../controllers/AuthController'
-import { handleInputErrors } from '../middleware/validation'
-import { Router } from 'express'
-import { limiter } from '../config/limiter'
 import { authenticate } from '../middleware/auth'
+import { handleInputErrors } from '../middleware/validation'
 
 const router = Router()
 
-router.use(limiter) // ルーターにlimiterを適用
+// router.use(limiter) // ルーターにlimiterを適用
 
 router.post(
   '/create-account',
@@ -97,13 +96,17 @@ router.get(
 )
 
 router.put(
-  '/user',
+  '/update-profile',
+  body('name').notEmpty().withMessage('ユーザ名は必須です'),
+  body('email')
+    .isEmail()
+    .withMessage('メールアドレスは有効な形式ではありません'),
   authenticate,
-  // handleInputErrors,
+  handleInputErrors,
   AuthController.updateUser,
 )
 
-router.post(
+router.put(
   '/update-password',
   authenticate,
   body('current_password')

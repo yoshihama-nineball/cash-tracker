@@ -8,9 +8,8 @@ on:
   pull_request:
 
 jobs:
-  build:
+  test-frontend:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -26,8 +25,31 @@ jobs:
       - name: Clear Yarn cache
         run: yarn cache clean
 
-      - name: Install dependencies
-        run: yarn install
+      - name: Install frontend dependencies
+        run: cd frontend && yarn install
 
-      - name: Run tests
-        run: yarn test
+      - name: Run frontend tests
+        run: cd frontend && yarn test
+
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Configure Yarn to use Yarn registry
+        run: yarn config set registry https://registry.yarnpkg.com
+
+      - name: Clear Yarn cache
+        run: yarn cache clean
+
+      - name: Install backend dependencies
+        run: cd backend && yarn install
+
+      - name: Run backend tests
+        run: cd backend && yarn test
