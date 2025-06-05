@@ -58,10 +58,10 @@ const CreateExpenseForm = ({ budgetId }: CreateExpenseFormProps) => {
   const router = useRouter();
   const ref = useRef<HTMLFormElement>(null);
 
-  const createExpenseWithBudgetId = createExpense.bind(
-    null,
-    budgetId,
-  ) as (state: ActionStateType, payload: FormData) => Promise<ActionStateType>;
+  const createExpenseWithBudgetId = createExpense.bind(null, budgetId) as (
+    state: ActionStateType,
+    payload: FormData,
+  ) => Promise<ActionStateType>;
 
   const [formState, dispatch] = useActionState(createExpenseWithBudgetId, {
     errors: [],

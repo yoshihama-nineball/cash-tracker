@@ -21,7 +21,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const { user } = await verifySession();
-  
+
   const userData = {
     user: user,
     isAuth: !!user,

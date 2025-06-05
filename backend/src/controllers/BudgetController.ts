@@ -9,8 +9,16 @@ export class BudgetController {
     try {
       // MongoDBではfindでデータを取得し、sortでソート
       const budgets = await Budget.find({ userId: req.user.id })
+        .populate('expenses') // ← この行を追加
         .sort({ createdAt: -1 }) // -1はDESCと同じ意味
         .exec()
+
+      // デバッグログを追加（一時的）
+      console.log('=== Budget getAll Debug ===')
+      budgets.forEach((budget, index) => {
+        console.log(`Budget ${index + 1}: ${budget.name}`)
+        console.log(`Expenses count: ${budget.expenses?.length || 0}`)
+      })
 
       res.json(budgets)
     } catch (error) {
@@ -38,12 +46,17 @@ export class BudgetController {
 
   static getById = async (req: Request, res: Response): Promise<void> => {
     try {
-      const budgetId = req.params.budgetId // req.paramsからbudgetIdを取得
+      const budgetId = req.params.budgetId
 
-      // MongoDBではfindByIdでデータを取得し、populateで関連データを取得
-      const budget = await Budget.findById(budgetId)
-        .populate('expenses') // Expenseとのリレーションを取得
-        .exec()
+      const budget = await Budget.findById(budgetId).populate('expenses').exec()
+
+      // デバッグログを追加
+      console.log('=== Budget getById Debug ===')
+      console.log('Budget ID:', budgetId)
+      console.log('Budget found:', !!budget)
+      console.log('Budget expenses field:', budget?.expenses)
+      console.log('Expenses count:', budget?.expenses?.length || 0)
+      console.log('Raw budget object:', JSON.stringify(budget, null, 2))
 
       if (!budget) {
         res.status(404).json({ error: '予算が見つかりません' })
@@ -52,6 +65,7 @@ export class BudgetController {
 
       res.status(200).json(budget)
     } catch (error) {
+      console.error('Budget getById error:', error)
       res.status(500).json({ error: 'サーバーエラーが発生しました' })
     }
   }

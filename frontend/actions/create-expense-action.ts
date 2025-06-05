@@ -13,8 +13,8 @@ export async function createExpense(
   prevState: ActionStateType,
   formData: FormData,
 ) {
-  console.log('createExpense開始 - budgetId:', budgetId);
-  console.log('formData:', {
+  console.log("createExpense開始 - budgetId:", budgetId);
+  console.log("formData:", {
     name: formData.get("name"),
     amount: formData.get("amount"),
   });
@@ -25,23 +25,23 @@ export async function createExpense(
       amount: formData.get("amount"),
     });
 
-    console.log('expense.success:', expense.success);
+    console.log("expense.success:", expense.success);
 
     if (!expense.success) {
-      console.log('バリデーションエラー:', expense.error);
+      console.log("バリデーションエラー:", expense.error);
       return {
         errors: expense.error.issues.map((issue) => issue.message),
         success: "",
       };
     }
 
-    console.log('バリデーション成功:', expense.data);
+    console.log("バリデーション成功:", expense.data);
 
     const token = await getToken();
-    console.log('token取得:', !!token);
+    console.log("token取得:", !!token);
 
     const url = `${process.env.NEXT_PUBLIC_API_URL}/budgets/${budgetId}/expenses`;
-    console.log('URL:', url);
+    console.log("URL:", url);
 
     const req = await fetch(url, {
       method: "POST",
@@ -55,16 +55,19 @@ export async function createExpense(
       }),
     });
 
-    console.log('レスポンスステータス:', req.status);
-    
+    console.log("レスポンスステータス:", req.status);
+
     const json = await req.json();
-    console.log('レスポンス内容:', json);
+    console.log("レスポンス内容:", json);
 
     revalidatePath("/admin");
 
     if (!req.ok) {
-      const errorMessage = json.errors?.[0]?.msg || json.message || `サーバーエラー (${req.status})`;
-      console.log('エラーレスポンス:', errorMessage);
+      const errorMessage =
+        json.errors?.[0]?.msg ||
+        json.message ||
+        `サーバーエラー (${req.status})`;
+      console.log("エラーレスポンス:", errorMessage);
       return {
         errors: [errorMessage],
         success: "",
@@ -75,11 +78,10 @@ export async function createExpense(
       errors: [],
       success: "支出を作成しました",
     };
-    console.log('最終結果:', result);
+    console.log("最終結果:", result);
     return result;
-
   } catch (error) {
-    console.error('createExpense内でエラー:', error);
+    console.error("createExpense内でエラー:", error);
     return {
       errors: ["予期しないエラーが発生しました"],
       success: "",

@@ -26,7 +26,7 @@ export async function createBudget(
 
   const token = await getToken();
   const url = `${process.env.NEXT_PUBLIC_API_URL}/budgets`;
-  
+
   const req = await fetch(url, {
     method: "POST",
     headers: {
@@ -40,12 +40,12 @@ export async function createBudget(
   });
 
   // デバッグ情報を追加
-  console.log('予算作成レスポンスステータス:', req.status);
-  console.log('予算作成レスポンスOK:', req.ok);
+  console.log("予算作成レスポンスステータス:", req.status);
+  console.log("予算作成レスポンスOK:", req.ok);
 
   const json = await req.json();
-  console.log('予算作成レスポンス内容:', json); // ← 追加
-  console.log('レスポンスの型:', typeof json); // ← 追加
+  console.log("予算作成レスポンス内容:", json); // ← 追加
+  console.log("レスポンスの型:", typeof json); // ← 追加
 
   revalidatePath("/admin");
 
@@ -78,9 +78,7 @@ export async function createBudget(
 
   // デバッグ用：実際のレスポンス内容をエラーメッセージに含める
   return {
-    errors: [
-      `レスポンス形式が予期しないものでした: ${JSON.stringify(json)}`,
-    ],
+    errors: [`レスポンス形式が予期しないものでした: ${JSON.stringify(json)}`],
     success: "",
   };
 }

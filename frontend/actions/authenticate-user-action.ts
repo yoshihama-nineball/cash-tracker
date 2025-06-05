@@ -56,20 +56,18 @@ export async function authenticate(
       httpOnly: true,
       path: "/",
     });
-
   } catch (error) {
-    // NEXT_REDIRECT以外のエラーのみ処理
-    if (error instanceof Error && error.message.includes('NEXT_REDIRECT')) {
-      throw error; // リダイレクトエラーは再スロー
+    if (error instanceof Error && error.message.includes("NEXT_REDIRECT")) {
+      throw error;
     }
-    
-    const errorMessage = error instanceof Error ? error.message : "不明なエラー";
+
+    const errorMessage =
+      error instanceof Error ? error.message : "不明なエラー";
     return {
       errors: ["ネットワークエラーが発生しました: " + errorMessage],
       success: "",
     };
   }
 
-  // ここでリダイレクト
   redirect("/admin/budgets");
 }

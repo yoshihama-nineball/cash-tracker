@@ -119,22 +119,17 @@ export const UserSchema = z.object({
 
 export const ExpenseAPIResponseSchema = z.object({
   _id: z.string(),
-  id: z
-    .union([z.string(), z.number()])
-    .transform((val) => (typeof val === "string" ? val : String(val))),
-
+  id: z.union([z.string(), z.number()]).transform((val) => String(val)),
   name: z.string(),
-
-  amount: z
+  amount: z.union([z.string(), z.number()]).transform((val) => Number(val)),
+  budgetId: z.union([z.string(), z.number()]).transform((val) => String(val)),
+  budget: z
     .union([z.string(), z.number()])
-    .transform((val) => (typeof val === "string" ? Number(val) : val)),
-
-  budgetId: z
-    .union([z.string(), z.number()])
-    .transform((val) => (typeof val === "string" ? val : String(val))),
-
+    .transform((val) => String(val))
+    .optional(),
   createdAt: z.string(),
   updatedAt: z.string(),
+  __v: z.number().optional(),
 });
 
 export const BudgetAPIResponseSchema = z.object({
@@ -158,15 +153,17 @@ export const BudgetAPIResponseSchema = z.object({
 
   expenses: z.array(ExpenseAPIResponseSchema).optional(),
 
-  user: z.union([
-    z.string(),
-    z.object({
-      id: z.string(),
-      name: z.string(),
-      email: z.string(),
-      _id: z.string(),
-    })
-  ]).optional(),
+  user: z
+    .union([
+      z.string(),
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        email: z.string(),
+        _id: z.string(),
+      }),
+    ])
+    .optional(),
 });
 
 export const BudgetsAPIResponseSchema = z.object({
