@@ -3,7 +3,7 @@ import mongoose from 'mongoose'
 dotenv.config()
 
 // MongoDB接続URI
-const MONGODB_URI = process.env.MONGODB_URI
+const MONGODB_URI = process.env.MONGOBD_URI
 
 // MongoDBインターフェースを定義
 interface IMongoDBConnection {
