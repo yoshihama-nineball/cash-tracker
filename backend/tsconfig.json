@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "skipLibCheck": true,
     "outDir": "./dist",
     "rootDir": "./src",
+    "types": [],
     "lib": ["esnext"],
     "target": "ESNext",
     "moduleResolution": "NodeNext",
@@ -14,6 +14,6 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true
   },
-  "include": ["src/**/*.ts", "test/**/*.ts"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "src/tests/**/*", "**/*.test.ts", "**/*.spec.ts"]
 }
