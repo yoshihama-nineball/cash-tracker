@@ -39,7 +39,7 @@ app.get('/api/hello', (req, res) => {
 app.use('/api/budgets', budgetRouter)
 app.use('/api/auth', authRouter)
 
-app.use('/', (req, res) => {
+app.get('/', (req, res) => {
   res.send('ユニットテストの動作確認')
 })
 
