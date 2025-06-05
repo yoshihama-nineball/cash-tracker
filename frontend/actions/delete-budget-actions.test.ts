@@ -20,7 +20,7 @@ describe("deleteBudget", () => {
     mockFormData.append("name", "旅行予算");
     mockFormData.append("amount", "150000");
 
-    process.env.API_URL = "http://localhost:4000/api";
+    process.env.NEXT_PUBLIC_API_URL = "http://localhost:4000/api";
 
     // モックの実装を設定
     mockDeleteDialog.mockImplementation(
@@ -37,7 +37,7 @@ describe("deleteBudget", () => {
 
         try {
           const token = await mockGetToken();
-          const url = `${process.env.API_URL}/budgets/${budgetId}`;
+          const url = `${process.env.NEXT_PUBLIC_API_URL}/budgets/${budgetId}`;
 
           const response = { success: `${name}を削除しました` };
 

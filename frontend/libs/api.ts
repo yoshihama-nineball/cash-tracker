@@ -11,7 +11,7 @@ const API_URL = "http://localhost:4000/api";
 export async function getBudgets() {
   try {
     const token = await getToken();
-    const url = `${process.env.API_URL}/budgets`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/budgets`;
 
     const response = await fetch(url, {
       headers: {
@@ -75,7 +75,7 @@ export const getBudget = cache(async (budgetId: string) => {
   // getToken()を await
   const token = await getToken();
 
-  const url = `${process.env.API_URL}/budgets/${budgetId}`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/budgets/${budgetId}`;
   const req = await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`,

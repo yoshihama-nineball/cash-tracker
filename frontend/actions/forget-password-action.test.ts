@@ -102,7 +102,7 @@ describe("forgot-password サーバアクション", () => {
     });
 
     expect(fetch).toHaveBeenCalledWith(
-      `${process.env.API_URL}/auth/forgot-password`,
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`,
       expect.objectContaining({
         method: "POST",
         headers: {

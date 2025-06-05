@@ -32,7 +32,7 @@ export async function forget_password(
 
   // ここからは検証成功後の処理
   try {
-    const url = `${process.env.API_URL}/auth/forgot-password`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/forgot-password`;
     const req = await fetch(url, {
       method: "POST",
       headers: {

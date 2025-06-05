@@ -1,8 +1,8 @@
 import { ErrorResponseSchema, LoginSchema } from "../libs/schemas/auth";
 import { authenticate } from "./authenticate-user-action";
 
-// process.env.API_URLを設定
-process.env.API_URL = "http://localhost:4000/api";
+// process.env.NEXT_PUBLIC_API_URLを設定
+process.env.NEXT_PUBLIC_API_URL = "http://localhost:4000/api";
 
 // next/headersのモック
 jest.mock("next/headers", () => {
@@ -104,7 +104,7 @@ describe("authenticate関数", () => {
 
     // APIが正しいパラメータで呼ばれる
     expect(fetch).toHaveBeenCalledWith(
-      `${process.env.API_URL}/auth/login`,
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/login`,
       expect.objectContaining({
         method: "POST",
         headers: {

@@ -124,7 +124,7 @@ describe("confirm_account サーバーアクション", () => {
 
     // fetchが正しく呼び出されたことを確認
     expect(fetch).toHaveBeenCalledWith(
-      `${process.env.API_URL}/auth/confirm-account`,
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/confirm-account`,
       expect.objectContaining({
         method: "POST",
         headers: {

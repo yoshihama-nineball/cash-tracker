@@ -27,7 +27,7 @@ export async function editBudget(
   }
 
   const token = await getToken();
-  const url = `${process.env.API_URL}/budgets/${budgetId}`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/budgets/${budgetId}`;
 
   try {
     const req = await fetch(url, {

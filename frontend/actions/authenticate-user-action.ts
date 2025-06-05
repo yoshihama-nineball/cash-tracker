@@ -25,7 +25,7 @@ export async function authenticate(
     };
   }
 
-  const url = `${process.env.API_URL}/auth/login`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
   const req = await fetch(url, {
     method: "POST",
     headers: {

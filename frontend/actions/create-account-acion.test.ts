@@ -118,7 +118,7 @@ describe("register サーバーアクション", () => {
     });
 
     expect(fetch).toHaveBeenCalledWith(
-      `${process.env.API_URL}/auth/create-account`,
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/create-account`,
       expect.objectContaining({
         method: "POST",
         headers: {

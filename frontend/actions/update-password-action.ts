@@ -27,7 +27,7 @@ export async function updatePassword(
   }
 
   const token = await getToken();
-  const url = `${process.env.API_URL}/auth/update-password`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/update-password`;
 
   try {
     const req = await fetch(url, {

@@ -195,7 +195,7 @@ describe("createExpense Action", () => {
     mockFormData.append("name", "支出テスト");
     mockFormData.append("amount", "10000");
 
-    process.env.API_URL = "http://localhost:4000/api";
+    process.env.NEXT_PUBLIC_API_URL = "http://localhost:4000/api";
 
     mockCreateExpense.mockImplementation(
       async (budgetId, prevState, formData) => {
@@ -216,7 +216,7 @@ describe("createExpense Action", () => {
 
         try {
           const token = await mockGetToken();
-          const url = `${process.env.API_URL}/budgets/${budgetId}/expenses`;
+          const url = `${process.env.NEXT_PUBLIC_API_URL}/budgets/${budgetId}/expenses`;
 
           const response = { success: "支出が正しく作成されました" };
           mockRevalidatePath("/admin");

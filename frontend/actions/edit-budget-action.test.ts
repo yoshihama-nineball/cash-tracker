@@ -20,7 +20,7 @@ describe("editBudget", () => {
     mockFormData.append("name", "旅行予算");
     mockFormData.append("amount", "150000");
 
-    process.env.API_URL = "http://localhost:4000/api";
+    process.env.NEXT_PUBLIC_API_URL = "http://localhost:4000/api";
 
     // モックの実装を設定
     mockEditBudget.mockImplementation(async (budgetId, prevState, formData) => {
@@ -36,7 +36,7 @@ describe("editBudget", () => {
 
       try {
         const token = await mockGetToken();
-        const url = `${process.env.API_URL}/budgets/${budgetId}`;
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/budgets/${budgetId}`;
 
         const response = { success: "予算が正常に更新されました" };
 

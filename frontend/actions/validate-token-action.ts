@@ -34,7 +34,7 @@ export async function validate_token(
 
     // API呼び出し
     try {
-      const url = `${process.env.API_URL}/auth/validate-token`;
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/validate-token`;
       console.log("API呼び出し:", url);
 
       const req = await fetch(url, {

@@ -42,7 +42,7 @@ describe("updatePassword", () => {
     mockFormData.append("password", "New Password");
     mockFormData.append("password_confirmation", "New Password");
 
-    process.env.API_URL = "http://localhost:4000/api";
+    process.env.NEXT_PUBLIC_API_URL = "http://localhost:4000/api";
     mockGetToken.mockResolvedValue("mock-token");
   });
 
@@ -64,7 +64,7 @@ describe("updatePassword", () => {
     const result = await updatePassword(mockPrevState, mockFormData);
 
     expect(fetch).toHaveBeenCalledWith(
-      `${process.env.API_URL}/auth/update-password`,
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/update-password`,
       {
         method: "PUT",
         headers: {
@@ -239,7 +239,7 @@ describe("updatePassword", () => {
     const result = await updatePassword(mockPrevState, mockFormData);
 
     expect(fetch).toHaveBeenCalledWith(
-      `${process.env.API_URL}/auth/update-password`,
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/update-password`,
       expect.objectContaining({
         headers: expect.objectContaining({
           Authorization: "Bearer null",

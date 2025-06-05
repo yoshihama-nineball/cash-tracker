@@ -13,7 +13,7 @@ export const verifySession = cache(async () => {
     }
 
     const jwtToken = token.value;
-    const url = `${process.env.API_URL}/auth/user`;
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/user`;
     const req = await fetch(url, {
       headers: {
         Authorization: `Bearer ${jwtToken}`,

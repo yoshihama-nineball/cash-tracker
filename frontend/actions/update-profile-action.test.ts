@@ -42,7 +42,7 @@ describe("updateProfile", () => {
     mockFormData.append("name", "Test User");
     mockFormData.append("email", "test@example.com");
 
-    process.env.API_URL = "http://localhost:4000/api";
+    process.env.NEXT_PUBLIC_API_URL = "http://localhost:4000/api";
     mockGetToken.mockResolvedValue("mock-token");
   });
 
@@ -63,7 +63,7 @@ describe("updateProfile", () => {
     const result = await updateProfile(mockPrevState, mockFormData);
 
     expect(fetch).toHaveBeenCalledWith(
-      `${process.env.API_URL}/auth/update-profile`,
+      `${process.env.NEXT_PUBLIC_API_URL}/auth/update-profile`,
       {
         method: "PUT",
         headers: {

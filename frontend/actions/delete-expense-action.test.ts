@@ -21,7 +21,7 @@ describe("deleteExpense", () => {
     mockFormData.append("name", "旅行支出");
     mockFormData.append("amount", "15000");
 
-    process.env.API_URL = "http://localhost:4000/api";
+    process.env.NEXT_PUBLIC_API_URL = "http://localhost:4000/api";
 
     mockDeleteExpenseForm.mockImplementation(
       async (budgetId, expenseId, prevState, formData) => {
@@ -37,7 +37,7 @@ describe("deleteExpense", () => {
 
         try {
           const token = await mockGetToken();
-          const url = `${process.env.API_URL}/budgets/${budgetId}/expenses/${expenseId}`;
+          const url = `${process.env.NEXT_PUBLIC_API_URL}/budgets/${budgetId}/expenses/${expenseId}`;
 
           const response = { success: `${name}を削除しました` };
 

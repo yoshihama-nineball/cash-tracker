@@ -33,7 +33,7 @@ describe("editExpense", () => {
     mockFormData.append("name", "テスト支出");
     mockFormData.append("amount", "1000");
 
-    process.env.API_URL = "http://localhost:4000/api";
+    process.env.NEXT_PUBLIC_API_URL = "http://localhost:4000/api";
     mockGetToken.mockResolvedValue("mock-token");
   });
 
@@ -51,7 +51,7 @@ describe("editExpense", () => {
     );
 
     expect(fetch).toHaveBeenCalledWith(
-      `${process.env.API_URL}/budgets/${mockBudgetId}/expenses/${mockExpenseId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/budgets/${mockBudgetId}/expenses/${mockExpenseId}`,
       {
         method: "PUT",
         headers: {

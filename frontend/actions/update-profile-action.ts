@@ -26,7 +26,7 @@ export async function updateProfile(
   }
 
   const token = await getToken();
-  const url = `${process.env.API_URL}/auth/update-profile`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/update-profile`;
 
   try {
     const req = await fetch(url, {

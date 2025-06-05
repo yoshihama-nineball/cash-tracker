@@ -11,7 +11,7 @@ jest.mock("../libs/auth/token", () => {
 global.fetch = jest.fn();
 
 // 環境変数の設定
-process.env.API_URL = "https://api.example.com";
+process.env.NEXT_PUBLIC_API_URL = "https://api.example.com";
 
 describe("getUserBudgets", () => {
   // 各テスト前にモックをリセット

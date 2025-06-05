@@ -25,7 +25,7 @@ export async function createBudget(
   }
 
   const token = await getToken();
-  const url = `${process.env.API_URL}/budgets`;
+  const url = `${process.env.NEXT_PUBLIC_API_URL}/budgets`;
 
   const req = await fetch(url, {
     method: "POST",
