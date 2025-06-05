@@ -14,3 +14,7 @@ TODO: バージョンそれぞれ記載
 ## やること
 - [] ブランチを切って疑似チーム開発する
 　　　issueやpull requestなど
+
+
+## URL
+https://cash-tracker-six.vercel.app/admin/budgets
