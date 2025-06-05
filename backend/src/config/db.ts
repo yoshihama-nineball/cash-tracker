@@ -11,32 +11,36 @@ interface IMongoDBConnection {
   sync(): void
 }
 
-// MongoDBクラスを定義（Sequelizeと同様のインターフェースを提供）
+// MongoDBクラスを定義
 class MongoDB implements IMongoDBConnection {
   private connection: mongoose.Connection | null = null
 
-  // Sequelizeのauthenticateメソッドと同様のメソッドを実装
   async authenticate(): Promise<void> {
     try {
-      await mongoose.connect(MONGODB_URI)
+      // 接続オプションを修正（存在するオプションのみ使用）
+      await mongoose.connect(MONGODB_URI, {
+        connectTimeoutMS: 30000,
+        socketTimeoutMS: 30000,
+        maxPoolSize: 5,
+        serverSelectionTimeoutMS: 30000,
+        bufferCommands: false, // これだけ残す
+      })
       this.connection = mongoose.connection
+      console.log('✅ MongoDB接続成功')
       return Promise.resolve()
     } catch (error) {
+      console.error('❌ MongoDB接続エラー:', error)
       return Promise.reject(error)
     }
   }
 
-  // Sequelizeのsyncメソッドと同様のメソッド（MongoDB用に空実装）
   sync(): void {
-    // MongoDBではテーブル同期が不要なので何もしない
     return
   }
 
-  // 現在の接続を返す
   getConnection(): mongoose.Connection | null {
     return this.connection
   }
 }
 
-// DBインスタンスを作成してエクスポート
 export const db = new MongoDB()
