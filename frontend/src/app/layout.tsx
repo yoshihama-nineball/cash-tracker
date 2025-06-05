@@ -1,8 +1,8 @@
 // app/layout.tsx
 import Header from "@/components/layouts/Header/Header";
-import { MessageProvider } from "context/MessageContext";
 import { Metadata } from "next";
 import React from "react";
+import { MessageProvider } from "../../context/MessageContext";
 import { verifySession } from "../../libs/auth/dal";
 import Loading from "../components/feedback/Loading";
 import { ClientThemeProvider } from "../components/layouts/ClientThemeProvider";
