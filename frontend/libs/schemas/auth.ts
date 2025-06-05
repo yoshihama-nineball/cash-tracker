@@ -158,14 +158,15 @@ export const BudgetAPIResponseSchema = z.object({
 
   expenses: z.array(ExpenseAPIResponseSchema).optional(),
 
-  user: z
-    .object({
+  user: z.union([
+    z.string(),
+    z.object({
       id: z.string(),
       name: z.string(),
       email: z.string(),
       _id: z.string(),
     })
-    .optional(),
+  ]).optional(),
 });
 
 export const BudgetsAPIResponseSchema = z.object({

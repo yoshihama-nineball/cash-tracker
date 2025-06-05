@@ -72,9 +72,7 @@ export async function createBudget(
 }
 
 export const getBudget = cache(async (budgetId: string) => {
-  // getToken()を await
   const token = await getToken();
-
   const url = `${process.env.NEXT_PUBLIC_API_URL}/budgets/${budgetId}`;
   const req = await fetch(url, {
     headers: {

@@ -1,9 +1,9 @@
 // app/layout.tsx
-// server component
 import Header from "@/components/layouts/Header/Header";
 import { MessageProvider } from "context/MessageContext";
 import { Metadata } from "next";
 import React from "react";
+import { verifySession } from "../../libs/auth/dal";
 import Loading from "../components/feedback/Loading";
 import { ClientThemeProvider } from "../components/layouts/ClientThemeProvider";
 
@@ -20,12 +20,19 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const { user } = await verifySession();
+  
+  const userData = {
+    user: user,
+    isAuth: !!user,
+  };
+
   return (
     <html lang="ja">
       <body>
         <ClientThemeProvider>
           <MessageProvider>
-            <Header />
+            <Header userData={userData} />
             <main>
               <React.Suspense fallback={<Loading />}>{children}</React.Suspense>
             </main>

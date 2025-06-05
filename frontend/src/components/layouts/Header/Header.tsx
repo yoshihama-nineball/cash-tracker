@@ -52,6 +52,9 @@ function stringAvatar(name: string) {
 }
 
 export default function Header({ userData }: HeaderProps) {
+  console.log('Header userData:', userData); // ← 追加
+  console.log('user:', userData?.user); // ← 追加
+  console.log('isAuth:', userData?.isAuth); // ← 追加
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
