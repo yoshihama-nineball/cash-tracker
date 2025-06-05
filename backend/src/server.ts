@@ -1,4 +1,5 @@
 import colors from 'colors'
+import cors from 'cors'
 import express from 'express'
 import morgan from 'morgan'
 import 'reflect-metadata'
@@ -20,11 +21,18 @@ connectDB()
 
 const app = express()
 
-// morganミドルウェアを使ったHTTPリクエスト結果の表示
+app.use(
+  cors({
+    origin: [
+      'http://localhost:3000',
+      // 'https://your-frontend-domain.vercel.app', // フロントデプロイ後に追加
+    ],
+    credentials: true,
+  }),
+)
+
 app.use(morgan('dev'))
-
 app.use(express.json())
-
 app.use(limiter)
 
 app.get('/api/hello', (req, res) => {
