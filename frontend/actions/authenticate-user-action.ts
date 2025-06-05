@@ -1,5 +1,12 @@
+"use server";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { ErrorResponseSchema, LoginSchema } from "../libs/schemas/auth";
+
+type ActionStateType = {
+  errors: string[];
+  success: string;
+};
 
 export async function authenticate(
   prevState: ActionStateType,
@@ -18,50 +25,35 @@ export async function authenticate(
     };
   }
 
-  // 環境変数を使用（パスを正しく結合）
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
-  
-  console.log('Request URL:', url); // デバッグ用
+  // const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
+  const url = `https://cash-tracker-btdf.vercel.app/api/auth/login`;
+  const req = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      password: auth.data.password,
+      email: auth.data.email,
+    }),
+  });
 
-  try {
-    const req = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        password: auth.data.password,
-        email: auth.data.email,
-      }),
-    });
-
-    // レスポンスをデバッグ
-    console.log('Response status:', req.status);
-    
-    const json = await req.json();
-
-    if (!req.ok) {
-      const { error } = ErrorResponseSchema.parse(json);
-      return {
-        errors: [error],
-        success: "",
-      };
-    }
-
-    const cookieStore = await cookies();
-    cookieStore.set({
-      name: "CASHTRACKR_TOKEN",
-      value: json,
-      httpOnly: true,
-      path: "/",
-    });
-
-    redirect("/admin/budgets");
-  } catch (error) {
-    console.error('Network error:', error);
+  const json = await req.json();
+  if (!req.ok) {
+    const { error } = ErrorResponseSchema.parse(json);
     return {
-      errors: ["サーバーエラーが発生しました"],
+      errors: [error],
       success: "",
     };
   }
+
+  const cookieStore = await cookies();
+  cookieStore.set({
+    name: "CASHTRACKR_TOKEN",
+    value: json,
+    httpOnly: true,
+    path: "/",
+  });
+
+  redirect("/admin/budgets");
 }
