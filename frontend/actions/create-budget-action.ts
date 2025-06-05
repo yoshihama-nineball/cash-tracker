@@ -1,5 +1,4 @@
 "use server";
-
 import { revalidatePath } from "next/cache";
 import getToken from "../libs/auth/token";
 import { DraftBudgetSchema } from "../libs/schemas/auth";
@@ -17,6 +16,7 @@ export async function createBudget(
     name: formData.get("name"),
     amount: formData.get("amount"),
   });
+
   if (!budget.success) {
     return {
       errors: budget.error.issues.map((issue) => issue.message),
@@ -26,7 +26,7 @@ export async function createBudget(
 
   const token = await getToken();
   const url = `${process.env.NEXT_PUBLIC_API_URL}/budgets`;
-
+  
   const req = await fetch(url, {
     method: "POST",
     headers: {
@@ -39,9 +39,23 @@ export async function createBudget(
     }),
   });
 
+  // デバッグ情報を追加
+  console.log('予算作成レスポンスステータス:', req.status);
+  console.log('予算作成レスポンスOK:', req.ok);
+
   const json = await req.json();
+  console.log('予算作成レスポンス内容:', json); // ← 追加
+  console.log('レスポンスの型:', typeof json); // ← 追加
 
   revalidatePath("/admin");
+
+  // エラーレスポンスの処理を追加
+  if (!req.ok) {
+    return {
+      errors: [json.message || `サーバーエラー (${req.status})`],
+      success: "",
+    };
+  }
 
   if (typeof json === "string") {
     return {
@@ -62,9 +76,10 @@ export async function createBudget(
     }
   }
 
+  // デバッグ用：実際のレスポンス内容をエラーメッセージに含める
   return {
     errors: [
-      "レスポンス形式が予期しないものでした。管理者にお問い合わせください。",
+      `レスポンス形式が予期しないものでした: ${JSON.stringify(json)}`,
     ],
     success: "",
   };

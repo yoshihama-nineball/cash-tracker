@@ -1,5 +1,4 @@
 "use server";
-
 import { DraftExpenseSchema } from "libs/schemas/auth";
 import { revalidatePath } from "next/cache";
 import getToken from "../libs/auth/token";
@@ -10,62 +9,80 @@ type ActionStateType = {
 };
 
 export async function createExpense(
-  budgetId: number,
+  budgetId: string,
   prevState: ActionStateType,
   formData: FormData,
 ) {
-  const expense = DraftExpenseSchema.safeParse({
+  console.log('createExpense開始 - budgetId:', budgetId);
+  console.log('formData:', {
     name: formData.get("name"),
     amount: formData.get("amount"),
   });
-  if (!expense.success) {
-    return {
-      errors: expense.error.issues.map((issue) => issue.message),
-      success: ",",
-    };
-  }
 
-  const token = await getToken();
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/budgets/${budgetId}/expenses`;
-  const req = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      name: expense.data.name,
-      amount: expense.data.amount,
-    }),
-  });
+  try {
+    const expense = DraftExpenseSchema.safeParse({
+      name: formData.get("name"),
+      amount: formData.get("amount"),
+    });
 
-  const json = await req.json();
+    console.log('expense.success:', expense.success);
 
-  revalidatePath("/admin");
-
-  if (typeof json === "string") {
-    return {
-      errors: [],
-      success: json,
-    };
-  } else if (json && typeof json === "object") {
-    if ("success" in json && typeof json.success === "string") {
+    if (!expense.success) {
+      console.log('バリデーションエラー:', expense.error);
       return {
-        errors: [],
-        success: json.success,
-      };
-    } else if ("message" in json && typeof json.message === "string") {
-      return {
-        errors: [],
-        success: json.message,
+        errors: expense.error.issues.map((issue) => issue.message),
+        success: "",
       };
     }
-  }
 
-  return {
-    errors: [
-      "レスポンス形式が予期しないものでした。管理者にお問い合わせください。",
-    ],
-    success: "",
-  };
+    console.log('バリデーション成功:', expense.data);
+
+    const token = await getToken();
+    console.log('token取得:', !!token);
+
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/budgets/${budgetId}/expenses`;
+    console.log('URL:', url);
+
+    const req = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        name: expense.data.name,
+        amount: expense.data.amount,
+      }),
+    });
+
+    console.log('レスポンスステータス:', req.status);
+    
+    const json = await req.json();
+    console.log('レスポンス内容:', json);
+
+    revalidatePath("/admin");
+
+    if (!req.ok) {
+      const errorMessage = json.errors?.[0]?.msg || json.message || `サーバーエラー (${req.status})`;
+      console.log('エラーレスポンス:', errorMessage);
+      return {
+        errors: [errorMessage],
+        success: "",
+      };
+    }
+
+    const result = {
+      errors: [],
+      success: "支出を作成しました",
+    };
+    console.log('最終結果:', result);
+    return result;
+
+  } catch (error) {
+    console.error('createExpense内でエラー:', error);
+    return {
+      errors: ["予期しないエラーが発生しました"],
+      success: "",
+    };
+  }
 }

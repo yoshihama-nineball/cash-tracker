@@ -60,7 +60,7 @@ const CreateExpenseForm = ({ budgetId }: CreateExpenseFormProps) => {
 
   const createExpenseWithBudgetId = createExpense.bind(
     null,
-    Number(budgetId),
+    budgetId,
   ) as (state: ActionStateType, payload: FormData) => Promise<ActionStateType>;
 
   const [formState, dispatch] = useActionState(createExpenseWithBudgetId, {
