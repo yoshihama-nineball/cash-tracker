@@ -23,7 +23,7 @@ const app = express()
 
 app.use(
   cors({
-    origin: ['http://localhost:3000', 'https://cash-tracker-six.vercel.app/'],
+    origin: ['http://localhost:3000', 'https://cash-tracker-six.vercel.app'],
     credentials: true,
   }),
 )
