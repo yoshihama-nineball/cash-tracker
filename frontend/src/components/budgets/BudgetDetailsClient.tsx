@@ -33,7 +33,11 @@ export default function BudgetDetailsClient({
         <Typography variant="h4" sx={{ fontWeight: "bold", color: "#333" }}>
           {budget.name}
         </Typography>
-        <CreateExpenseForm budgetId={budget.id} />
+        <CreateExpenseForm
+          budgetId={budget.id}
+          open={activeModal}
+          setOpen={setActiveModal}
+        />
       </Box>
       <ExpenseList
         budget={budget}

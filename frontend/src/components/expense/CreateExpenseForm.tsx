@@ -15,13 +15,7 @@ import {
 } from "@mui/material";
 import { TransitionProps } from "@mui/material/transitions";
 import { useRouter } from "next/navigation";
-import React, {
-  useActionState,
-  useEffect,
-  useRef,
-  useState,
-  useTransition,
-} from "react";
+import React, { useActionState, useEffect, useRef, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { createExpense } from "../../../actions/create-expense-action";
 import { useMessage } from "../../../context/MessageContext";
@@ -33,6 +27,8 @@ import Button from "../ui/Button/Button";
 
 interface CreateExpenseFormProps {
   budgetId: string;
+  open: "none" | "create" | "edit" | "delete";
+  setOpen: (open: "none" | "create" | "edit" | "delete") => void;
 }
 
 type ActionStateType = {
@@ -49,8 +45,11 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const CreateExpenseForm = ({ budgetId }: CreateExpenseFormProps) => {
-  const [open, setOpen] = useState(false);
+const CreateExpenseForm = ({
+  budgetId,
+  open,
+  setOpen,
+}: CreateExpenseFormProps) => {
   const [isPending, startTransition] = useTransition();
   const { showMessage } = useMessage();
   const theme = useTheme();
@@ -80,10 +79,9 @@ const CreateExpenseForm = ({ budgetId }: CreateExpenseFormProps) => {
       amount: 0,
     },
   });
-
   useEffect(() => {
     if (formState.success) {
-      setOpen(false);
+      setOpen("none");
       reset();
       showMessage(formState.success, "success");
     }
@@ -97,12 +95,12 @@ const CreateExpenseForm = ({ budgetId }: CreateExpenseFormProps) => {
 
   const handleClickOpen = () => {
     reset();
-    setOpen(true);
+    setOpen("create");
   };
 
   const handleClose = () => {
     reset();
-    setOpen(false);
+    setOpen("none");
   };
 
   const onSubmit = async (data: DraftExpenseFormValues) => {
@@ -132,7 +130,7 @@ const CreateExpenseForm = ({ budgetId }: CreateExpenseFormProps) => {
       </Button>
       　
       <Dialog
-        open={open}
+        open={open === "create"}
         TransitionComponent={Transition}
         keepMounted
         onClose={handleClose}
